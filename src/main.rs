@@ -1,4 +1,7 @@
+use ap_fossilizer::mastodon_export::MastodonExport;
 use clap::{Parser, Subcommand};
+use std::convert::From;
+use std::error::Error;
 
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
@@ -32,32 +35,13 @@ fn main() {
     }
 }
 
-use flate2::read::GzDecoder;
-use std::fs::File;
-use std::io::Read;
-use tar::Archive;
-
-fn command_import(filename: &Option<String>) -> Result<(), String> {
-    println!("'myapp import' was used, name is: {filename:?}");
-
+fn command_import(filename: &Option<String>) -> Result<(), Box<dyn Error>> {
     let filename = filename.as_ref().ok_or("no filename")?;
-    let tar_gz = File::open(filename).or(Err("no targs"))?;
-    let tar = GzDecoder::new(tar_gz);
-    let mut archive = Archive::new(tar);
-    let entries = archive.entries().or(Err("no entries"))?;
 
-    for entry in entries {
-        let mut entry = entry.or(Err("bad entry"))?;
-        let entry_path = entry.path().or(Err("bad entry path"))?;
-        if entry_path.ends_with("outbox.json") {
-            println!("entry! {:?} {:?}", entry_path, entry.size());
+    let mut export = MastodonExport::from(filename);
+    let outbox = export.outbox()?;
 
-            let mut buffer = String::new();
-            entry.read_to_string(&mut buffer);
-
-            println!("json! {:?}", buffer);
-        }
-    }
+    println!("outbox {:?}", outbox.ordered_items.len());
 
     Ok(())
 }
