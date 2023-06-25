@@ -23,6 +23,9 @@ pub struct Activity {
     pub object: serde_json::Value,
 }
 
+// todo: actor?
+// todo: object?
+
 pub type OutboxWithActivities = Outbox<Activity>;
 
 pub type OutboxWithValues = Outbox<serde_json::Value>;

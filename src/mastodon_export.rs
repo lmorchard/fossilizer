@@ -20,7 +20,7 @@ impl From<&String> for MastodonExport {
 
 impl From<PathBuf> for MastodonExport {
     fn from(filepath: PathBuf) -> Self {
-        Self::new(PathBuf::from(filepath))
+        Self::new(filepath)
     }
 }
 
@@ -46,6 +46,7 @@ impl MastodonExport {
         Ok(())
     }
 
+    // todo: define more specific error type
     pub fn outbox(&mut self) -> Result<Outbox<Activity>, Box<dyn Error>> {
         self.open()?;
         let archive = self.archive.as_mut().ok_or("no archive")?;
