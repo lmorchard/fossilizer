@@ -7,24 +7,24 @@ use tar::Archive;
 
 use crate::activitystreams::{Activity, Outbox};
 
-pub struct MastodonExport {
+pub struct Export {
     pub filepath: PathBuf,
     pub archive: Option<Archive<GzDecoder<File>>>,
 }
 
-impl From<&String> for MastodonExport {
+impl From<&String> for Export {
     fn from(filepath: &String) -> Self {
         Self::new(PathBuf::from(filepath))
     }
 }
 
-impl From<PathBuf> for MastodonExport {
+impl From<PathBuf> for Export {
     fn from(filepath: PathBuf) -> Self {
         Self::new(filepath)
     }
 }
 
-impl MastodonExport {
+impl Export {
     pub fn new(filepath: PathBuf) -> Self {
         Self {
             filepath,
@@ -76,7 +76,7 @@ mod tests {
             .join(TEST_RESOURCES_PATH)
             .join("mastodon-export.tar.gz");
 
-        let mut export = MastodonExport::from(export_path);
+        let mut export = Export::from(export_path);
         let outbox = export.outbox().or(Err("outbox failed"))?;
 
         println!("outbox {:?}", outbox.ordered_items.len());

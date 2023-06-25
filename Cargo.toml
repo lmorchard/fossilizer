@@ -9,6 +9,7 @@ edition = "2021"
 anyhow = "1.0.71"
 clap = { version = "4.3.8", features = ["derive", "env", "cargo"] }
 config = "0.13.3"
+dotenv = "0.15.0"
 env_logger = "0.10.0"
 flate2 = "1.0.26"
 lazy_static = "1.4.0"
