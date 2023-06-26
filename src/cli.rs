@@ -92,6 +92,11 @@ fn command_build() -> Result<(), Box<dyn Error>> {
         for month in months {
             let days = activities.get_published_days_for_month(month)?;
             info!("DAYS {:?}", days);
+
+            let day = days.get(0).ok_or("no first day")?;
+            let items = activities.get_activities_for_day(day.to_string());
+            //info!("ITEMS {:?}", items);
+            //break;
         }
     }
 

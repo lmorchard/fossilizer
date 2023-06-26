@@ -83,6 +83,25 @@ impl Activities {
             [month],
         )
     }
+
+    pub fn get_activities_for_day(&self, day: String) -> Result<Vec<Activity>> {
+        let conn = &self.conn;
+        let mut stmt = conn.prepare(
+            r#"
+                SELECT json
+                FROM activities
+                WHERE publishedYearMonthDay = ?1
+            "#            
+        )?;
+        let mut rows = stmt.query([day])?;
+        let mut out = Vec::new();
+        while let Some(r) = rows.next()? {
+            let json_text: String = r.get(0)?;
+            let activity: Activity = serde_json::from_str(json_text.as_str())?;
+            out.push(activity);
+        }
+        Ok(out)
+    }
 }
 
 type SingleColumnResult = Result<Vec<String>, rusqlite::Error>;
