@@ -1,6 +1,7 @@
 use anyhow::Result;
 use std::error::Error;
 use std::fs;
+use std::io::prelude::*;
 use std::path::PathBuf;
 
 use ap_fossilizer::{app, db, templates};
@@ -21,45 +22,38 @@ pub fn command_build() -> Result<(), Box<dyn Error>> {
     let config = app::config_try_deserialize::<BuildConfig>()?;
     let build_path = PathBuf::from(config.build_path);
 
-    fs::remove_dir_all(&build_path)?;
+    if let Err(err) = fs::remove_dir_all(&build_path) {
+        if err.kind() != std::io::ErrorKind::NotFound {
+            // todo: improve error handling here
+            return Err(Box::new(err));
+        }
+    }
     fs::create_dir_all(&build_path)?;
 
     let tera = templates::init()?;
-    let mut context = tera::Context::new();
 
     let conn = db::conn()?;
     let activities = db::activities::Activities::new(conn);
 
-    let all_days = activities.get_published_days()?;
-    for day in all_days {
-        let day_path = PathBuf::from(&build_path).join(&day);
-        fs::create_dir_all(day_path)?;
-    }
+    let all_months = activities.get_published_months()?;
+    for month in all_months {
+        let month_path = PathBuf::from(&build_path).join(&month);
+        fs::create_dir_all(&month_path)?;
 
-    /*
-    let years = activities.get_published_years()?;
-    info!("YEARS {:?}", years);
+        let days = activities.get_published_days_for_month(&month)?;
+        for day in days {
+            let day_path = PathBuf::from(&build_path).join(&day).with_extension("html");
+            info!("DAY PATH {:?}", day_path);
+            let items = activities.get_activities_for_day(&day)?;
 
-    for year in years {
-        let months = activities.get_published_months_for_year(year)?;
-        info!("MONTHS {:?}", months);
-        for month in months {
-            let days = activities.get_published_days_for_month(month)?;
-            info!("DAYS {:?}", days);
+            let mut context = tera::Context::new();
+            context.insert("day", &day);
+            context.insert("activities", &items);
 
-            let day = days.get(0).ok_or("no first day")?;
-            let items = activities.get_activities_for_day(day.to_string());
-            //info!("ITEMS {:?}", items);
-            //break;
+            let day_source = tera.render("day.html", &context)?;
+            let mut day_file = fs::File::create(day_path)?;
+            day_file.write_all(day_source.as_bytes())?;
         }
     }
-
-    context.insert("number", &1234);
-
-    let result = tera.render("index.html", &context)?;
-
-    info!("RESULT: {:?}", result);
-     */
-
     Ok(())
 }

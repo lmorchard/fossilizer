@@ -20,7 +20,22 @@ pub struct Activity {
     pub published: String,
     pub to: Vec<String>,
     pub cc: Vec<String>,
-    pub object: serde_json::Value,
+    pub object: serde_json::Value, //Object,
+}
+
+#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Object {
+    pub id: String,
+    #[serde(rename = "type")]
+    pub type_field: String,
+    pub url: String,
+    pub published: String,
+    pub to: Vec<String>,
+    pub cc: Vec<String>,
+    pub summary: String,
+    pub content: String,
+    pub in_reply_to: String
 }
 
 // todo: actor?
