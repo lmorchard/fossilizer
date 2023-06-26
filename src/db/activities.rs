@@ -68,8 +68,9 @@ impl Activities {
         collect_first_column(stmt.query([year]))
     }
 
-    pub fn get_published_days_for_month(&self, month: String) -> Result<Vec<String>> {
-        let stmt = &mut self.conn.prepare(
+    pub fn get_published_days_for_month(&self, month: String) -> Result<Vec<String>, rusqlite::Error> {
+        let conn = &self.conn;
+        let mut stmt = conn.prepare(
             r#"
                 SELECT publishedYearMonthDay
                 FROM activities
@@ -77,7 +78,8 @@ impl Activities {
                 GROUP BY publishedYearMonthDay
             "#,
         )?;
-        collect_first_column(stmt.query([month]))
+        let rows = stmt.query_map([month], |row| row.get(0))?;
+        rows.collect()
     }
 }
 
