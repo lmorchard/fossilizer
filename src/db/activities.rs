@@ -28,6 +28,7 @@ impl Activities {
     pub fn import_outbox(&self, outbox: Outbox<Activity>) -> Result<()> {
         let conn = &self.conn;
 
+        // todo: use conn.transaction()?
         conn.execute("BEGIN TRANSACTION", ())?;
 
         for (count, item) in outbox.ordered_items.into_iter().enumerate() {
@@ -45,7 +46,7 @@ impl Activities {
         Ok(())
     }
 
-    pub fn get_published_years(&self) -> Result<Vec<String>> {
+    pub fn get_published_years(&self) -> Result<Vec<String>, rusqlite::Error> {
         let stmt = &mut self.conn.prepare(
             r#"
                 SELECT publishedYear
@@ -53,10 +54,11 @@ impl Activities {
                 GROUP BY publishedYear
             "#,
         )?;
-        collect_first_column(stmt.query([]))
+        let result = stmt.query_map([], |r| r.get(0))?.collect();
+        result
     }
 
-    pub fn get_published_months_for_year(&self, year: String) -> Result<Vec<String>> {
+    pub fn get_published_months_for_year(&self, year: String) -> Result<Vec<String>, rusqlite::Error> {
         let stmt = &mut self.conn.prepare(
             r#"
                 SELECT publishedYearMonth
@@ -65,7 +67,8 @@ impl Activities {
                 GROUP BY publishedYearMonth
             "#,
         )?;
-        collect_first_column(stmt.query([year]))
+        let result = stmt.query_map([year], |r| r.get(0))?.collect();
+        result
     }
 
     pub fn get_published_days_for_month(&self, month: String) -> Result<Vec<String>, rusqlite::Error> {
@@ -78,16 +81,7 @@ impl Activities {
                 GROUP BY publishedYearMonthDay
             "#,
         )?;
-        let rows = stmt.query_map([month], |row| row.get(0))?;
-        rows.collect()
+        let result = stmt.query_map([month], |r| r.get(0))?.collect();
+        result
     }
-}
-
-fn collect_first_column(rows: std::result::Result<Rows, rusqlite::Error>) -> Result<Vec<String>> {
-    let mut rows = rows?;
-    let mut out = Vec::new();
-    while let Some(row) = rows.next()? {
-        out.push(row.get(0)?);
-    }
-    Ok(out)
 }
