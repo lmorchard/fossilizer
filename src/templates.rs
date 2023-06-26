@@ -1,5 +1,5 @@
-use tera::Tera;
 use std::error::Error;
+use tera::Tera;
 
 pub fn init() -> Result<Tera, Box<dyn Error>> {
     let mut tera = Tera::default();

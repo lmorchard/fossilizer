@@ -1,7 +1,7 @@
 use anyhow::Result;
+use rusqlite::params;
 use rusqlite::Connection;
 use std::error::Error;
-use rusqlite::params;
 
 use crate::activitystreams::{Activity, Outbox};
 
@@ -34,7 +34,7 @@ impl Activities {
 
         for (count, item) in outbox.ordered_items.into_iter().enumerate() {
             if count > 0 && (count % IMPORT_TRANSACTION_PAGE_SIZE) == 0 {
-                info!("Imported {:?} items", count);                
+                info!("Imported {:?} items", count);
                 conn.execute("COMMIT TRANSACTION", ())?;
                 conn.execute("BEGIN TRANSACTION", ())?;
             }
