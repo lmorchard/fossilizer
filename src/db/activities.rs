@@ -1,6 +1,5 @@
 use anyhow::Result;
-use rusqlite::params;
-use rusqlite::Connection;
+use rusqlite::{params, Connection, Rows};
 
 use crate::activitystreams::{Activity, Outbox};
 
@@ -47,25 +46,18 @@ impl Activities {
     }
 
     pub fn get_published_years(&self) -> Result<Vec<String>> {
-        let conn = &self.conn;
-        let mut stmt = conn.prepare(
+        let stmt = &mut self.conn.prepare(
             r#"
                 SELECT publishedYear
                 FROM activities
                 GROUP BY publishedYear
             "#,
         )?;
-        let mut rows = stmt.query([])?;
-        let mut out = Vec::new();
-        while let Some(row) = rows.next()? {
-            out.push(row.get(0)?);
-        }
-        Ok(out)
+        collect_first_column(stmt.query([]))
     }
 
     pub fn get_published_months_for_year(&self, year: String) -> Result<Vec<String>> {
-        let conn = &self.conn;
-        let mut stmt = conn.prepare(
+        let stmt = &mut self.conn.prepare(
             r#"
                 SELECT publishedYearMonth
                 FROM activities
@@ -73,17 +65,11 @@ impl Activities {
                 GROUP BY publishedYearMonth
             "#,
         )?;
-        let mut rows = stmt.query([year])?;
-        let mut out = Vec::new();
-        while let Some(row) = rows.next()? {
-            out.push(row.get(0)?);
-        }
-        Ok(out)
+        collect_first_column(stmt.query([year]))
     }
 
     pub fn get_published_days_for_month(&self, month: String) -> Result<Vec<String>> {
-        let conn = &self.conn;
-        let mut stmt = conn.prepare(
+        let stmt = &mut self.conn.prepare(
             r#"
                 SELECT publishedYearMonthDay
                 FROM activities
@@ -91,11 +77,15 @@ impl Activities {
                 GROUP BY publishedYearMonthDay
             "#,
         )?;
-        let rows = stmt.query_map([month], |row| row.get(0))?;
-        let mut out = Vec::new();
-        for row in rows {
-            out.push(row?);
-        }
-        Ok(out)
+        collect_first_column(stmt.query([month]))
     }
+}
+
+fn collect_first_column(rows: std::result::Result<Rows, rusqlite::Error>) -> Result<Vec<String>> {
+    let mut rows = rows?;
+    let mut out = Vec::new();
+    while let Some(row) = rows.next()? {
+        out.push(row.get(0)?);
+    }
+    Ok(out)
 }
