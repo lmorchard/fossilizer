@@ -9,6 +9,15 @@ pub mod activities;
 
 use crate::app;
 
+// Define migrations. These are applied atomically.
+lazy_static! {
+    static ref MIGRATIONS: Migrations<'static> =
+        Migrations::new(vec![
+            M::up(include_str!("./db/migrations/202306241304-init.sql")), //.down(/* todo */),
+            M::up(include_str!("./db/migrations/202306261338-object-type-and-indexes-up.sql")),
+        ]);
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct DatabaseConfig {
     #[serde(default = "default_database_path")]
@@ -39,12 +48,4 @@ pub fn upgrade() -> Result<(), Box<dyn Error>> {
     let mut conn = Connection::open(config.database_path)?;
     MIGRATIONS.to_latest(&mut conn)?;
     Ok(())
-}
-
-// Define migrations. These are applied atomically.
-lazy_static! {
-    static ref MIGRATIONS: Migrations<'static> =
-        Migrations::new(vec![
-            M::up(include_str!("./db/migrations/202306241304-init.sql")), //.down(/* todo */),
-        ]);
 }

@@ -32,8 +32,10 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Commands {
-    /// Initialize teh database
+    /// Initialize the database
     Init {},
+    /// Upgrade the database
+    Upgrade {},
     /// Adds files to myapp
     Import { filenames: Vec<String> },
     /// Build the static site
@@ -45,8 +47,10 @@ pub fn execute() -> Result<(), Box<dyn Error>> {
 
     app::init(cli.config.as_deref())?;
 
+    // todo: come up with a more useful way to report status after subcommand
     match &cli.command {
         Commands::Init {} => info!("INIT {:?}", command_init()),
+        Commands::Upgrade {} => info!("UPGRADE {:?}", command_upgrade()),
         Commands::Import { filenames } => info!("IMPORT {:?}", command_import(filenames)),
         Commands::Build {} => info!("BUILD {:?}", build::command_build()),
     };
@@ -55,6 +59,12 @@ pub fn execute() -> Result<(), Box<dyn Error>> {
 }
 
 fn command_init() -> Result<(), Box<dyn Error>> {
+    // todo: remove existing DB?
+    db::upgrade()?;
+    Ok(())
+}
+
+fn command_upgrade() -> Result<(), Box<dyn Error>> {
     db::upgrade()?;
     Ok(())
 }
