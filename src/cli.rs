@@ -1,9 +1,12 @@
+use anyhow::Result;
 use clap::{Parser, Subcommand};
 use std::convert::From;
 use std::error::Error;
 use std::path::PathBuf;
 
-use ap_fossilizer::{app, db, mastodon, templates};
+use ap_fossilizer::{app, db, mastodon};
+
+pub mod build;
 
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
@@ -45,7 +48,7 @@ pub fn execute() -> Result<(), Box<dyn Error>> {
     match &cli.command {
         Commands::Init {} => info!("INIT {:?}", command_init()),
         Commands::Import { filenames } => info!("IMPORT {:?}", command_import(filenames)),
-        Commands::Build {} => info!("BUILD {:?}", command_build()),
+        Commands::Build {} => info!("BUILD {:?}", build::command_build()),
     };
 
     Ok(())
@@ -72,39 +75,6 @@ fn command_import(filenames: &Vec<String>) -> Result<(), Box<dyn Error>> {
         debug!("Imported {:?}", filename);
     }
     info!("Done");
-
-    Ok(())
-}
-
-fn command_build() -> Result<(), Box<dyn Error>> {    
-    let tera = templates::init()?;
-    let mut context = tera::Context::new();
-
-    let conn = db::conn()?;
-    let activities = db::activities::Activities::new(conn);
-
-    let years = activities.get_published_years()?;
-    info!("YEARS {:?}", years);
-
-    for year in years {
-        let months = activities.get_published_months_for_year(year)?;
-        info!("MONTHS {:?}", months);
-        for month in months {
-            let days = activities.get_published_days_for_month(month)?;
-            info!("DAYS {:?}", days);
-
-            let day = days.get(0).ok_or("no first day")?;
-            let items = activities.get_activities_for_day(day.to_string());
-            //info!("ITEMS {:?}", items);
-            //break;
-        }
-    }
-
-    context.insert("number", &1234);
-
-    let result = tera.render("index.html", &context)?;
-
-    info!("RESULT: {:?}", result);
 
     Ok(())
 }

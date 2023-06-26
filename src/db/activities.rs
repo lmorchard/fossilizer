@@ -84,6 +84,19 @@ impl Activities {
         )
     }
 
+    pub fn get_published_days(&self) -> SingleColumnResult {
+        query_single_column(
+            &self.conn,
+            r#"
+                SELECT publishedYearMonthDay
+                FROM activities
+                GROUP BY publishedYearMonthDay
+                ORDER BY publishedYearMonthDay
+            "#,
+            [],
+        )
+    }
+
     pub fn get_activities_for_day(&self, day: String) -> Result<Vec<Activity>> {
         let conn = &self.conn;
         let mut stmt = conn.prepare(
