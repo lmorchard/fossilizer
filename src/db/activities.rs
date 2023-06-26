@@ -3,6 +3,8 @@ use rusqlite::{params, Connection};
 
 use crate::activitystreams::{Activity, Outbox};
 
+use activitystreams::activity::ActivityBox;
+
 // todo: make this configurable?
 const IMPORT_TRANSACTION_PAGE_SIZE: usize = 500;
 

@@ -1,5 +1,7 @@
 use serde::{Deserialize, Serialize};
 
+use activitystreams::activity::ActivityBox;
+
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Outbox<TItem> {
@@ -10,6 +12,33 @@ pub struct Outbox<TItem> {
     pub ordered_items: Vec<TItem>,
 }
 
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Actor {
+    pub id: String,
+    #[serde(rename = "type")]
+    pub type_field: String,
+    pub following: String,
+    pub followers: String,
+    pub inbox: String,
+    pub outbox: String,
+    pub likes: String,
+    pub bookmarks: String,
+    pub preferred_username: String,
+    pub name: String,
+    pub summary: Option<String>,
+    pub url: String,
+    pub published: String,
+    pub icon: Option<Attachment>,
+    pub image: Option<Attachment>,
+    pub public_key: Option<PublicKey>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct PublicKey {}
+
+#[allow(clippy::large_enum_variant)]
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum StringOrObject {
@@ -43,6 +72,28 @@ pub struct Object {
     pub summary: Option<String>,
     pub content: Option<String>,
     pub in_reply_to: Option<String>,
+    pub tag: Vec<Tag>,
+    pub attachment: Vec<Attachment>,
+}
+
+#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Tag {
+    #[serde(rename = "type")]
+    pub type_field: String,
+    pub href: String,
+    pub name: String,
+}
+
+#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Attachment {
+    #[serde(rename = "type")]
+    pub type_field: String,
+    pub media_type: String,
+    pub url: String,
+    pub name: Option<String>,
+    pub blurhash: Option<String>,
 }
 
 // todo: actor?
@@ -60,12 +111,11 @@ mod tests {
     const JSON_OUTBOX: &str = include_str!("./resources/test/outbox.json");
 
     #[test]
-    fn test_outbox_parsing() -> Result<(), Box<dyn Error>> {
-        let outbox: OutboxWithActivities = serde_json::from_str(JSON_OUTBOX)?;
+    fn test_outbox_parsing_mini() -> Result<(), Box<dyn Error>> {
+        let outbox: Outbox<Activity> = serde_json::from_str(JSON_OUTBOX)?;
 
         let ordered_items = outbox.ordered_items;
-        assert_eq!(ordered_items.len(), 2);
-
+        assert!(ordered_items.len() > 0);
         let item1 = ordered_items.get(0).ok_or("no item1")?;
         assert_eq!(
             item1.id,
@@ -74,6 +124,34 @@ mod tests {
         assert_eq!(item1.type_field, "Create");
         assert_eq!(item1.actor, "https://mastodon.social/users/lmorchard");
 
+        Ok(())
+    }
+
+    #[test]
+    fn test_outbox_parsing_full() -> Result<(), Box<dyn Error>> {
+        let outbox: Outbox<activitystreams::activity::ActivityBox> =
+            serde_json::from_str(JSON_OUTBOX)?;
+
+        let ordered_items = outbox.ordered_items;
+        assert!(ordered_items.len() > 0);
+
+        let item1 = &ordered_items[0];
+        let item1: activitystreams::activity::Create = item1.clone().into_concrete()?;
+
+        assert_eq!(
+            item1.object_props.id.ok_or("no id")?.as_str(),
+            "https://mastodon.social/users/lmorchard/statuses/55864/activity"
+        );
+
+        // assert_eq!(item1.kind, activitystreams::activity::kind::CreateType);
+        assert_eq!(
+            item1
+                .create_props
+                .get_actor_xsd_any_uri()
+                .ok_or("no actor")?
+                .as_str(),
+            "https://mastodon.social/users/lmorchard"
+        );
         Ok(())
     }
 }

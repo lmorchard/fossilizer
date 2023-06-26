@@ -1,3 +1,12 @@
-<div class="activity">
-    {{ activity.id }}
-</div>
+{% if "Create" == activity.type %}
+    {% set object = activity.object %}
+    {% if "Note" == object.type %}
+        <div class="activity post">
+
+        </div>
+    {% endif %}
+{% elif "Announce" == activity.type %}
+    <div class="activity boost">
+
+    </div>
+{% endif %}
