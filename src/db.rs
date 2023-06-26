@@ -5,6 +5,8 @@ use rusqlite_migration::{Migrations, M};
 use serde::{Deserialize, Serialize};
 use std::error::Error;
 
+pub mod activities;
+
 use crate::app;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -43,22 +45,6 @@ pub fn config() -> Result<DatabaseConfig, Box<dyn Error>> {
 lazy_static! {
     static ref MIGRATIONS: Migrations<'static> =
         Migrations::new(vec![
-            M::up(include_str!("./resources/migrations/202306241304-init.sql")),
-            /*
-            // PRAGMA are better applied outside of migrations, see below for details.
-            M::up(r#"
-                  ALTER TABLE friend ADD COLUMN birthday TEXT;
-                  ALTER TABLE friend ADD COLUMN comment TEXT;
-                  "#),
-
-            // This migration can be reverted
-            M::up("CREATE TABLE animal(name TEXT);")
-            .down("DROP TABLE animal;")
-            */
-
-            // In the future, if the need to change the schema arises, put
-            // migrations here, like so:
-            // M::up("CREATE INDEX UX_friend_email ON friend(email);"),
-            // M::up("CREATE INDEX UX_friend_name ON friend(name);"),
+            M::up(include_str!("./db/migrations/202306241304-init.sql")), //.down(/* todo */),
         ]);
 }

@@ -19,7 +19,7 @@ pub fn init(config_path: Option<&Path>) -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-#[derive(Default)]
+#[derive(Default, Clone)]
 pub struct AppContext {
     pub raw_config: Config,
 }

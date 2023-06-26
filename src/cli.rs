@@ -2,24 +2,8 @@ use clap::{Parser, Subcommand};
 use std::convert::From;
 use std::error::Error;
 use std::path::PathBuf;
-use rusqlite::params;
 
-use ap_fossilizer::{app, db, mastodon};
-
-pub fn execute() -> Result<(), Box<dyn Error>> {
-    let cli = Cli::parse();
-
-    app::init(cli.config.as_deref())?;
-
-    // You can check for the existence of subcommands, and if found use their
-    // matches just as you would the top level cmd
-    match &cli.command {
-        Commands::Init {} => println!("INIT {:?}", command_init()),
-        Commands::Import { filename } => println!("IMPORT {:?}", command_import(filename)),
-    };
-
-    Ok(())
-}
+use ap_fossilizer::{app, db, mastodon, templates};
 
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
@@ -45,10 +29,26 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Commands {
-    /// Init the thingy
+    /// Initialize teh database
     Init {},
     /// Adds files to myapp
-    Import { filename: Option<String> },
+    Import { filenames: Vec<String> },
+    /// Build the static site
+    Build {},
+}
+
+pub fn execute() -> Result<(), Box<dyn Error>> {
+    let cli = Cli::parse();
+
+    app::init(cli.config.as_deref())?;
+
+    match &cli.command {
+        Commands::Init {} => info!("INIT {:?}", command_init()),
+        Commands::Import { filenames } => info!("IMPORT {:?}", command_import(filenames)),
+        Commands::Build {} => info!("BUILD {:?}", command_build()),
+    };
+
+    Ok(())
 }
 
 fn command_init() -> Result<(), Box<dyn Error>> {
@@ -56,27 +56,35 @@ fn command_init() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-fn command_import(filename: &Option<String>) -> Result<(), Box<dyn Error>> {
-    let filename = filename.as_ref().ok_or("no filename")?;
-    let mut export = mastodon::Export::from(filename);
-    let outbox = export.outbox()?;
-    let conn = db::conn()?;
+fn command_import(filenames: &Vec<String>) -> Result<(), Box<dyn Error>> {
+    for filename in filenames {
+        info!("Importing {:?}", filename);
 
-    info!("Start transaction");
-    conn.execute("BEGIN TRANSACTION", ())?;
+        let mut export = mastodon::Export::from(filename);
+        let outbox = export.outbox()?;
 
-    for (count, item) in outbox.ordered_items.into_iter().enumerate() {
-        let json_text = serde_json::to_string_pretty(&item)?;
+        info!("Found {:?} items", outbox.ordered_items.len());
 
-        debug!("Inserting {:?}", count);
-        conn.execute(
-            "INSERT OR REPLACE INTO activities (json) VALUES (?1)",
-            params![json_text],
-        )?;
+        let conn = db::conn()?;
+        let activities = db::activities::Activities::new(conn);
+        activities.import_outbox(outbox)?;
+
+        debug!("Imported {:?}", filename);
     }
-
-    conn.execute("COMMIT TRANSACTION", ())?;
     info!("Done");
+
+    Ok(())
+}
+
+fn command_build() -> Result<(), Box<dyn Error>> {
+    let tera = templates::init()?;
+    let mut context = tera::Context::new();
+
+    context.insert("number", &1234);
+
+    let result = tera.render("index.html", &context)?;
+
+    info!("RESULT: {:?}", result);
 
     Ok(())
 }
