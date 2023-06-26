@@ -1,5 +1,5 @@
 use anyhow::Result;
-use rusqlite::{params, Connection, Rows};
+use rusqlite::{params, Connection};
 
 use crate::activitystreams::{Activity, Outbox};
 

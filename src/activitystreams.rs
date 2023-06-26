@@ -10,6 +10,13 @@ pub struct Outbox<TItem> {
     pub ordered_items: Vec<TItem>,
 }
 
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum StringOrObject {
+    String(String),
+    Object(Object),
+}
+
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Activity {
@@ -20,7 +27,7 @@ pub struct Activity {
     pub published: String,
     pub to: Vec<String>,
     pub cc: Vec<String>,
-    pub object: serde_json::Value, //Object,
+    pub object: Option<StringOrObject>,
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -33,9 +40,9 @@ pub struct Object {
     pub published: String,
     pub to: Vec<String>,
     pub cc: Vec<String>,
-    pub summary: String,
-    pub content: String,
-    pub in_reply_to: String
+    pub summary: Option<String>,
+    pub content: Option<String>,
+    pub in_reply_to: Option<String>,
 }
 
 // todo: actor?

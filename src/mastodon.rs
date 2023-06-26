@@ -77,7 +77,7 @@ mod tests {
             .join("mastodon-export.tar.gz");
 
         let mut export = Export::from(export_path);
-        let outbox = export.outbox().or(Err("outbox failed"))?;
+        let outbox = export.outbox()?;
 
         println!("outbox {:?}", outbox.ordered_items.len());
 
