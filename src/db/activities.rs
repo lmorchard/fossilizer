@@ -46,42 +46,56 @@ impl Activities {
         Ok(())
     }
 
-    pub fn get_published_years(&self) -> Result<Vec<String>, rusqlite::Error> {
-        let stmt = &mut self.conn.prepare(
+    pub fn get_published_years(&self) -> SingleColumnResult {
+        query_single_column(
+            &self.conn,
             r#"
                 SELECT publishedYear
                 FROM activities
                 GROUP BY publishedYear
             "#,
-        )?;
-        let result = stmt.query_map([], |r| r.get(0))?.collect();
-        result
+            [],
+        )
     }
 
-    pub fn get_published_months_for_year(&self, year: String) -> Result<Vec<String>, rusqlite::Error> {
-        let stmt = &mut self.conn.prepare(
+    pub fn get_published_months_for_year(&self, year: String) -> SingleColumnResult {
+        query_single_column(
+            &self.conn,
             r#"
                 SELECT publishedYearMonth
                 FROM activities
                 WHERE publishedYear = ?1
                 GROUP BY publishedYearMonth
             "#,
-        )?;
-        let result = stmt.query_map([year], |r| r.get(0))?.collect();
-        result
+            [year],
+        )
     }
 
-    pub fn get_published_days_for_month(&self, month: String) -> Result<Vec<String>, rusqlite::Error> {
-        let conn = &self.conn;
-        let mut stmt = conn.prepare(
+    pub fn get_published_days_for_month(&self, month: String) -> SingleColumnResult {
+        query_single_column(
+            &self.conn,
             r#"
                 SELECT publishedYearMonthDay
                 FROM activities
                 WHERE publishedYearMonth = ?1
                 GROUP BY publishedYearMonthDay
             "#,
-        )?;
-        let result = stmt.query_map([month], |r| r.get(0))?.collect();
-        result
+            [month],
+        )
     }
+}
+
+type SingleColumnResult = Result<Vec<String>, rusqlite::Error>;
+
+fn query_single_column<P>(
+    conn: &Connection,
+    sql: &str,
+    params: P,
+) -> Result<Vec<String>, rusqlite::Error>
+where
+    P: rusqlite::Params,
+{
+    let mut stmt = conn.prepare(sql)?;
+    let result = stmt.query_map(params, |r| r.get(0))?.collect();
+    result
 }
