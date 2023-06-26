@@ -19,12 +19,8 @@ fn default_database_path() -> String {
     "./data.sqlite3".to_string()
 }
 
-pub fn upgrade() -> Result<(), Box<dyn Error>> {
-    let config = config()?;
-
-    let mut conn = Connection::open(config.database_path)?;
-    MIGRATIONS.to_latest(&mut conn)?;
-    Ok(())
+pub fn config() -> Result<DatabaseConfig, Box<dyn Error>> {
+    app::config_try_deserialize::<DatabaseConfig>()
 }
 
 pub fn conn() -> Result<Connection, Box<dyn Error>> {
@@ -37,8 +33,12 @@ pub fn conn() -> Result<Connection, Box<dyn Error>> {
     Ok(conn)
 }
 
-pub fn config() -> Result<DatabaseConfig, Box<dyn Error>> {
-    app::config_try_deserialize::<DatabaseConfig>()
+pub fn upgrade() -> Result<(), Box<dyn Error>> {
+    let config = config()?;
+
+    let mut conn = Connection::open(config.database_path)?;
+    MIGRATIONS.to_latest(&mut conn)?;
+    Ok(())
 }
 
 // Define migrations. These are applied atomically.

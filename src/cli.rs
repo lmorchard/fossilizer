@@ -76,9 +76,24 @@ fn command_import(filenames: &Vec<String>) -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-fn command_build() -> Result<(), Box<dyn Error>> {
+fn command_build() -> Result<(), Box<dyn Error>> {    
     let tera = templates::init()?;
     let mut context = tera::Context::new();
+
+    let conn = db::conn()?;
+    let activities = db::activities::Activities::new(conn);
+
+    let years = activities.get_published_years()?;
+    info!("YEARS {:?}", years);
+
+    for year in years {
+        let months = activities.get_published_months_for_year(year)?;
+        info!("MONTHS {:?}", months);
+        for month in months {
+            let days = activities.get_published_days_for_month(month)?;
+            info!("DAYS {:?}", days);
+        }
+    }
 
     context.insert("number", &1234);
 
