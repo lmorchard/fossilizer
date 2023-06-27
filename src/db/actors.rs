@@ -31,4 +31,18 @@ impl<'a> Actors<'a> {
         let actor: T = serde_json::from_str(json_text.as_str())?;
         Ok(actor)
     }
+
+    pub fn get_actors<T: for<'de> Deserialize<'de>>(&self) -> Result<Vec<T>> {
+        let conn = &self.conn;
+        let mut stmt = conn.prepare("SELECT json FROM actors")?;
+        let mut rows = stmt.query([])?;
+        let mut out = Vec::new();
+        while let Some(r) = rows.next()? {
+            let json_text: String = r.get(0)?;
+            let actor: T = serde_json::from_str(json_text.as_str())?;
+            out.push(actor);
+        }
+        Ok(out)
+    }
+
 }
