@@ -3,8 +3,6 @@ use rusqlite::{params, Connection};
 
 use crate::activitystreams::{Activity, Outbox};
 
-use activitystreams::activity::ActivityBox;
-
 // todo: make this configurable?
 const IMPORT_TRANSACTION_PAGE_SIZE: usize = 500;
 
@@ -125,8 +123,13 @@ impl Activities {
         let mut out = Vec::new();
         while let Some(r) = rows.next()? {
             let json_text: String = r.get(0)?;
-            let activity: Activity = serde_json::from_str(json_text.as_str())?;
-            out.push(activity);
+            match serde_json::from_str(json_text.as_str()) {
+                Ok(activity) => out.push(activity),
+                Err(e) => {
+                    println!("JSON {json_text}");
+                    panic!("oof {e:?}");
+                }
+            }
         }
         Ok(out)
     }

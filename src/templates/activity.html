@@ -1,12 +1,13 @@
-{% if "Create" == activity.type %}
-    {% set object = activity.object %}
-    {% if "Note" == object.type %}
+{%- if "Create" == activity.type -%}
+    {%- set object = activity.object -%}
+    {%- if "Note" == object.type -%}
         <div class="activity post">
-
+            <a href="{{ object.url }}">{{ object.published }}</a>: {{ object.content }}
         </div>
-    {% endif %}
-{% elif "Announce" == activity.type %}
+    {%- endif -%}
+{%- elif "Announce" == activity.type -%}
+    {%- set object = activity.object -%}
     <div class="activity boost">
-
+        {{ object }}
     </div>
-{% endif %}
+{%- endif -%}

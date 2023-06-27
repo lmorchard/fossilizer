@@ -1,7 +1,5 @@
 use serde::{Deserialize, Serialize};
 
-use activitystreams::activity::ActivityBox;
-
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Outbox<TItem> {
@@ -73,7 +71,7 @@ pub struct Object {
     pub content: Option<String>,
     pub in_reply_to: Option<String>,
     pub tag: Vec<Tag>,
-    pub attachment: Vec<Attachment>,
+    // pub attachment: Vec<Attachment>,
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -81,8 +79,10 @@ pub struct Object {
 pub struct Tag {
     #[serde(rename = "type")]
     pub type_field: String,
-    pub href: String,
+    pub id: Option<String>,
+    pub href: Option<String>,
     pub name: String,
+    pub icon: Option<Attachment>,
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -109,6 +109,8 @@ mod tests {
     use std::error::Error;
 
     const JSON_OUTBOX: &str = include_str!("./resources/test/outbox.json");
+    const JSON_ACTIVITY_WITH_EMOJI: &str =
+        include_str!("./resources/test/activity-with-emoji.json");
 
     #[test]
     fn test_outbox_parsing_mini() -> Result<(), Box<dyn Error>> {
@@ -152,6 +154,18 @@ mod tests {
                 .as_str(),
             "https://mastodon.social/users/lmorchard"
         );
+        Ok(())
+    }
+
+    #[test]
+    fn test_activity_parsing_with_emoji() -> Result<(), Box<dyn Error>> {
+        let activity: Activity = serde_json::from_str(JSON_ACTIVITY_WITH_EMOJI)?;
+
+        assert_eq!(
+            activity.id,
+            "https://toot.cafe/users/lmorchard/statuses/100599986688993237/activity",
+        );
+
         Ok(())
     }
 }

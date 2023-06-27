@@ -9,12 +9,12 @@ pub mod activities;
 
 use crate::app;
 
-// Define migrations. These are applied atomically.
 lazy_static! {
     static ref MIGRATIONS: Migrations<'static> =
         Migrations::new(vec![
-            M::up(include_str!("./db/migrations/202306241304-init.sql")), //.down(/* todo */),
+            M::up(include_str!("./db/migrations/202306241304-init.sql")),
             M::up(include_str!("./db/migrations/202306261338-object-type-and-indexes-up.sql")),
+            M::up(include_str!("./db/migrations/202306262036-actors-up.sql")),
         ]);
 }
 
