@@ -33,7 +33,7 @@ pub fn command_build() -> Result<(), Box<dyn Error>> {
     let tera = templates::init()?;
 
     let conn = db::conn()?;
-    let activities = db::activities::Activities::new(conn);
+    let activities = db::activities::Activities::new(&conn);
 
     let all_months = activities.get_published_months()?;
     for month in all_months {

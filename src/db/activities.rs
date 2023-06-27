@@ -1,21 +1,22 @@
 use anyhow::Result;
 use rusqlite::{params, Connection};
+use serde::Serialize;
 
 use crate::activitystreams::{Activity, Outbox};
 
 // todo: make this configurable?
 const IMPORT_TRANSACTION_PAGE_SIZE: usize = 500;
 
-pub struct Activities {
-    conn: Connection,
+pub struct Activities<'a> {
+    conn: &'a Connection,
 }
 
-impl Activities {
-    pub fn new(conn: Connection) -> Self {
-        Activities { conn }
+impl<'a> Activities<'a> {
+    pub fn new(conn: &'a Connection) -> Self {
+        Self { conn }
     }
 
-    pub fn import_activity(&self, activity: Activity) -> Result<()> {
+    pub fn import_activity<T: Serialize>(&self, activity: T) -> Result<()> {
         let json_text = serde_json::to_string_pretty(&activity)?;
         self.conn.execute(
             "INSERT OR REPLACE INTO activities (json) VALUES (?1)",
@@ -25,7 +26,7 @@ impl Activities {
         Ok(())
     }
 
-    pub fn import_outbox(&self, outbox: Outbox<Activity>) -> Result<()> {
+    pub fn import_outbox<T: Serialize>(&self, outbox: Outbox<T>) -> Result<()> {
         let conn = &self.conn;
 
         // todo: use conn.transaction()?

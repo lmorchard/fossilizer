@@ -5,6 +5,7 @@ use rusqlite_migration::{Migrations, M};
 use serde::{Deserialize, Serialize};
 use std::error::Error;
 
+pub mod actors;
 pub mod activities;
 
 use crate::app;

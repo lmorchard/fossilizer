@@ -4,9 +4,10 @@ use std::convert::From;
 use std::error::Error;
 use std::path::PathBuf;
 
-use ap_fossilizer::{app, db, mastodon};
+use ap_fossilizer::{app, db};
 
 pub mod build;
+pub mod import;
 
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
@@ -51,7 +52,7 @@ pub fn execute() -> Result<(), Box<dyn Error>> {
     match &cli.command {
         Commands::Init {} => info!("INIT {:?}", command_init()),
         Commands::Upgrade {} => info!("UPGRADE {:?}", command_upgrade()),
-        Commands::Import { filenames } => info!("IMPORT {:?}", command_import(filenames)),
+        Commands::Import { filenames } => info!("IMPORT {:?}", import::command_import(filenames)),
         Commands::Build {} => info!("BUILD {:?}", build::command_build()),
     };
 
@@ -66,25 +67,5 @@ fn command_init() -> Result<(), Box<dyn Error>> {
 
 fn command_upgrade() -> Result<(), Box<dyn Error>> {
     db::upgrade()?;
-    Ok(())
-}
-
-fn command_import(filenames: &Vec<String>) -> Result<(), Box<dyn Error>> {
-    for filename in filenames {
-        info!("Importing {:?}", filename);
-
-        let mut export = mastodon::Export::from(filename);
-        let outbox = export.outbox()?;
-
-        info!("Found {:?} items", outbox.ordered_items.len());
-
-        let conn = db::conn()?;
-        let activities = db::activities::Activities::new(conn);
-        activities.import_outbox(outbox)?;
-
-        debug!("Imported {:?}", filename);
-    }
-    info!("Done");
-
     Ok(())
 }

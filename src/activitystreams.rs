@@ -117,7 +117,7 @@ mod tests {
         let outbox: Outbox<Activity> = serde_json::from_str(JSON_OUTBOX)?;
 
         let ordered_items = outbox.ordered_items;
-        assert!(ordered_items.len() > 0);
+        assert!(!ordered_items.is_empty());
         let item1 = ordered_items.get(0).ok_or("no item1")?;
         assert_eq!(
             item1.id,
@@ -135,7 +135,7 @@ mod tests {
             serde_json::from_str(JSON_OUTBOX)?;
 
         let ordered_items = outbox.ordered_items;
-        assert!(ordered_items.len() > 0);
+        assert!(!ordered_items.is_empty());
 
         let item1 = &ordered_items[0];
         let item1: activitystreams::activity::Create = item1.clone().into_concrete()?;
