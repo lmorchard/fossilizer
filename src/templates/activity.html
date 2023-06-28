@@ -26,9 +26,9 @@
       <ul class="list-group list-group-flush">
         <li class="list-group-item media-attachments">
           {%- for attachment in object.attachment -%}
-            <img class="media-attachment" src="{{ attachment.url }}" width="48" height="48"
+            <img class="media-attachment" src="{{ attachment.url | safe }}" width="48" height="48"
                 data-bs-toggle="modal" data-bs-target="#exampleModal"
-                data-fullsrc="{{ attachment.url }}" title="{{ attachment.name }}" />
+                data-fullsrc="{{ attachment.url | safe }}" title="{{ attachment.name }}" />
           {%- endfor -%}
         </li>
       </ul>

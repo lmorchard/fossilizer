@@ -93,7 +93,7 @@ pub struct Object {
     pub content: Option<String>,
     pub in_reply_to: Option<String>,
     pub tag: Vec<Tag>,
-    // pub attachment: Vec<Attachment>,
+    pub attachment: Vec<Attachment>,
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]

@@ -4,7 +4,7 @@ use std::fs;
 use std::io::prelude::*;
 use std::path::PathBuf;
 
-use ap_fossilizer::{app, db, templates, activitystreams};
+use ap_fossilizer::{activitystreams, app, db, templates};
 
 use serde::{Deserialize, Serialize};
 
@@ -32,29 +32,34 @@ pub fn command_build() -> Result<(), Box<dyn Error>> {
 
     let tera = templates::init()?;
 
-    let conn = db::conn()?;
-    let activities = db::activities::Activities::new(&conn);
-    let actors = db::actors::Actors::new(&conn);
+    let db_conn = db::conn()?;
+    let db_activities = db::activities::Activities::new(&db_conn);
+    let db_actors = db::actors::Actors::new(&db_conn);
 
-    let all_months = activities.get_published_months()?;
+    let all_months = db_activities.get_published_months()?;
     for month in all_months {
         let month_path = PathBuf::from(&build_path).join(&month);
         fs::create_dir_all(&month_path)?;
 
-        let days = activities.get_published_days_for_month(&month)?;
+        let days = db_activities.get_published_days_for_month(&month)?;
         for day in days {
             let day_path = PathBuf::from(&build_path).join(&day).with_extension("html");
             info!("DAY PATH {:?}", day_path);
 
-            let items = activities.get_activities_for_day(&day)?;
-            let items: Vec<activitystreams::Activity> = items.iter().map(|activity| {
-                let actor_id = activity.actor.id().unwrap();
-                let actor = actors.get_actor(actor_id).unwrap();
-                
-                let mut activity = activity.clone();
-                activity.actor = activitystreams::IdOrObject::Object(actor);
-                activity
-            }).collect();
+            let items: Vec<activitystreams::Activity> = db_activities
+                .get_activities_for_day(&day)?
+                .iter()
+                // use faillable iterator here?
+                .map(|activity| {
+                    // Dereference actor ID in activity via DB lookup
+                    let actor_id = activity.actor.id().unwrap();
+                    let actor = db_actors.get_actor(actor_id).unwrap();
+
+                    let mut activity = activity.clone();
+                    activity.actor = activitystreams::IdOrObject::Object(actor);
+                    activity
+                })
+                .collect();
 
             let mut context = tera::Context::new();
             context.insert("day", &day);
