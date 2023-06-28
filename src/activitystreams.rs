@@ -96,13 +96,6 @@ pub struct Attachment {
     pub blurhash: Option<String>,
 }
 
-// todo: actor?
-// todo: object?
-
-pub type OutboxWithActivities = Outbox<Activity>;
-
-pub type OutboxWithValues = Outbox<serde_json::Value>;
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -113,7 +106,7 @@ mod tests {
         include_str!("./resources/test/activity-with-emoji.json");
 
     #[test]
-    fn test_outbox_parsing_mini() -> Result<(), Box<dyn Error>> {
+    fn test_outbox_parsing_with_local_model() -> Result<(), Box<dyn Error>> {
         let outbox: Outbox<Activity> = serde_json::from_str(JSON_OUTBOX)?;
 
         let ordered_items = outbox.ordered_items;
@@ -130,7 +123,7 @@ mod tests {
     }
 
     #[test]
-    fn test_outbox_parsing_full() -> Result<(), Box<dyn Error>> {
+    fn test_outbox_parsing_with_external_model() -> Result<(), Box<dyn Error>> {
         let outbox: Outbox<activitystreams::activity::ActivityBox> =
             serde_json::from_str(JSON_OUTBOX)?;
 
@@ -160,12 +153,10 @@ mod tests {
     #[test]
     fn test_activity_parsing_with_emoji() -> Result<(), Box<dyn Error>> {
         let activity: Activity = serde_json::from_str(JSON_ACTIVITY_WITH_EMOJI)?;
-
         assert_eq!(
             activity.id,
             "https://toot.cafe/users/lmorchard/statuses/100599986688993237/activity",
         );
-
         Ok(())
     }
 }

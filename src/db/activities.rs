@@ -49,7 +49,7 @@ impl<'a> Activities<'a> {
 
     pub fn get_published_years(&self) -> SingleColumnResult {
         query_single_column(
-            &self.conn,
+            self.conn,
             r#"
                 SELECT publishedYear
                 FROM activities
@@ -61,7 +61,7 @@ impl<'a> Activities<'a> {
 
     pub fn get_published_months_for_year(&self, year: &String) -> SingleColumnResult {
         query_single_column(
-            &self.conn,
+            self.conn,
             r#"
                 SELECT publishedYearMonth
                 FROM activities
@@ -74,7 +74,7 @@ impl<'a> Activities<'a> {
 
     pub fn get_published_days_for_month(&self, month: &String) -> SingleColumnResult {
         query_single_column(
-            &self.conn,
+            self.conn,
             r#"
                 SELECT publishedYearMonthDay
                 FROM activities
@@ -87,7 +87,7 @@ impl<'a> Activities<'a> {
 
     pub fn get_published_months(&self) -> SingleColumnResult {
         query_single_column(
-            &self.conn,
+            self.conn,
             r#"
                 SELECT publishedYearMonth
                 FROM activities
@@ -100,7 +100,7 @@ impl<'a> Activities<'a> {
 
     pub fn get_published_days(&self) -> SingleColumnResult {
         query_single_column(
-            &self.conn,
+            self.conn,
             r#"
                 SELECT publishedYearMonthDay
                 FROM activities
