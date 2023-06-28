@@ -37,11 +37,33 @@ pub struct Actor {
 pub struct PublicKey {}
 
 #[allow(clippy::large_enum_variant)]
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum StringOrObject {
-    String(String),
-    Object(Object),
+pub enum IdOrObject<T> {
+    #[default]
+    None,
+    Id(String),
+    Object(T),
+}
+impl<T> IdOrObject<T> {
+    pub fn is_none(&self) -> bool {
+        match &self {
+            IdOrObject::None => true,
+            _ => false,
+        }
+    }
+    pub fn id(&self) -> Option<&String> {
+        match &self {
+            IdOrObject::Id(v) => Some(v),
+            _ => None,
+        }
+    }
+    pub fn object(&self) -> Option<&T> {
+        match &self {
+            IdOrObject::Object(v) => Some(v),
+            _ => None,
+        }
+    }
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -50,11 +72,11 @@ pub struct Activity {
     pub id: String,
     #[serde(rename = "type")]
     pub type_field: String,
-    pub actor: String,
     pub published: String,
     pub to: Vec<String>,
     pub cc: Vec<String>,
-    pub object: Option<StringOrObject>,
+    pub actor: IdOrObject<Actor>,
+    pub object: IdOrObject<Object>,
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -117,7 +139,10 @@ mod tests {
             "https://mastodon.social/users/lmorchard/statuses/55864/activity"
         );
         assert_eq!(item1.type_field, "Create");
-        assert_eq!(item1.actor, "https://mastodon.social/users/lmorchard");
+        assert_eq!(
+            item1.actor.id().ok_or("no actor id")?,
+            "https://mastodon.social/users/lmorchard"
+        );
 
         Ok(())
     }

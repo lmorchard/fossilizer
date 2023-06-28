@@ -1,13 +1,41 @@
-{%- if "Create" == activity.type -%}
-    {%- set object = activity.object -%}
-    {%- if "Note" == object.type -%}
-        <div class="activity post">
-            <a href="{{ object.url }}">{{ object.published }}</a>: {{ object.content }}
-        </div>
-    {%- endif -%}
-{%- elif "Announce" == activity.type -%}
-    {%- set object = activity.object -%}
-    <div class="activity boost">
-        {{ object }}
+{%- set actor = activity.actor -%}
+{%- set object = activity.object -%}
+<li id="{{ activity.id | safe }}" class="card activity post">
+  <div class="card-header">
+    <a href="{{ actor.url | safe }}" target="_blank"><img class="avatar"
+        src="{{ actor.icon.url | safe }}" width="48" height="48" /></a>
+    <h5 class="card-title">{{ actor.name }}</h5>
+    <h6 class="card-subtitle mb-2 text-muted">@<a href="{{ actor.url | safe }}" target="_blank">{{ actor.url }}</a></h6>
+  </div>
+  <div class="card-body">
+    <div class="card-text">
+      {%- if "Announce" == activity.type -%}
+        ♻️ <a href="{{ object }}" class="retoot">{{ object }}</a>
+      {%- elif "Create" == activity.type and "Note" == object.type -%}
+        {%- if object.summary -%}
+          <h6><span class="spoiler-text badge text-bg-warning">{{ object.summary }}</span></h6>
+        {%- endif -%}
+        {%- if object.content -%}
+          {{ object.content | safe }}
+        {%- endif -%}
+      {%- endif -%}
     </div>
-{%- endif -%}
+  </div>
+  {%- if "Create" == activity.type and "Note" == object.type -%}
+    {%- if object.attachment -%}
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item media-attachments">
+          {%- for attachment in object.attachment -%}
+            <img class="media-attachment" src="{{ attachment.url }}" width="48" height="48"
+                data-bs-toggle="modal" data-bs-target="#exampleModal"
+                data-fullsrc="{{ attachment.url }}" title="{{ attachment.name }}" />
+          {%- endfor -%}
+        </li>
+      </ul>
+    {%- endif -%}
+    <div class="card-footer fs-6 text-end text-muted">
+      <a href="{{ object.url }}" target="_blank"><time datetime="{{ activity.published }}" title="{{ activity.published }}">{{ activity.published }}</time></a>
+      <button title="Open in home instance" class="goto-home-instance btn btn-outline-primary" data-uri="{{ object.url | safe }}">🚀</button>
+    </div>
+  {%- endif -%}
+</li>        

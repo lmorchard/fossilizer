@@ -4,7 +4,7 @@ use std::fs;
 use std::io::prelude::*;
 use std::path::PathBuf;
 
-use ap_fossilizer::{app, db, templates};
+use ap_fossilizer::{app, db, templates, activitystreams};
 
 use serde::{Deserialize, Serialize};
 
@@ -34,6 +34,7 @@ pub fn command_build() -> Result<(), Box<dyn Error>> {
 
     let conn = db::conn()?;
     let activities = db::activities::Activities::new(&conn);
+    let actors = db::actors::Actors::new(&conn);
 
     let all_months = activities.get_published_months()?;
     for month in all_months {
@@ -44,7 +45,16 @@ pub fn command_build() -> Result<(), Box<dyn Error>> {
         for day in days {
             let day_path = PathBuf::from(&build_path).join(&day).with_extension("html");
             info!("DAY PATH {:?}", day_path);
+
             let items = activities.get_activities_for_day(&day)?;
+            let items: Vec<activitystreams::Activity> = items.iter().map(|activity| {
+                let actor_id = activity.actor.id().unwrap();
+                let actor = actors.get_actor(actor_id).unwrap();
+                
+                let mut activity = activity.clone();
+                activity.actor = activitystreams::IdOrObject::Object(actor);
+                activity
+            }).collect();
 
             let mut context = tera::Context::new();
             context.insert("day", &day);

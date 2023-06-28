@@ -24,3 +24,35 @@ pub fn templates_source() -> Cloned<std::slice::Iter<'static, (&'static str, &'s
     // todo: allow override of templates from user-supplied source via config
     TEMPLATES_SOURCE.iter().cloned()
 }
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::error::Error;
+
+    use crate::activitystreams::{Actor,Activity,IdOrObject};
+
+    const JSON_ACTIVITY_WITH_ATTACHMENT: &str =
+        include_str!("./resources/test/activity-with-attachment.json");
+
+    const JSON_ACTOR: &str =
+        include_str!("./resources/test/actor.json");
+
+    #[test]
+    fn test_activity_template_with_attachment() -> Result<(), Box<dyn Error>> {
+        let tera = init()?;
+
+        let mut activity: Activity = serde_json::from_str(JSON_ACTIVITY_WITH_ATTACHMENT)?;
+        let actor: Actor = serde_json::from_str(JSON_ACTOR)?;
+        activity.actor = IdOrObject::Object(actor);
+
+        let mut context = tera::Context::new();
+        context.insert("activity", &activity);
+
+        let rendered_source = tera.render("activity.html", &context)?;
+        println!("RENDERED {}", rendered_source);
+
+        Ok(())
+    }
+}
