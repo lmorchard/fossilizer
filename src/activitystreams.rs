@@ -47,10 +47,7 @@ pub enum IdOrObject<T> {
 }
 impl<T> IdOrObject<T> {
     pub fn is_none(&self) -> bool {
-        match &self {
-            IdOrObject::None => true,
-            _ => false,
-        }
+        matches!(self, IdOrObject::None)
     }
     pub fn id(&self) -> Option<&String> {
         match &self {

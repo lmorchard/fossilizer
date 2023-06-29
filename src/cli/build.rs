@@ -2,12 +2,11 @@ use anyhow::Result;
 use std::error::Error;
 use std::fs;
 use std::io::prelude::*;
-use std::path::{Path, PathBuf};
-
-use ap_fossilizer::{activitystreams, app, db, templates};
-
+use std::path::PathBuf;
 use rust_embed::RustEmbed;
 use serde::{Deserialize, Serialize};
+
+use fossilizer::{activitystreams, app, db, templates};
 
 #[derive(RustEmbed)]
 #[folder = "src/resources/web"]
@@ -54,7 +53,7 @@ fn copy_web_assets(build_path: &PathBuf) -> Result<(), Box<dyn Error>> {
         let outpath = PathBuf::from(build_path).join(&filename.to_string());
 
         let outparent = outpath.parent().ok_or("no parent path")?;
-        fs::create_dir_all(&outparent)?;
+        fs::create_dir_all(outparent)?;
 
         let mut outfile = fs::File::create(&outpath)?;
         outfile.write_all(file.data.as_ref())?;
@@ -82,7 +81,7 @@ fn generate_activities_pages(build_path: &PathBuf, tera: &tera::Tera) -> Result<
         let day_path = PathBuf::from(build_path).join(&day).with_extension("html");
 
         let month_path = day_path.parent().ok_or("no day path parent")?;
-        fs::create_dir_all(&month_path)?;
+        fs::create_dir_all(month_path)?;
 
         let items: Vec<activitystreams::Activity> = db_activities
             .get_activities_for_day(&day)?

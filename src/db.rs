@@ -4,6 +4,8 @@ use rusqlite::Connection;
 use rusqlite_migration::{Migrations, M};
 use serde::{Deserialize, Serialize};
 use std::error::Error;
+use std::path::Path;
+use std::fs;
 
 pub mod activities;
 pub mod actors;
@@ -28,7 +30,7 @@ pub struct DatabaseConfig {
 }
 
 fn default_database_path() -> String {
-    "./data.sqlite3".to_string()
+    "./data/data.sqlite3".to_string()
 }
 
 pub fn config() -> Result<DatabaseConfig, Box<dyn Error>> {
@@ -37,11 +39,17 @@ pub fn config() -> Result<DatabaseConfig, Box<dyn Error>> {
 
 pub fn conn() -> Result<Connection, Box<dyn Error>> {
     let config = config()?;
-    debug!("database path {:?}", config.database_path);
-    let conn = Connection::open(config.database_path)?;
+
+    let database_path = Path::new(&config.database_path);
+    let database_parent_path = database_path.parent().ok_or("no parent path")?;
+    trace!("database path {:?}", database_path);
+    fs::create_dir_all(&database_parent_path).unwrap();
+
+    let conn = Connection::open(database_path)?;
     conn.pragma_update(None, "journal_mode", "WAL").unwrap();
     conn.pragma_update(None, "foreign_keys", "ON").unwrap();
 
+    trace!("database connection opened {:?}", database_path);
     Ok(conn)
 }
 

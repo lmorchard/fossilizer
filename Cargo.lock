@@ -151,31 +151,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9c7d0618f0e0b7e8ff11427422b64564d5fb0be1940354bfe2e0529b18a9d9b8"
 
 [[package]]
-name = "ap-fossilizer"
-version = "0.1.0"
-dependencies = [
- "activitystreams",
- "anyhow",
- "chrono",
- "clap",
- "config",
- "dotenv",
- "env_logger",
- "fallible-iterator 0.3.0",
- "flate2",
- "lazy_static",
- "log",
- "rusqlite",
- "rusqlite_migration",
- "rust-embed",
- "serde",
- "serde_json",
- "simple-logging",
- "tar",
- "tera",
-]
-
-[[package]]
 name = "async-trait"
 version = "0.1.68"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -505,6 +480,32 @@ dependencies = [
 ]
 
 [[package]]
+name = "fossilizer"
+version = "0.1.0"
+dependencies = [
+ "activitystreams",
+ "anyhow",
+ "chrono",
+ "clap",
+ "config",
+ "dotenv",
+ "env_logger",
+ "fallible-iterator 0.3.0",
+ "flate2",
+ "lazy_static",
+ "log",
+ "rusqlite",
+ "rusqlite_migration",
+ "rust-embed",
+ "serde",
+ "serde_json",
+ "sha256",
+ "simple-logging",
+ "tar",
+ "tera",
+]
+
+[[package]]
 name = "generic-array"
 version = "0.14.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -588,6 +589,12 @@ name = "hermit-abi"
 version = "0.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "fed44880c466736ef9a5c5b5facefb5ed0785676d0c02d612db14e54f0d84286"
+
+[[package]]
+name = "hex"
+version = "0.4.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7f24254aa9a54b5c858eaee2f5bccdb46aaf0e486a595ed5fd8f86ba55232a70"
 
 [[package]]
 name = "humansize"
@@ -1156,6 +1163,16 @@ dependencies = [
  "cfg-if",
  "cpufeatures",
  "digest",
+]
+
+[[package]]
+name = "sha256"
+version = "1.1.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "08a975c1bc0941703000eaf232c4d8ce188d8d5408d6344b6b2c8c6262772828"
+dependencies = [
+ "hex",
+ "sha2",
 ]
 
 [[package]]

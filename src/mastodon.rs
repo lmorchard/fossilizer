@@ -3,11 +3,13 @@ use flate2::read::GzDecoder;
 use serde::Deserialize;
 use std::convert::From;
 use std::error::Error;
+use std::fs;
 use std::fs::File;
-use std::path::PathBuf;
+use std::io::{copy, Read};
+use std::path::{Path, PathBuf};
 use tar::{Archive, Entry};
 
-use crate::activitystreams::Outbox;
+use crate::activitystreams::{Actor, Outbox};
 
 pub struct Export {
     pub filepath: PathBuf,
@@ -35,6 +37,7 @@ impl Export {
     }
 
     pub fn reset(&mut self) {
+        // todo: need to close an existing archive & file first?
         self.archive = None;
     }
 
@@ -43,7 +46,8 @@ impl Export {
         self.reset();
 
         let tar_gz = File::open(self.filepath.as_path())?;
-        self.archive = Some(Archive::new(GzDecoder::new(tar_gz)));
+        let tar_uncompressed = GzDecoder::new(tar_gz);
+        self.archive = Some(Archive::new(tar_uncompressed));
 
         Ok(())
     }
@@ -57,17 +61,17 @@ impl Export {
        -r--r--r-- wheel/wheel   100238 2023-01-15 04:19 header.jpg
        -r--r--r-- wheel/wheel     3705 2023-01-15 04:19 actor.json
     */
-
-    pub fn find_entry(
+    pub fn find_entry<P: AsRef<Path>>(
         &mut self,
-        entry_name: &str,
+        entry_path: P,
     ) -> Result<Entry<'_, GzDecoder<File>>, Box<dyn Error>> {
         self.open()?;
+        let entry_path: &Path = entry_path.as_ref();
         let archive = self.archive.as_mut().ok_or("no archive")?;
         let entries = archive.entries()?;
         for entry in entries {
             let entry = entry?;
-            if entry.path()?.to_str().ok_or("no path str")? == entry_name {
+            if entry_path == entry.path()? {
                 return Ok(entry);
             }
         }
@@ -87,7 +91,63 @@ impl Export {
         Ok(actor)
     }
 
-    // todo: unpack media_attachments dir
+    pub fn unpack_media<P>(&mut self, dest_path: P) -> Result<(), Box<dyn Error>>
+    where
+        P: AsRef<Path>,
+    {
+        let actor: Actor = self.actor()?;
+        let actor_hash = sha256::digest(actor.id);
+
+        use std::path::Component;
+        let dest_path = PathBuf::new().join(dest_path).join(actor_hash);
+
+        self.open()?;
+
+        let archive = self.archive.as_mut().ok_or("no archive")?;
+        let entries = archive.entries()?;
+
+        for entry in entries {
+            let mut entry = entry?;
+            let entry_path = entry.path().unwrap().into_owned();
+
+            if Path::new("header.jpg") == entry_path || Path::new("avatar.png") == entry_path {
+                extract_tar_entry(&dest_path, &entry_path, &mut entry)?;
+            } else if entry_path.to_str().unwrap().contains("media_attachments") {
+                let normalized_path: PathBuf = entry_path
+                    .components()
+                    .skip_while(|c| match c {
+                        Component::Normal(name) => name != &"media_attachments",
+                        _ => true,
+                    })
+                    .collect();
+                extract_tar_entry(&dest_path, &normalized_path, &mut entry)?;
+            }
+        }
+
+        Ok(())
+    }
+}
+
+fn extract_tar_entry<P, R>(
+    dest_path: P,
+    within_dest_path: P,
+    input_reader: &mut R,
+) -> Result<(), Box<dyn Error>>
+where
+    P: AsRef<Path>,
+    R: ?Sized,
+    R: Read,
+{
+    let output_path = PathBuf::new().join(dest_path).join(within_dest_path);
+    info!("Extracting {:?}", output_path);
+
+    let output_parent_path = output_path.parent().unwrap();
+    fs::create_dir_all(&output_parent_path)?;
+
+    let mut output_file = fs::File::create(&output_path)?;
+    copy(input_reader, &mut output_file)?;
+
+    Ok(())
 }
 
 #[cfg(test)]

@@ -37,8 +37,8 @@ pub fn render_to_file(
     context: &tera::Context,
 ) -> Result<(), Box<dyn Error>> {
     let file_parent_path = file_path.parent().ok_or("no parent path")?;
-    fs::create_dir_all(&file_parent_path)?;
-    let output = tera.render(&template_name, &context)?;
+    fs::create_dir_all(file_parent_path)?;
+    let output = tera.render(template_name, context)?;
     let mut file = fs::File::create(file_path)?;
     file.write_all(output.as_bytes())?;
     debug!("Wrote {} to {:?}", template_name, file_path);
@@ -69,7 +69,7 @@ mod tests {
         context.insert("activity", &activity);
 
         let rendered_source = tera.render("activity.html", &context)?;
-        println!("RENDERED {}", rendered_source);
+        println!("RENDERED {rendered_source}");
 
         Ok(())
     }

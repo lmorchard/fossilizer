@@ -4,7 +4,7 @@ use std::convert::From;
 use std::error::Error;
 use std::path::PathBuf;
 
-use ap_fossilizer::{app, db};
+use fossilizer::{app, db};
 
 pub mod build;
 pub mod import;
