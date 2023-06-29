@@ -1,0 +1,77 @@
+html,
+body {
+  height: 100%;
+  --avatar-size: 48px;
+}
+
+body {
+  display: flex;
+  align-items: center;
+  padding-top: 40px;
+  padding-bottom: 40px;
+}
+
+.page-meta {
+  max-width: 27rem;
+}
+
+.form-search {
+  padding: 15px;
+}
+
+.search-results {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  padding: 0;
+  margin: 0;
+  text-indent: 0;
+  list-style-type: none;
+}
+
+.search-results .activity {
+  max-width: 25rem;
+  margin: 0.5em 0.5em;
+  flex-grow: 1;
+}
+
+.activity .card-header {
+  position: relative;
+}
+
+.activity .card-header .avatar {
+  position: absolute;
+  top: var(--bs-card-cap-padding-y);
+  left: var(--bs-card-cap-padding-x);
+  width: var(--avatar-size);
+  height: var(--avatar-size);
+}
+
+.activity .card-header .card-title,
+.activity .card-header .card-subtitle {
+  margin-left: calc(48px + var(--bs-card-cap-padding-x));
+}
+
+.activity .card-body .card-text {
+  max-height: 10em;
+  overflow-y: auto;
+}
+
+.activity button.goto-home-instance {
+  margin-left: 0.5em;
+  font-size: 0.75em
+}
+
+.search-results .activity .invisible {
+  visibility: visible !important;
+  opacity: 0.5;
+}
+
+.modal-media-attachment {
+  height: 80vh;
+}
+
+.modal-media-attachment #media-attachment-display {
+  /* min-height: 60vh; */
+  max-height: 75vh;
+}

@@ -1,0 +1,10 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    <h1>Index</h1>
+    <ul class="days">
+        {% for day_entry in day_entries %}
+            <li><a href="./{{ day_entry.day_path | safe }}">{{ day_entry.day }} ({{ day_entry.activity_count }})</a></li>
+        {% endfor %}
+    </ul>
+{% endblock content %}

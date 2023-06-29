@@ -5,18 +5,20 @@ use rusqlite_migration::{Migrations, M};
 use serde::{Deserialize, Serialize};
 use std::error::Error;
 
-pub mod actors;
 pub mod activities;
+pub mod actors;
 
 use crate::app;
 
 lazy_static! {
-    static ref MIGRATIONS: Migrations<'static> =
-        Migrations::new(vec![
-            M::up(include_str!("./db/migrations/202306241304-init.sql")),
-            M::up(include_str!("./db/migrations/202306261338-object-type-and-indexes-up.sql")),
-            M::up(include_str!("./db/migrations/202306262036-actors-up.sql")),
-        ]);
+    // TODO: iterate through directory using rust_embed?
+    static ref MIGRATIONS: Migrations<'static> = Migrations::new(vec![
+        M::up(include_str!("./db/migrations/202306241304-init.sql")),
+        M::up(include_str!(
+            "./db/migrations/202306261338-object-type-and-indexes-up.sql"
+        )),
+        M::up(include_str!("./db/migrations/202306262036-actors-up.sql")),
+    ]);
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

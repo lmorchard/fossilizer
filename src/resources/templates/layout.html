@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en" data-bs-theme="dark">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧐</text></svg>">
+    <link href="/vendor/bootstrap.min.css" rel="stylesheet">
+    <link href="/index.css" rel="stylesheet">
+    {% block head %}
+      <title>{% block title %}{% endblock title %}</title>
+    {% endblock head %}
+  </head>
+  <body class="">
+    <main class="form-search w-100 m-auto">
+
+      <form class="w-100 m-auto" method="GET" action="./">
+        <div class="container">
+          <div class="row">
+            <h1 class="text-center">Fossilizer</h1>
+            <div class="col">
+              <input id="searchField" name="q" type="text" class="form-control" 
+                autofocus placeholder="search" value="">
+            </div>
+            <div class="col-auto">
+              <button class="btn btn-outline-primary" type="submit" title="Search">🔎</button>
+            </div>
+          </div>
+        </div>
+      </form>
+    
+      {% block content %} {% endblock content %}
+    </main>
+    <script src="/vendor/bootstrap.bundle.min.js"></script>
+    <script src="/index.js" type="module"></script>
+  </body>
+</html>
