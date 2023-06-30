@@ -1,21 +1,7 @@
-// import { WebSocketHandler } from "./websockets.js";
-
 const KEY_HOME_INSTANCE_DOMAIN = "home-instance-domain";
 
 function init() {
-  const searchField = document.body.querySelector("#searchField");
-  if (searchField) {
-    searchField.focus();
-    searchField.select();
-  }
   document.body.addEventListener("click", handleClick);
-  document.body.addEventListener("change", handleChange);
-
-  setupWebSocket();
-}
-
-function setupWebSocket() {
-  // new WebSocketHandler().connect();
 }
 
 async function getHomeInstanceDomain() {
@@ -63,20 +49,6 @@ async function handleClick(ev) {
 
   if (classList.contains("reset-home-instance-domain")) {
     resetHomeInstanceDomain();
-  }
-}
-
-async function handleChange(ev) {
-  const { classList } = ev.target;
-  if (classList.contains("autosubmit")) {
-    let current = ev.target;
-    do {
-      current = current.parentNode;
-      if (current.tagName == "FORM") {
-        current.submit();
-        break;
-      }
-    } while (current);
   }
 }
 

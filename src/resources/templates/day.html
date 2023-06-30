@@ -1,16 +1,19 @@
 {% extends "layout.html" %}
 
+{% block head %}
+  <title>{{ day }}</title>
+{% endblock head %} 
+
+{% block pagetitle %}{{ day }}{% endblock pagetitle %} 
+
 {% block content %}
   <section class="container mt-3 m-auto justify-content-center">
-    <h2 class="text-center">
-        {{ day }}
-    </h2>
     <div class="col">
-    <ul class="text-left search-results justify-content-center">
-        {% for activity in activities %}
-            {% include "activity.html" %}
-        {% endfor %}
-    </ul>
+      <ul class="text-left search-results justify-content-center activities" data-pagefind-body>
+          {% for activity in activities %}
+              {% include "activity.html" %}
+          {% endfor %}
+      </ul>
     </div>
   </section>
 
@@ -29,5 +32,4 @@
       </div>
     </div>
   </div>
-
 {% endblock content %}
