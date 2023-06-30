@@ -75,6 +75,7 @@ mod tests {
         activity.actor = IdOrObject::Object(actor);
 
         let mut context = tera::Context::new();
+        context.insert("site_root", "../..");
         context.insert("activity", &activity);
 
         let rendered_source = tera.render("activity.html", &context)?;
