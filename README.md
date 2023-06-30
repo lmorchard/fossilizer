@@ -4,8 +4,7 @@ This is maybe an attempt to build a static site generator for Mastodon export ta
 
 ## TODO
 
-- [ ] extract media files into a sensible location for build
-- [ ] async parallel page generation
+- [ ] parallel page generation and media copying
 - [ ] page navigation via HTML transclusion
 - [ ] fetch outbox url for incremental imports
 - [ ] build pagefind indices

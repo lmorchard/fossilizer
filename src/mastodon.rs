@@ -95,24 +95,25 @@ impl Export {
     where
         P: AsRef<Path>,
     {
-        let actor: Actor = self.actor()?;
-        let actor_hash = sha256::digest(actor.id);
-
         use std::path::Component;
-        let dest_path = PathBuf::new().join(dest_path).join(actor_hash);
+        let actor: Actor = self.actor()?;
 
+        // Include a hash of the actor's ID in media path so that exports from
+        // multiple instances end up with media in separate directories
+        let dest_path = PathBuf::new().join(dest_path).join(&actor.id_hash());
+
+        // todo: do this extraction alongside other non-media files?
         self.open()?;
-
         let archive = self.archive.as_mut().ok_or("no archive")?;
         let entries = archive.entries()?;
 
         for entry in entries {
             let mut entry = entry?;
             let entry_path = entry.path().unwrap().into_owned();
+            let entry_path_extension = entry_path.extension();
 
-            if Path::new("header.jpg") == entry_path || Path::new("avatar.png") == entry_path {
-                extract_tar_entry(&dest_path, &entry_path, &mut entry)?;
-            } else if entry_path.to_str().unwrap().contains("media_attachments") {
+            if entry_path.to_str().unwrap().contains("media_attachments") {
+                // HACK: some exports seem to have leading directory paths before `media_attachments`, so strip that off
                 let normalized_path: PathBuf = entry_path
                     .components()
                     .skip_while(|c| match c {
@@ -121,6 +122,11 @@ impl Export {
                     })
                     .collect();
                 extract_tar_entry(&dest_path, &normalized_path, &mut entry)?;
+            } else if let Some(ext) = entry_path_extension {
+                // mainly for {avatar,header}.{jpg,png}, but there may be more?
+                if "png" == ext || "jpg" == ext {
+                    extract_tar_entry(&dest_path, &entry_path, &mut entry)?;
+                }
             }
         }
 

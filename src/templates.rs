@@ -4,6 +4,8 @@ use std::fs;
 use std::io::prelude::*;
 use std::path::PathBuf;
 use tera::Tera;
+use serde_json::value::{to_value, Value};
+use std::collections::HashMap;
 
 #[derive(RustEmbed)]
 #[folder = "src/resources/templates"]
@@ -14,7 +16,14 @@ pub fn init() -> Result<Tera, Box<dyn Error>> {
 
     tera.add_raw_templates(templates_source())?;
 
+    tera.register_filter("sha256", filter_sha256);
+
     Ok(tera)
+}
+
+pub fn filter_sha256(value: &Value, _: &HashMap<String, Value>) -> tera::Result<Value> {
+    let s = try_get_value!("filter_sha256", "value", String, value);
+    Ok(to_value(sha256::digest(s)).unwrap())
 }
 
 pub fn templates_source() -> Vec<(String, String)> {

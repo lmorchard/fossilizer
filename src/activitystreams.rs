@@ -32,6 +32,12 @@ pub struct Actor {
     pub public_key: Option<PublicKey>,
 }
 
+impl Actor {
+    pub fn id_hash(&self) -> String {
+        sha256::digest(self.id.as_str())
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct PublicKey {}

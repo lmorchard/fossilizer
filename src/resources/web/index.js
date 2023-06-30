@@ -1,4 +1,4 @@
-import { WebSocketHandler } from "./websockets.js";
+// import { WebSocketHandler } from "./websockets.js";
 
 const KEY_HOME_INSTANCE_DOMAIN = "home-instance-domain";
 
@@ -15,7 +15,7 @@ function init() {
 }
 
 function setupWebSocket() {
-  new WebSocketHandler().connect();
+  // new WebSocketHandler().connect();
 }
 
 async function getHomeInstanceDomain() {
