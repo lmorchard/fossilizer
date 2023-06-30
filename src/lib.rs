@@ -9,6 +9,7 @@ extern crate tera;
 
 pub mod activitystreams;
 pub mod app;
+pub mod config;
 pub mod db;
 pub mod mastodon;
 pub mod templates;

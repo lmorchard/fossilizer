@@ -1,30 +1,13 @@
 use anyhow::Result;
 use std::convert::From;
 use std::error::Error;
-use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 use std::fs;
 
-use fossilizer::{app, db, mastodon, activitystreams};
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct ImportConfig {
-    #[serde(default = "default_data_path")]
-    pub data_path: PathBuf,
-}
-
-fn default_data_path() -> PathBuf {
-    "./data".into()
-}
-
-impl ImportConfig {
-    pub fn media_path(&self) -> PathBuf {
-        self.data_path.join("media")
-    }
-}
+use fossilizer::{config, db, mastodon, activitystreams};
 
 pub fn command_import(filenames: &Vec<String>) -> Result<(), Box<dyn Error>> {
-    let config = app::config_try_deserialize::<ImportConfig>()?;
+    let config = config::config()?;
     let data_path = PathBuf::from(&config.data_path);
     fs::create_dir_all(&data_path)?;
 

@@ -5,6 +5,7 @@ This is maybe an attempt to build a static site generator for Mastodon export ta
 ## TODO
 
 - [ ] parallel page generation and media copying
+- [ ] link pages together with prev / next navigation
 - [ ] page navigation via HTML transclusion
 - [ ] fetch outbox url for incremental imports
 - [ ] build pagefind indices

@@ -1,6 +1,6 @@
 {%- set actor = activity.actor -%}
 {%- set actor_hash = actor.id | sha256 %}
-{%- set media_root = "../../media/" ~ actor_hash -%}
+{%- set media_root = site_root ~ "/media/" ~ actor_hash -%}
 {%- set object = activity.object -%}
 <li id="{{ activity.id | safe }}" class="card activity post" data-pagefind-filter="activityType:{{ activity.type }}">
   <div class="card-header">

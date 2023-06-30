@@ -2,7 +2,6 @@ use anyhow::Result;
 use lazy_static::lazy_static;
 use rusqlite::Connection;
 use rusqlite_migration::{Migrations, M};
-use serde::{Deserialize, Serialize};
 use std::error::Error;
 use std::path::Path;
 use std::fs;
@@ -10,7 +9,7 @@ use std::fs;
 pub mod activities;
 pub mod actors;
 
-use crate::app;
+use crate::config;
 
 lazy_static! {
     // TODO: iterate through directory using rust_embed?
@@ -23,22 +22,8 @@ lazy_static! {
     ]);
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct DatabaseConfig {
-    #[serde(default = "default_database_path")]
-    pub database_path: String,
-}
-
-fn default_database_path() -> String {
-    "./data/data.sqlite3".to_string()
-}
-
-pub fn config() -> Result<DatabaseConfig, Box<dyn Error>> {
-    app::config_try_deserialize::<DatabaseConfig>()
-}
-
 pub fn conn() -> Result<Connection, Box<dyn Error>> {
-    let config = config()?;
+    let config = config::config()?;
 
     let database_path = Path::new(&config.database_path);
     let database_parent_path = database_path.parent().ok_or("no parent path")?;
@@ -54,7 +39,7 @@ pub fn conn() -> Result<Connection, Box<dyn Error>> {
 }
 
 pub fn upgrade() -> Result<(), Box<dyn Error>> {
-    let config = config()?;
+    let config = config::config()?;
 
     let mut conn = Connection::open(config.database_path)?;
     MIGRATIONS.to_latest(&mut conn)?;

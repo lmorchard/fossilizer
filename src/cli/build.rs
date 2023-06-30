@@ -6,37 +6,22 @@ use std::fs;
 use std::io::prelude::*;
 use std::path::{Path, PathBuf};
 
-use crate::cli::import::ImportConfig;
-use fossilizer::{activitystreams, app, db, templates};
+use fossilizer::{activitystreams, config, db, templates};
 
 #[derive(RustEmbed)]
 #[folder = "src/resources/web"]
 struct WebAsset;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct BuildConfig {
-    #[serde(default = "default_build_path")]
-    pub build_path: String,
-}
-
-fn default_build_path() -> String {
-    "./build".to_string()
-}
-
 pub fn command_build() -> Result<(), Box<dyn Error>> {
-    let config = app::config_try_deserialize::<BuildConfig>()?;
-    let build_path = PathBuf::from(config.build_path);
+    let config = config::config()?;
 
-    let import_config = app::config_try_deserialize::<ImportConfig>()?;
-    let media_path = import_config.media_path();
-
-    setup_build_path(&build_path)?;
-    copy_web_assets(&build_path)?;
-    copy_media_files(&[media_path], &build_path)?;
+    setup_build_path(&config.build_path)?;
+    copy_web_assets(&config.build_path)?;
+    copy_media_files(&[config.media_path()], &config.build_path)?;
 
     let tera = templates::init()?;
-    let day_entries = generate_activities_pages(&build_path, &tera)?;
-    generate_index_page(build_path, day_entries, tera)?;
+    let day_entries = generate_activities_pages(&config.build_path, &tera)?;
+    generate_index_page(&config.build_path, day_entries, tera)?;
 
     Ok(())
 }
@@ -139,6 +124,7 @@ fn generate_activities_pages(
         });
 
         let mut context = tera::Context::new();
+        context.insert("site_root", "../..");
         context.insert("day", &day);
         context.insert("activities", &items);
 
@@ -148,7 +134,7 @@ fn generate_activities_pages(
 }
 
 fn generate_index_page(
-    build_path: PathBuf,
+    build_path: &PathBuf,
     day_entries: Vec<IndexDayEntry>,
     tera: tera::Tera,
 ) -> Result<(), Box<dyn Error>> {
@@ -156,6 +142,7 @@ fn generate_index_page(
         .join("index")
         .with_extension("html");
     let mut context = tera::Context::new();
+    context.insert("site_root", ".");
     context.insert("day_entries", &day_entries);
     templates::render_to_file(&tera, &index_path, "index.html", &context)?;
     Ok(())
