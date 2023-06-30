@@ -30,7 +30,7 @@ pub fn command_build() -> Result<(), Box<dyn Error>> {
     let import_config = app::config_try_deserialize::<ImportConfig>()?;
     let media_path = import_config.media_path();
 
-    clean_build_path(&build_path)?;
+    setup_build_path(&build_path)?;
     copy_web_assets(&build_path)?;
     copy_media_files(&[media_path], &build_path)?;
 
@@ -41,13 +41,15 @@ pub fn command_build() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-fn clean_build_path(build_path: &PathBuf) -> Result<(), Box<dyn Error>> {
+fn setup_build_path(build_path: &PathBuf) -> Result<(), Box<dyn Error>> {
+    /* todo: cli option to clean or not clean
     if let Err(err) = fs::remove_dir_all(build_path) {
         if err.kind() != std::io::ErrorKind::NotFound {
             // todo: improve error handling here
             return Err(Box::new(err));
         }
     }
+    */
     fs::create_dir_all(build_path)?;
     Ok(())
 }
@@ -104,7 +106,10 @@ fn generate_activities_pages(
     let db_conn = db::conn()?;
     let db_activities = db::activities::Activities::new(&db_conn);
     let db_actors = db::actors::Actors::new(&db_conn);
-    let all_days = db_activities.get_published_days()?;
+
+    let mut all_days = db_activities.get_published_days()?;
+    all_days.reverse();
+
     let mut day_entries: Vec<IndexDayEntry> = Vec::new();
     for day in all_days {
         let day_path = PathBuf::from(build_path).join(&day).with_extension("html");

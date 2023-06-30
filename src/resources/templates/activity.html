@@ -1,10 +1,11 @@
 {%- set actor = activity.actor -%}
 {%- set actor_hash = actor.id | sha256 %}
+{%- set media_root = "../../media/" ~ actor_hash -%}
 {%- set object = activity.object -%}
-<li id="{{ activity.id | safe }}" class="card activity post">
+<li id="{{ activity.id | safe }}" class="card activity post" data-pagefind-filter="activityType:{{ activity.type }}">
   <div class="card-header">
     <a href="{{ actor.url | safe }}" target="_blank"><img class="avatar"
-        src="/media/{{ actor_hash }}/{{ actor.icon.url | safe }}" width="48" height="48" /></a>
+        src="{{ media_root | safe}}/{{ actor.icon.url | safe }}" width="48" height="48" /></a>
     <h5 class="card-title" data-pagefind-filter="actorName">{{ actor.name }}</h5>
     <h6 class="card-subtitle mb-2 text-muted">@<a href="{{ actor.url | safe }}" target="_blank" data-pagefind-filter="actorUrl">{{ actor.url }}</a></h6>
   </div>
@@ -27,9 +28,9 @@
       <ul class="list-group list-group-flush">
         <li class="list-group-item media-attachments">
           {%- for attachment in object.attachment -%}
-            <img class="media-attachment" src="/media/{{ actor_hash }}/{{ attachment.url | safe }}" width="48" height="48"
+            <img class="media-attachment" src="{{ media_root | safe }}/{{ attachment.url | safe }}" width="48" height="48"
                 data-bs-toggle="modal" data-bs-target="#exampleModal"
-                data-fullsrc="/media/{{ actor.id | sha256 }}/{{ attachment.url | safe }}" title="{{ attachment.name }}" />
+                data-fullsrc="{{ media_root | safe }}/{{ attachment.url | safe }}" title="{{ attachment.name }}" />
           {%- endfor -%}
         </li>
       </ul>

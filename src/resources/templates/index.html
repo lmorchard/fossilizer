@@ -1,10 +1,29 @@
 {% extends "layout.html" %}
 
+{% block head %}
+  <title>Fossilizer Index</title>
+  <link href="./vendor/bootstrap.min.css" rel="stylesheet">
+  <link href="./index.css" rel="stylesheet">
+  <link href="./pagefind/pagefind-ui.css" rel="stylesheet">
+  <script src="./pagefind/pagefind-ui.js" type="text/javascript"></script>    
+  <script src="./vendor/bootstrap.bundle.min.js"></script>
+  <script src="./index.js" type="module"></script>
+{% endblock head %} 
+
+{% block pagetitle %}Fossilizer Index{% endblock pagetitle %} 
+
 {% block content %}
-    <h1>Index</h1>
-    <ul class="days">
+  <section class="container mt-3 m-auto justify-content-center">
+    <div class="col">
+      <ul class="text-left justify-content-center index-list">
         {% for day_entry in day_entries %}
-            <li><a href="./{{ day_entry.day_path | safe }}">{{ day_entry.day }} ({{ day_entry.activity_count }})</a></li>
+          <li class="card">
+            <div class="card-header">
+              <a href="./{{ day_entry.day_path | safe }}">{{ day_entry.day }} ({{ day_entry.activity_count }})</a>
+            </div>
+          </li>
         {% endfor %}
-    </ul>
+      </ul>
+    </div>
+  </section>
 {% endblock content %}
