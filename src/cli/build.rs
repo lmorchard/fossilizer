@@ -1,11 +1,12 @@
 use anyhow::Result;
+use rust_embed::RustEmbed;
+use serde::{Deserialize, Serialize};
 use std::error::Error;
 use std::fs;
 use std::io::prelude::*;
-use std::path::PathBuf;
-use rust_embed::RustEmbed;
-use serde::{Deserialize, Serialize};
+use std::path::{Path, PathBuf};
 
+use crate::cli::import::ImportConfig;
 use fossilizer::{activitystreams, app, db, templates};
 
 #[derive(RustEmbed)]
@@ -26,8 +27,12 @@ pub fn command_build() -> Result<(), Box<dyn Error>> {
     let config = app::config_try_deserialize::<BuildConfig>()?;
     let build_path = PathBuf::from(config.build_path);
 
+    let import_config = app::config_try_deserialize::<ImportConfig>()?;
+    let media_path = import_config.media_path();
+
     clean_build_path(&build_path)?;
     copy_web_assets(&build_path)?;
+    copy_media_files(&[media_path], &build_path)?;
 
     let tera = templates::init()?;
     let day_entries = generate_activities_pages(&build_path, &tera)?;
@@ -63,6 +68,27 @@ fn copy_web_assets(build_path: &PathBuf) -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
+fn copy_media_files<P>(media_path: &[P], build_path: &P) -> Result<(), Box<dyn Error>>
+where
+    P: AsRef<Path> + std::fmt::Debug,
+{
+    info!("Copying {:?} to {:?}", media_path, build_path);
+    // todo: use with progress? https://docs.rs/fs_extra/latest/fs_extra/fn.copy_items_with_progress.html
+    fs_extra::copy_items(
+        media_path,
+        build_path,
+        &fs_extra::dir::CopyOptions {
+            overwrite: true,
+            skip_exist: true,
+            buffer_size: 64000,
+            copy_inside: true,
+            content_only: false,
+            depth: 0,
+        },
+    )?;
+    Ok(())
+}
+
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 
 pub struct IndexDayEntry {
@@ -71,7 +97,10 @@ pub struct IndexDayEntry {
     pub activity_count: usize,
 }
 
-fn generate_activities_pages(build_path: &PathBuf, tera: &tera::Tera) -> Result<Vec<IndexDayEntry>, Box<dyn Error>> {
+fn generate_activities_pages(
+    build_path: &PathBuf,
+    tera: &tera::Tera,
+) -> Result<Vec<IndexDayEntry>, Box<dyn Error>> {
     let db_conn = db::conn()?;
     let db_activities = db::activities::Activities::new(&db_conn);
     let db_actors = db::actors::Actors::new(&db_conn);
@@ -113,7 +142,11 @@ fn generate_activities_pages(build_path: &PathBuf, tera: &tera::Tera) -> Result<
     Ok(day_entries)
 }
 
-fn generate_index_page(build_path: PathBuf, day_entries: Vec<IndexDayEntry>, tera: tera::Tera) -> Result<(), Box<dyn Error>> {
+fn generate_index_page(
+    build_path: PathBuf,
+    day_entries: Vec<IndexDayEntry>,
+    tera: tera::Tera,
+) -> Result<(), Box<dyn Error>> {
     let index_path = PathBuf::from(&build_path)
         .join("index")
         .with_extension("html");

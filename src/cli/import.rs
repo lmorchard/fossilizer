@@ -10,16 +10,22 @@ use fossilizer::{app, db, mastodon, activitystreams};
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ImportConfig {
     #[serde(default = "default_data_path")]
-    pub data_path: String,
+    pub data_path: PathBuf,
 }
 
-fn default_data_path() -> String {
-    "./data".to_string()
+fn default_data_path() -> PathBuf {
+    "./data".into()
+}
+
+impl ImportConfig {
+    pub fn media_path(&self) -> PathBuf {
+        self.data_path.join("media")
+    }
 }
 
 pub fn command_import(filenames: &Vec<String>) -> Result<(), Box<dyn Error>> {
     let config = app::config_try_deserialize::<ImportConfig>()?;
-    let data_path = PathBuf::from(config.data_path);
+    let data_path = PathBuf::from(&config.data_path);
     fs::create_dir_all(&data_path)?;
 
     for filename in filenames {
@@ -29,7 +35,7 @@ pub fn command_import(filenames: &Vec<String>) -> Result<(), Box<dyn Error>> {
 
         let mut export = mastodon::Export::from(filename);
 
-        let media_path = data_path.join("media");
+        let media_path = config.media_path();
         fs::create_dir_all(&media_path)?;
         debug!("extracting media to {:?}", media_path);
         export.unpack_media(&media_path)?;
