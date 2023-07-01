@@ -11,3 +11,5 @@ This is maybe an attempt to build a static site generator for Mastodon export ta
 - [ ] build pagefind indices
 - [ ] GitHub pages publish action?
 - [ ] automated cross platform build on GitHub
+- [ ] try [tinysearch](https://github.com/tinysearch/tinysearch) to index individual activities and link to within-page anchors?
+

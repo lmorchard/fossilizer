@@ -107,10 +107,7 @@ fn plan_activities_pages(
     db_activities: &db::activities::Activities<'_>,
 ) -> Result<Vec<IndexDayContext>, Box<dyn Error>> {
     let mut day_entries: Vec<IndexDayContext> = Vec::new();
-
-    let mut all_days = db_activities.get_published_days()?;
-    all_days.reverse();
-
+    let all_days = db_activities.get_published_days()?;
     for day in all_days {
         let day_path = PathBuf::from(build_path).join(&day).with_extension("html");
         let mut context = IndexDayContext {
