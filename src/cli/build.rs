@@ -21,17 +21,10 @@ pub fn command_build() -> Result<(), Box<dyn Error>> {
 
     let db_conn = db::conn()?;
     let db_activities = db::activities::Activities::new(&db_conn);
-    let db_actors = db::actors::Actors::new(&db_conn);
 
     let tera = templates::init()?;
     let mut day_entries = plan_activities_pages(&config.build_path, &db_activities)?;
-    generate_activities_pages(
-        &config.build_path,
-        &db_activities,
-        &db_actors,
-        &mut day_entries,
-        &tera,
-    )?;
+    generate_activities_pages(&config.build_path, &mut day_entries)?;
     generate_index_page(&config.build_path, &day_entries, &tera)?;
 
     Ok(())
@@ -131,51 +124,60 @@ fn plan_activities_pages(
 
 fn generate_activities_pages(
     build_path: &PathBuf,
-    db_activities: &db::activities::Activities<'_>,
-    db_actors: &db::actors::Actors<'_>,
     day_entries: &mut Vec<IndexDayContext>,
-    tera: &tera::Tera,
 ) -> Result<(), Box<dyn Error>> {
-    for mut day_entry in day_entries {
-        let day = &day_entry.current.day;
-        let day_path = &day_entry.current.day_path;
-
-        let items: Vec<activitystreams::Activity> = db_activities
-            .get_activities_for_day(&day)?
-            .iter()
-            // use faillable iterator here?
-            .map(|activity| {
-                // Dereference actor ID in activity via DB lookup
-                let actor_id = activity.actor.id().unwrap();
-                let actor = db_actors.get_actor(actor_id).unwrap();
-
-                let mut activity = activity.clone();
-                activity.actor = activitystreams::IdOrObject::Object(actor);
-                activity
-            })
-            .collect();
-
-        day_entry.current.activity_count = items.len();
-
-        let mut context = tera::Context::new();
-        context.insert("site_root", "../..");
-        context.insert("day", &day);
-        context.insert("current_day", &day_entry.current);
-        if let Some(previous) = &day_entry.previous {
-            context.insert("previous_day", &previous);
-        }
-        if let Some(next) = &day_entry.next {
-            context.insert("next_day", &next);
-        }
-        context.insert("activities", &items);
-
-        templates::render_to_file(
-            tera,
-            &PathBuf::from(&build_path).join(&day_path),
-            "day.html",
-            &context,
-        )?;
+    for day_entry in day_entries {
+        generate_activity_page(day_entry, build_path)?;
     }
+    Ok(())
+}
+
+fn generate_activity_page(
+    day_entry: &mut IndexDayContext,
+    build_path: &PathBuf,
+) -> Result<(), Box<dyn Error>> {
+    let tera = templates::init()?;
+    let db_conn = db::conn()?;
+    let db_activities = db::activities::Activities::new(&db_conn);
+    let db_actors = db::actors::Actors::new(&db_conn);
+
+    let day = &day_entry.current.day;
+    let day_path = &day_entry.current.day_path;
+    let items: Vec<activitystreams::Activity> = db_activities
+        .get_activities_for_day(&day)?
+        .iter()
+        // use faillable iterator here?
+        .map(|activity| {
+            // Dereference actor ID in activity via DB lookup
+            let actor_id = activity.actor.id().unwrap();
+            let actor = db_actors.get_actor(actor_id).unwrap();
+
+            let mut activity = activity.clone();
+            activity.actor = activitystreams::IdOrObject::Object(actor);
+            activity
+        })
+        .collect();
+    day_entry.current.activity_count = items.len();
+
+    let mut context = tera::Context::new();
+    context.insert("site_root", "../..");
+    context.insert("day", &day);
+    context.insert("current_day", &day_entry.current);
+    if let Some(previous) = &day_entry.previous {
+        context.insert("previous_day", &previous);
+    }
+    if let Some(next) = &day_entry.next {
+        context.insert("next_day", &next);
+    }
+    context.insert("activities", &items);
+
+    templates::render_to_file(
+        &tera,
+        &PathBuf::from(&build_path).join(&day_path),
+        "day.html",
+        &context,
+    )?;
+
     Ok(())
 }
 

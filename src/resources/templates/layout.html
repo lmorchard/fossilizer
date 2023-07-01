@@ -18,29 +18,25 @@
   </head>
   <body class="">
     <main class="form-search w-100 m-auto">
-
       <form class="w-100 m-auto" method="GET" action="./">
         <div class="container">
           <div class="row">
             <div class="col">    
               <div id="search"></div>
               <script>
-                  window.addEventListener('DOMContentLoaded', (event) => {
-                      new PagefindUI({
-                        element: "#search",
-                        showImages: true,
-                        baseUrl: "{{ site_root | safe }}",
-                      });
-                  });
+                window.addEventListener('DOMContentLoaded', (event) => {
+                    new PagefindUI({
+                      element: "#search",
+                      showImages: true,
+                      baseUrl: "{{ site_root | safe }}",
+                    });
+                });
               </script>
             </div>
           </div>
         </div>
       </form>
-    
       {% block content %} {% endblock content %}
-
     </main>
-
   </body>
 </html>
