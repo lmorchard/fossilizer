@@ -143,9 +143,6 @@ fn generate_activities_pages(
         let day = &day_entry.current.day;
         let day_path = &day_entry.current.day_path;
 
-        let month_path = day_path.parent().ok_or("no day path parent")?;
-        fs::create_dir_all(month_path)?;
-
         let items: Vec<activitystreams::Activity> = db_activities
             .get_activities_for_day(&day)?
             .iter()

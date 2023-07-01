@@ -55,7 +55,7 @@ body {
   flex-grow: 1;
 }
 
-.search-results {
+.activities {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
@@ -65,17 +65,17 @@ body {
   list-style-type: none;
 }
 
-.search-results .activity {
+.activities .card {
   max-width: 25rem;
   margin: 0.5em 0.5em;
   flex-grow: 1;
 }
 
-.activity .card-header {
+.activities .card .card-header {
   position: relative;
 }
 
-.activity .card-header .avatar {
+.activities .card .card-header .avatar {
   position: absolute;
   top: var(--bs-card-cap-padding-y);
   left: var(--bs-card-cap-padding-x);
@@ -83,22 +83,22 @@ body {
   height: var(--avatar-size);
 }
 
-.activity .card-header .card-title,
-.activity .card-header .card-subtitle {
+.activities .card .card-header .card-title,
+.activities .card .card-header .card-subtitle {
   margin-left: calc(48px + var(--bs-card-cap-padding-x));
 }
 
-.activity .card-body .card-text {
+.activities .card .card-body .card-text {
   max-height: 10em;
   overflow-y: auto;
 }
 
-.activity button.goto-home-instance {
+.activities .card button.goto-home-instance {
   margin-left: 0.5em;
   font-size: 0.75em
 }
 
-.search-results .activity .invisible {
+.activities .card .invisible {
   visibility: visible !important;
   opacity: 0.5;
 }

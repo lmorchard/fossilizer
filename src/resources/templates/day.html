@@ -2,25 +2,50 @@
 
 {% block head %}
   <title>{{ day }}</title>
+  <link rel="top" href="{{ site_root ~ "/index.html" }}" title="Index" />
+  {% if previous_day %}
+    <link rel="prev" href="{{ site_root ~ "/" ~ previous_day.day_path }}" title="{{ previous_day.day }}" />
+  {% endif %}
+  {% if next_day %}
+    <link rel="next" href="{{ site_root ~ "/" ~ next_day.day_path }}" title="{{ next_day.day }}" />
+  {% endif %}
+
 {% endblock head %} 
 
 {% block pagetitle %}
-  {% if previous_day %}
-    <a href="{{ site_root ~ "/" ~ previous_day.day_path }}" title="{{ previous_day.day }}">⬅️</a>
-  {% endif %}
   {{ day }}
-  {% if next_day %}
-    <a href="{{ site_root ~ "/" ~ next_day.day_path }}" title="{{ next_day.day }}">➡️</a>
-  {% endif %}
 {% endblock pagetitle %} 
 
 {% block content %}
   <section class="container mt-3 m-auto justify-content-center">
     <div class="col">
       <ul class="text-left search-results justify-content-center activities" data-pagefind-body>
-          {% for activity in activities %}
-              {% include "activity.html" %}
-          {% endfor %}
+
+        <li class="card">
+          <div class="card-body">
+            <div class="card-text">
+              <h2>{{ day }}</h2>
+              {% if previous_day %}
+                <h3><a class="nav-activities" href="{{ site_root ~ "/" ~ previous_day.day_path }}" title="{{ previous_day.day }}">⬅️</a></h3>
+              {% endif %}
+            </div>
+          </div>
+        </li>
+
+        {% for activity in activities %}
+            {% include "activity.html" %}
+        {% endfor %}
+
+        {% if next_day %}
+          <li class="card">
+            <div class="card-body">
+              <div class="card-text">
+                <h3><a class="nav-activities lazy-load auto-click" href="{{ site_root ~ "/" ~ next_day.day_path }}" title="{{ next_day.day }}">➡️</a></h3>
+              </div>
+            </div>
+          </li>
+        {% endif %}
+    
       </ul>
     </div>
   </section>
