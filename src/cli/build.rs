@@ -19,9 +19,20 @@ pub fn command_build() -> Result<(), Box<dyn Error>> {
     copy_web_assets(&config.build_path)?;
     copy_media_files(&[config.media_path()], &config.build_path)?;
 
+    let db_conn = db::conn()?;
+    let db_activities = db::activities::Activities::new(&db_conn);
+    let db_actors = db::actors::Actors::new(&db_conn);
+
     let tera = templates::init()?;
-    let day_entries = generate_activities_pages(&config.build_path, &tera)?;
-    generate_index_page(&config.build_path, day_entries, tera)?;
+    let mut day_entries = plan_activities_pages(&config.build_path, &db_activities)?;
+    generate_activities_pages(
+        &config.build_path,
+        &db_activities,
+        &db_actors,
+        &mut day_entries,
+        &tera,
+    )?;
+    generate_index_page(&config.build_path, &day_entries, &tera)?;
 
     Ok(())
 }
@@ -84,20 +95,53 @@ pub struct IndexDayEntry {
     pub activity_count: usize,
 }
 
-fn generate_activities_pages(
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct IndexDayContext {
+    pub previous: Option<IndexDayEntry>,
+    pub current: IndexDayEntry,
+    pub next: Option<IndexDayEntry>,
+}
+
+fn plan_activities_pages(
     build_path: &PathBuf,
-    tera: &tera::Tera,
-) -> Result<Vec<IndexDayEntry>, Box<dyn Error>> {
-    let db_conn = db::conn()?;
-    let db_activities = db::activities::Activities::new(&db_conn);
-    let db_actors = db::actors::Actors::new(&db_conn);
+    db_activities: &db::activities::Activities<'_>,
+) -> Result<Vec<IndexDayContext>, Box<dyn Error>> {
+    let mut day_entries: Vec<IndexDayContext> = Vec::new();
 
     let mut all_days = db_activities.get_published_days()?;
     all_days.reverse();
 
-    let mut day_entries: Vec<IndexDayEntry> = Vec::new();
     for day in all_days {
         let day_path = PathBuf::from(build_path).join(&day).with_extension("html");
+        let mut context = IndexDayContext {
+            current: IndexDayEntry {
+                day: day.clone(),
+                day_path: day_path.clone().strip_prefix(build_path)?.to_path_buf(),
+                activity_count: 0,
+            },
+            previous: None,
+            next: None,
+        };
+        if let Some(mut previous) = day_entries.pop() {
+            previous.next = Some(context.current.clone());
+            context.previous = Some(previous.current.clone());
+            day_entries.push(previous);
+        }
+        day_entries.push(context);
+    }
+    Ok(day_entries)
+}
+
+fn generate_activities_pages(
+    build_path: &PathBuf,
+    db_activities: &db::activities::Activities<'_>,
+    db_actors: &db::actors::Actors<'_>,
+    day_entries: &mut Vec<IndexDayContext>,
+    tera: &tera::Tera,
+) -> Result<(), Box<dyn Error>> {
+    for mut day_entry in day_entries {
+        let day = &day_entry.current.day;
+        let day_path = &day_entry.current.day_path;
 
         let month_path = day_path.parent().ok_or("no day path parent")?;
         fs::create_dir_all(month_path)?;
@@ -117,26 +161,34 @@ fn generate_activities_pages(
             })
             .collect();
 
-        day_entries.push(IndexDayEntry {
-            day: day.clone(),
-            day_path: day_path.clone().strip_prefix(build_path)?.to_path_buf(),
-            activity_count: items.len(),
-        });
+        day_entry.current.activity_count = items.len();
 
         let mut context = tera::Context::new();
         context.insert("site_root", "../..");
         context.insert("day", &day);
+        context.insert("current_day", &day_entry.current);
+        if let Some(previous) = &day_entry.previous {
+            context.insert("previous_day", &previous);
+        }
+        if let Some(next) = &day_entry.next {
+            context.insert("next_day", &next);
+        }
         context.insert("activities", &items);
 
-        templates::render_to_file(tera, &day_path, "day.html", &context)?;
+        templates::render_to_file(
+            tera,
+            &PathBuf::from(&build_path).join(&day_path),
+            "day.html",
+            &context,
+        )?;
     }
-    Ok(day_entries)
+    Ok(())
 }
 
 fn generate_index_page(
     build_path: &PathBuf,
-    day_entries: Vec<IndexDayEntry>,
-    tera: tera::Tera,
+    day_entries: &Vec<IndexDayContext>,
+    tera: &tera::Tera,
 ) -> Result<(), Box<dyn Error>> {
     let index_path = PathBuf::from(&build_path)
         .join("index")

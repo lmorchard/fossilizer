@@ -4,7 +4,15 @@
   <title>{{ day }}</title>
 {% endblock head %} 
 
-{% block pagetitle %}{{ day }}{% endblock pagetitle %} 
+{% block pagetitle %}
+  {% if previous_day %}
+    <a href="{{ site_root ~ "/" ~ previous_day.day_path }}" title="{{ previous_day.day }}">⬅️</a>
+  {% endif %}
+  {{ day }}
+  {% if next_day %}
+    <a href="{{ site_root ~ "/" ~ next_day.day_path }}" title="{{ next_day.day }}">➡️</a>
+  {% endif %}
+{% endblock pagetitle %} 
 
 {% block content %}
   <section class="container mt-3 m-auto justify-content-center">

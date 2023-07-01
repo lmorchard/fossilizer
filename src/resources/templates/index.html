@@ -10,7 +10,8 @@
   <section class="container mt-3 m-auto justify-content-center">
     <div class="col">
       <ul class="text-left justify-content-center index-list">
-        {% for day_entry in day_entries %}
+        {%- for entry in day_entries -%}
+          {%- set day_entry = entry.current -%}
           <li class="card">
             <div class="card-header">
               <a href="./{{ day_entry.day_path | safe }}">{{ day_entry.day }} ({{ day_entry.activity_count }})</a>
