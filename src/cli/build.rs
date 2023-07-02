@@ -44,6 +44,7 @@ pub fn command_build() -> Result<(), Box<dyn Error>> {
             let mut day_entries =
                 generate_activities_pages(&config.build_path, &tera, &actors, &day_entries)
                     .unwrap();
+
             day_entries.sort_by(|a, b| a.current.day.partial_cmp(&b.current.day).unwrap());
             generate_index_page(&config.build_path, &day_entries, &tera).unwrap();
 
@@ -72,6 +73,7 @@ fn setup_build_path(build_path: &PathBuf) -> Result<(), Box<dyn Error>> {
 }
 
 fn copy_web_assets(build_path: &PathBuf) -> Result<(), Box<dyn Error>> {
+    info!("Copying static web assets");
     for filename in WebAsset::iter() {
         let file = WebAsset::get(&filename).ok_or("no web asset")?;
         let outpath = PathBuf::from(build_path).join(&filename.to_string());
@@ -163,6 +165,7 @@ fn generate_activities_pages(
     actors: &HashMap<String, activitystreams::Actor>,
     day_entries: &Vec<IndexDayContext>,
 ) -> Result<Vec<IndexDayContext>, Box<dyn Error>> {
+    info!("Generating {} per-day pages", day_entries.len());
     Ok(day_entries
         .par_iter()
         .map(|day_entry| generate_activity_page(&build_path, &tera, &actors, &day_entry).unwrap())
@@ -234,12 +237,17 @@ fn generate_index_page(
     day_entries: &Vec<IndexDayContext>,
     tera: &tera::Tera,
 ) -> Result<(), Box<dyn Error>> {
+    info!("Generating site index page");
+
     let index_path = PathBuf::from(&build_path)
         .join("index")
         .with_extension("html");
+
     let mut context = tera::Context::new();
     context.insert("site_root", ".");
     context.insert("day_entries", &day_entries);
+
     templates::render_to_file(&tera, &index_path, "index.html", &context)?;
+
     Ok(())
 }
