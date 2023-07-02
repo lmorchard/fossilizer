@@ -18,10 +18,10 @@ impl<'a> Activities<'a> {
 
     pub fn import_activity<T: Serialize>(&self, activity: T) -> Result<()> {
         let json_text = serde_json::to_string_pretty(&activity)?;
-        self.conn.execute(
-            "INSERT OR REPLACE INTO activities (json) VALUES (?1)",
-            params![json_text],
-        )?;
+        let mut stmt = self
+            .conn
+            .prepare_cached("INSERT OR REPLACE INTO activities (json) VALUES (?1)")?;
+        stmt.execute(params![json_text])?;
 
         Ok(())
     }
@@ -113,12 +113,12 @@ impl<'a> Activities<'a> {
 
     pub fn get_activities_for_day(&self, day: &String) -> Result<Vec<Activity>> {
         let conn = &self.conn;
-        let mut stmt = conn.prepare(
+        let mut stmt = conn.prepare_cached(
             r#"
                 SELECT json
                 FROM activities
                 WHERE publishedYearMonthDay = ?1
-            "#            
+            "#,
         )?;
         let mut rows = stmt.query([day])?;
         let mut out = Vec::new();
@@ -146,7 +146,7 @@ fn query_single_column<P>(
 where
     P: rusqlite::Params,
 {
-    let mut stmt = conn.prepare(sql)?;
+    let mut stmt = conn.prepare_cached(sql)?;
     let result = stmt.query_map(params, |r| r.get(0))?.collect();
     result
 }

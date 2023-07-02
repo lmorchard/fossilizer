@@ -1,7 +1,10 @@
 use anyhow::Result;
 use rusqlite::{params, Connection};
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 use std::error::Error;
+
+use crate::activitystreams;
 
 pub struct Actors<'a> {
     conn: &'a Connection,
@@ -45,4 +48,13 @@ impl<'a> Actors<'a> {
         Ok(out)
     }
 
+    pub fn get_actors_by_id(
+        &self,
+    ) -> Result<HashMap<String, activitystreams::Actor>, Box<dyn Error>> {
+        Ok(self
+            .get_actors::<activitystreams::Actor>()?
+            .into_iter()
+            .map(|actor| (actor.id.clone(), actor))
+            .collect())
+    }
 }

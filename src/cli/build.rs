@@ -1,10 +1,14 @@
 use anyhow::Result;
+use rayon::prelude::*;
 use rust_embed::RustEmbed;
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 use std::error::Error;
 use std::fs;
 use std::io::prelude::*;
 use std::path::{Path, PathBuf};
+use std::thread;
+use tera::Tera;
 
 use fossilizer::{activitystreams, config, db, templates};
 
@@ -12,20 +16,44 @@ use fossilizer::{activitystreams, config, db, templates};
 #[folder = "src/resources/web"]
 struct WebAsset;
 
+const PUBLIC_ID: &str = "https://www.w3.org/ns/activitystreams#Public";
+
 pub fn command_build() -> Result<(), Box<dyn Error>> {
     let config = config::config()?;
 
     setup_build_path(&config.build_path)?;
-    copy_web_assets(&config.build_path)?;
-    copy_media_files(&[config.media_path()], &config.build_path)?;
 
-    let db_conn = db::conn()?;
-    let db_activities = db::activities::Activities::new(&db_conn);
+    let threads = vec![
+        thread::spawn(move || -> Result<()> {
+            let config = config::config().unwrap();
+            copy_web_assets(&config.build_path).unwrap();
+            copy_media_files(&[config.media_path()], &config.build_path).unwrap();
+            Ok(())
+        }),
+        thread::spawn(move || -> Result<()> {
+            let config = config::config().unwrap();
 
-    let tera = templates::init()?;
-    let mut day_entries = plan_activities_pages(&config.build_path, &db_activities)?;
-    generate_activities_pages(&config.build_path, &mut day_entries)?;
-    generate_index_page(&config.build_path, &day_entries, &tera)?;
+            let tera = templates::init().unwrap();
+
+            let db_conn = db::conn().unwrap();
+            let db_activities = db::activities::Activities::new(&db_conn);
+            let db_actors = db::actors::Actors::new(&db_conn);
+            let actors = db_actors.get_actors_by_id().unwrap();
+
+            let day_entries = plan_activities_pages(&config.build_path, &db_activities).unwrap();
+            let mut day_entries =
+                generate_activities_pages(&config.build_path, &tera, &actors, &day_entries)
+                    .unwrap();
+            day_entries.sort_by(|a, b| a.current.day.partial_cmp(&b.current.day).unwrap());
+            generate_index_page(&config.build_path, &day_entries, &tera).unwrap();
+
+            Ok(())
+        }),
+    ];
+
+    for t in threads {
+        t.join().unwrap()?
+    }
 
     Ok(())
 }
@@ -65,16 +93,23 @@ where
 {
     info!("Copying {:?} to {:?}", media_path, build_path);
     // todo: use with progress? https://docs.rs/fs_extra/latest/fs_extra/fn.copy_items_with_progress.html
-    fs_extra::copy_items(
+    fs_extra::copy_items_with_progress(
         media_path,
         build_path,
         &fs_extra::dir::CopyOptions {
-            overwrite: true,
+            overwrite: false,
             skip_exist: true,
             buffer_size: 64000,
             copy_inside: true,
             content_only: false,
             depth: 0,
+        },
+        |process_info| {
+            debug!(
+                "Copied {} ({} / {})",
+                process_info.file_name, process_info.copied_bytes, process_info.total_bytes
+            );
+            fs_extra::dir::TransitProcessResult::ContinueOrAbort
         },
     )?;
     Ok(())
@@ -124,39 +159,52 @@ fn plan_activities_pages(
 
 fn generate_activities_pages(
     build_path: &PathBuf,
-    day_entries: &mut Vec<IndexDayContext>,
-) -> Result<(), Box<dyn Error>> {
-    for day_entry in day_entries {
-        generate_activity_page(day_entry, build_path)?;
-    }
-    Ok(())
+    tera: &Tera,
+    actors: &HashMap<String, activitystreams::Actor>,
+    day_entries: &Vec<IndexDayContext>,
+) -> Result<Vec<IndexDayContext>, Box<dyn Error>> {
+    Ok(day_entries
+        .par_iter()
+        .map(|day_entry| generate_activity_page(&build_path, &tera, &actors, &day_entry).unwrap())
+        .collect())
 }
 
 fn generate_activity_page(
-    day_entry: &mut IndexDayContext,
     build_path: &PathBuf,
-) -> Result<(), Box<dyn Error>> {
-    let tera = templates::init()?;
+    tera: &Tera,
+    actors: &HashMap<String, activitystreams::Actor>,
+    day_entry: &IndexDayContext,
+) -> Result<IndexDayContext, Box<dyn Error>> {
+    let mut day_entry = day_entry.clone();
+
+    // let tera = templates::init()?;
     let db_conn = db::conn()?;
     let db_activities = db::activities::Activities::new(&db_conn);
-    let db_actors = db::actors::Actors::new(&db_conn);
 
     let day = &day_entry.current.day;
     let day_path = &day_entry.current.day_path;
+
     let items: Vec<activitystreams::Activity> = db_activities
         .get_activities_for_day(&day)?
         .iter()
-        // use faillable iterator here?
         .map(|activity| {
             // Dereference actor ID in activity via DB lookup
-            let actor_id = activity.actor.id().unwrap();
-            let actor = db_actors.get_actor(actor_id).unwrap();
-
+            let actor_id: &String = activity.actor.id().unwrap();
+            let actor: &activitystreams::Actor = actors.get(actor_id).unwrap();
+            (activity, actor)
+        })
+        .filter(|(activity, actor)| {
+            let to = &activity.to;
+            let followers = &actor.followers;
+            to.contains(&followers) || to.contains(&PUBLIC_ID.to_string())
+        })
+        .map(|(activity, actor)| {
             let mut activity = activity.clone();
-            activity.actor = activitystreams::IdOrObject::Object(actor);
+            activity.actor = activitystreams::IdOrObject::Object(actor.clone());
             activity
         })
         .collect();
+
     day_entry.current.activity_count = items.len();
 
     let mut context = tera::Context::new();
@@ -178,7 +226,7 @@ fn generate_activity_page(
         &context,
     )?;
 
-    Ok(())
+    Ok(day_entry)
 }
 
 fn generate_index_page(
