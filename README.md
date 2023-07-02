@@ -4,11 +4,11 @@ This is maybe an attempt to build a static site generator for Mastodon export ta
 
 ## TODO
 
-- [x] parallel page generation and media copying
-- [x] page navigation via HTML transclusion
-- [ ] index posts by public / private
-- [ ] properly link prev / next page respecting public-only query
-- [ ] link pages together with prev / next navigation
+- [ ] include actor info in site header?
+- [ ] position fixed floating search header
+- [ ] better index page, separate by year & month
+- [ ] special index just for activities with media attachments?
+- [ ] navigation between media attachments in dialog, prev & next
 - [ ] fetch outbox url for incremental imports
 - [ ] build pagefind indices
 - [ ] GitHub pages publish action?
