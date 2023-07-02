@@ -1,5 +1,9 @@
 use serde::{Deserialize, Serialize};
 
+lazy_static! {
+    pub static ref PUBLIC_ID: String = "https://www.w3.org/ns/activitystreams#Public".to_string();
+}
+
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Outbox<TItem> {
@@ -80,6 +84,12 @@ pub struct Activity {
     pub cc: Vec<String>,
     pub actor: IdOrObject<Actor>,
     pub object: IdOrObject<Object>,
+}
+
+impl Activity {
+    pub fn is_public(&self) -> bool {
+        self.to.contains(&PUBLIC_ID) || self.cc.contains(&PUBLIC_ID)
+    }
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]

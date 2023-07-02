@@ -4,9 +4,11 @@ This is maybe an attempt to build a static site generator for Mastodon export ta
 
 ## TODO
 
-- [ ] parallel page generation and media copying
+- [x] parallel page generation and media copying
+- [x] page navigation via HTML transclusion
+- [ ] index posts by public / private
+- [ ] properly link prev / next page respecting public-only query
 - [ ] link pages together with prev / next navigation
-- [ ] page navigation via HTML transclusion
 - [ ] fetch outbox url for incremental imports
 - [ ] build pagefind indices
 - [ ] GitHub pages publish action?

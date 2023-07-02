@@ -19,6 +19,7 @@ lazy_static! {
             "./db/migrations/202306261338-object-type-and-indexes-up.sql"
         )),
         M::up(include_str!("./db/migrations/202306262036-actors-up.sql")),
+        M::up(include_str!("./db/migrations/202307021314-ispublic-up.sql")),
     ]);
 }
 

@@ -16,8 +16,6 @@ use fossilizer::{activitystreams, config, db, templates};
 #[folder = "src/resources/web"]
 struct WebAsset;
 
-const PUBLIC_ID: &str = "https://www.w3.org/ns/activitystreams#Public";
-
 pub fn command_build() -> Result<(), Box<dyn Error>> {
     let config = config::config()?;
 
@@ -191,15 +189,13 @@ fn generate_activity_page(
         .get_activities_for_day(&day)?
         .iter()
         .map(|activity| {
-            // Dereference actor ID in activity via DB lookup
             let actor_id: &String = activity.actor.id().unwrap();
             let actor: &activitystreams::Actor = actors.get(actor_id).unwrap();
             (activity, actor)
         })
-        .filter(|(activity, actor)| {
-            let to = &activity.to;
-            let followers = &actor.followers;
-            to.contains(&followers) || to.contains(&PUBLIC_ID.to_string())
+        .filter(|(activity, _actor)| {
+            // todo: any actor-related filtering needed here?
+            activity.is_public()
         })
         .map(|(activity, actor)| {
             let mut activity = activity.clone();
