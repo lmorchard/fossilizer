@@ -53,6 +53,7 @@ impl<'a> Activities<'a> {
             r#"
                 SELECT publishedYear
                 FROM activities
+                WHERE isPublic = 1
                 GROUP BY publishedYear
             "#,
             [],
@@ -65,7 +66,7 @@ impl<'a> Activities<'a> {
             r#"
                 SELECT publishedYearMonth
                 FROM activities
-                WHERE publishedYear = ?1
+                WHERE publishedYear = ? AND isPublic = 1
                 GROUP BY publishedYearMonth
             "#,
             [year],
@@ -78,7 +79,7 @@ impl<'a> Activities<'a> {
             r#"
                 SELECT publishedYearMonthDay
                 FROM activities
-                WHERE publishedYearMonth = ?1
+                WHERE publishedYearMonth = ?1 AND isPublic = 1
                 GROUP BY publishedYearMonthDay
             "#,
             [month],
@@ -91,6 +92,7 @@ impl<'a> Activities<'a> {
             r#"
                 SELECT publishedYearMonth
                 FROM activities
+                WHERE isPublic = 1
                 GROUP BY publishedYearMonth
                 ORDER BY publishedYearMonth
             "#,
@@ -104,6 +106,7 @@ impl<'a> Activities<'a> {
             r#"
                 SELECT publishedYearMonthDay
                 FROM activities
+                WHERE isPublic = 1
                 GROUP BY publishedYearMonthDay
                 ORDER BY publishedYearMonthDay
             "#,
@@ -117,7 +120,7 @@ impl<'a> Activities<'a> {
             r#"
                 SELECT json
                 FROM activities
-                WHERE publishedYearMonthDay = ?1
+                WHERE publishedYearMonthDay = ?1 AND isPublic = 1
             "#,
         )?;
         let mut rows = stmt.query([day])?;
