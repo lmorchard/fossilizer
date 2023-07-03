@@ -100,18 +100,22 @@ impl<'a> Activities<'a> {
         )
     }
 
-    pub fn get_published_days(&self) -> SingleColumnResult {
-        query_single_column(
-            self.conn,
+    pub fn get_published_days(&self) -> Result<Vec<(String, usize)>, rusqlite::Error> {
+        let conn = self.conn;
+        let mut stmt = conn.prepare_cached(
             r#"
-                SELECT publishedYearMonthDay
+                SELECT publishedYearMonthDay, count(id)
                 FROM activities
                 WHERE isPublic = 1
                 GROUP BY publishedYearMonthDay
                 ORDER BY publishedYearMonthDay
             "#,
-            [],
-        )
+        )?;
+        let res = stmt
+            .query_map([], |row| Ok((row.get(0)?, row.get(1)?)))?
+            .collect::<Result<Vec<(String, usize)>, _>>()?;
+
+        Ok(res)
     }
 
     pub fn get_activities_for_day(&self, day: &String) -> Result<Vec<Activity>> {

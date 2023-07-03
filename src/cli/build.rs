@@ -36,14 +36,11 @@ pub fn command_build() -> Result<(), Box<dyn Error>> {
             let db_conn = db::conn().unwrap();
             let db_activities = db::activities::Activities::new(&db_conn);
             let db_actors = db::actors::Actors::new(&db_conn);
+
             let actors = db_actors.get_actors_by_id().unwrap();
 
             let day_entries = plan_activities_pages(&config.build_path, &db_activities).unwrap();
-            let mut day_entries =
-                generate_activities_pages(&config.build_path, &tera, &actors, &day_entries)
-                    .unwrap();
-
-            day_entries.sort_by(|a, b| a.current.day.partial_cmp(&b.current.day).unwrap());
+            generate_activities_pages(&config.build_path, &tera, &actors, &day_entries).unwrap();
             generate_index_page(&config.build_path, &day_entries, &tera).unwrap();
 
             Ok(())
@@ -136,13 +133,13 @@ fn plan_activities_pages(
 ) -> Result<Vec<IndexDayContext>, Box<dyn Error>> {
     let mut day_entries: Vec<IndexDayContext> = Vec::new();
     let all_days = db_activities.get_published_days()?;
-    for day in all_days {
+    for (day, activity_count) in all_days {
         let day_path = PathBuf::from(build_path).join(&day).with_extension("html");
         let mut context = IndexDayContext {
             current: IndexDayEntry {
                 day: day.clone(),
                 day_path: day_path.clone().strip_prefix(build_path)?.to_path_buf(),
-                activity_count: 0,
+                activity_count,
             },
             previous: None,
             next: None,
@@ -162,12 +159,12 @@ fn generate_activities_pages(
     tera: &Tera,
     actors: &HashMap<String, activitystreams::Actor>,
     day_entries: &Vec<IndexDayContext>,
-) -> Result<Vec<IndexDayContext>, Box<dyn Error>> {
+) -> Result<(), Box<dyn Error>> {
     info!("Generating {} per-day pages", day_entries.len());
-    Ok(day_entries
-        .par_iter()
-        .map(|day_entry| generate_activity_page(&build_path, &tera, &actors, &day_entry).unwrap())
-        .collect())
+    day_entries.par_iter().for_each(|day_entry| {
+        generate_activity_page(&build_path, &tera, &actors, &day_entry).unwrap()
+    });
+    Ok(())
 }
 
 fn generate_activity_page(
@@ -175,9 +172,7 @@ fn generate_activity_page(
     tera: &Tera,
     actors: &HashMap<String, activitystreams::Actor>,
     day_entry: &IndexDayContext,
-) -> Result<IndexDayContext, Box<dyn Error>> {
-    let mut day_entry = day_entry.clone();
-
+) -> Result<(), Box<dyn Error>> {
     // let tera = templates::init()?;
     let db_conn = db::conn()?;
     let db_activities = db::activities::Activities::new(&db_conn);
@@ -204,8 +199,6 @@ fn generate_activity_page(
         })
         .collect();
 
-    day_entry.current.activity_count = items.len();
-
     let mut context = tera::Context::new();
     context.insert("site_root", "../..");
     context.insert("day", &day);
@@ -225,7 +218,7 @@ fn generate_activity_page(
         &context,
     )?;
 
-    Ok(day_entry)
+    Ok(())
 }
 
 fn generate_index_page(
