@@ -36,7 +36,9 @@
     {%- endif -%}
     <div class="card-footer fs-6 text-end text-muted">
       <a href="{{ object.url }}" target="_blank"><time datetime="{{ activity.published }}" title="{{ activity.published }}">{{ activity.published }}</time></a>
+      {# todo: get this "open in home instance" button working
       <button title="Open in home instance" class="goto-home-instance btn btn-outline-primary" data-uri="{{ object.url | safe }}">🚀</button>
+      #}
     </div>
   {%- endif -%}
 </li>        
