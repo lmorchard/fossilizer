@@ -9,17 +9,17 @@ use std::io::prelude::*;
 use std::path::{Path, PathBuf};
 use std::thread;
 use tera::Tera;
-
+use std::collections::hash_map::Entry::{Occupied, Vacant};
 use fossilizer::{activitystreams, config, db, templates};
 
 #[derive(RustEmbed)]
 #[folder = "src/resources/web"]
 struct WebAsset;
 
-pub fn command_build() -> Result<(), Box<dyn Error>> {
+pub fn command_build(clean: &bool) -> Result<(), Box<dyn Error>> {
     let config = config::config()?;
 
-    setup_build_path(&config.build_path)?;
+    setup_build_path(&config.build_path, &clean)?;
 
     let threads = vec![
         thread::spawn(move || -> Result<()> {
@@ -40,8 +40,8 @@ pub fn command_build() -> Result<(), Box<dyn Error>> {
             let actors = db_actors.get_actors_by_id().unwrap();
 
             let day_entries = plan_activities_pages(&config.build_path, &db_activities).unwrap();
-            generate_activities_pages(&config.build_path, &tera, &actors, &day_entries).unwrap();
             generate_index_page(&config.build_path, &day_entries, &tera).unwrap();
+            generate_activities_pages(&config.build_path, &tera, &actors, &day_entries).unwrap();
 
             Ok(())
         }),
@@ -54,15 +54,16 @@ pub fn command_build() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-fn setup_build_path(build_path: &PathBuf) -> Result<(), Box<dyn Error>> {
-    /* todo: cli option to clean or not clean
-    if let Err(err) = fs::remove_dir_all(build_path) {
-        if err.kind() != std::io::ErrorKind::NotFound {
-            // todo: improve error handling here
-            return Err(Box::new(err));
+fn setup_build_path(build_path: &PathBuf, clean: &bool) -> Result<(), Box<dyn Error>> {
+    if *clean {
+        info!("Cleaning build path");
+        if let Err(err) = fs::remove_dir_all(build_path) {
+            if err.kind() != std::io::ErrorKind::NotFound {
+                // todo: improve error handling here
+                return Err(Box::new(err));
+            }
         }
     }
-    */
     fs::create_dir_all(build_path)?;
     Ok(())
 }
@@ -228,6 +229,24 @@ fn generate_index_page(
 ) -> Result<(), Box<dyn Error>> {
     info!("Generating site index page");
 
+    // Index daily entries into outline of years, months, days
+    let mut calendar_outline: HashMap<&str, HashMap<&str, HashMap<&str, &IndexDayContext>>> =
+        HashMap::new();
+    for day_entry in day_entries {
+        let parts = day_entry.current.day.split("/").take(3).collect::<Vec<&str>>();
+        if let [year, month, day] = parts[..] {
+            let year_map = match calendar_outline.entry(year) {
+                Vacant(entry) => entry.insert(HashMap::new()),
+                Occupied(entry) => entry.into_mut(),
+            };
+            let month_map = match year_map.entry(month) {
+                Vacant(entry) => entry.insert(HashMap::new()),
+                Occupied(entry) => entry.into_mut(),
+            };
+            month_map.insert(day, &day_entry);
+        }
+    }
+
     let index_path = PathBuf::from(&build_path)
         .join("index")
         .with_extension("html");
@@ -235,6 +254,7 @@ fn generate_index_page(
     let mut context = tera::Context::new();
     context.insert("site_root", ".");
     context.insert("day_entries", &day_entries);
+    context.insert("calendar_outline", &calendar_outline);
 
     templates::render_to_file(&tera, &index_path, "index.html", &context)?;
 

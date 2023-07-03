@@ -2,23 +2,32 @@
 
 {% block head %}
   <title>Fossilizer Index</title>
-{% endblock head %} 
+{% endblock head %}
 
 {% block pagetitle %}Fossilizer Index{% endblock pagetitle %} 
 
 {% block content %}
   <section class="container mt-3 m-auto justify-content-center">
-    <div class="col">
-      <ul class="text-left justify-content-center index-list">
-        {%- for entry in day_entries -%}
-          {%- set day_entry = entry.current -%}
-          <li class="card">
-            <div class="card-header">
-              <a href="./{{ day_entry.day_path | safe }}">{{ day_entry.day }} ({{ day_entry.activity_count }})</a>
-            </div>
-          </li>
-        {% endfor %}
-      </ul>
+    <div class="col index-calendar-outline">
+      {%- for year, months in calendar_outline -%}
+        <details class="year">
+          <summary><h2>{{ year }} ({{ months | length }})</h2></summary>
+          {%- for month, days in months -%}
+            <details class="month">
+              <summary><h3>{{ month }} ({{ days | length }})</h3></summary>
+              <div class="col">
+                <ul class="index-list">
+                  {%- for day, entry in days -%} {%- set day_entry = entry.current -%}
+                    <li class="card day">
+                        <a href="./{{ day_entry.day_path | safe }}">{{ day_entry.day }} ({{ day_entry.activity_count }})</a>
+                    </li>
+                  {%- endfor -%}
+                </ul>
+              </div>
+            </details>
+          {%- endfor -%}
+          </details>
+      {%- endfor -%}
     </div>
   </section>
 {% endblock content %}

@@ -40,7 +40,10 @@ enum Commands {
     /// Adds files to myapp
     Import { filenames: Vec<String> },
     /// Build the static site
-    Build {},
+    Build {
+        #[arg(short = 'k', long)]
+        clean: bool,
+    },
 }
 
 pub fn execute() -> Result<(), Box<dyn Error>> {
@@ -53,7 +56,7 @@ pub fn execute() -> Result<(), Box<dyn Error>> {
         Commands::Init {} => info!("INIT {:?}", command_init()),
         Commands::Upgrade {} => info!("UPGRADE {:?}", command_upgrade()),
         Commands::Import { filenames } => info!("IMPORT {:?}", import::command_import(filenames)),
-        Commands::Build {} => info!("BUILD {:?}", build::command_build()),
+        Commands::Build { clean } => info!("BUILD {:?}", build::command_build(&clean)),
     };
 
     Ok(())

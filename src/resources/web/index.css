@@ -38,21 +38,42 @@ body {
   padding: 15px;
 }
 
+.index-calendar-outline details {
+  margin-left: 2em;
+  margin-top: 2em;
+}
+
+.index-calendar-outline details summary {
+  list-style: none;  
+}
+
+.index-calendar-outline .year h2 {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.index-calendar-outline .month h3 {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+}
+
 .index-list {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
+  justify-content: flex-start;
+  align-content: flex-start;
+  align-items: flex-start;
   padding: 0;
   margin: 0;
   text-indent: 0;
   list-style-type: none;  
 }
 
-.index-list li.card {
+.index-list li {
   width: 10rem;
   text-align: center;
-  margin: 0.5em 0.5em;
-  flex-grow: 1;
+  margin: 0.5em;
+  padding: 0.5em;
+  flex-grow: 0;
 }
 
 .activities {
