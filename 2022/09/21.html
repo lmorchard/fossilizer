@@ -25,37 +25,34 @@
     <script src="../../index.js" type="module"></script>
   </head>
   <body class="">
-    <main class="form-search w-100 m-auto">
-
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
       <form class="w-100 m-auto" method="GET" action="./">
         <div class="container">
           <div class="row">
-            <div class="col">    
-              <div id="search"></div>
-              <script>
-                  window.addEventListener('DOMContentLoaded', (event) => {
-                      new PagefindUI({
-                        element: "#search",
-                        showImages: true,
-                        baseUrl: "../..",
-                      });
+            <div id="search"></div>
+            <script>
+              window.addEventListener('DOMContentLoaded', (event) => {
+                  new PagefindUI({
+                    element: "#search",
+                    showImages: true,
+                    baseUrl: "../..",
                   });
-              </script>
-            </div>
+              });
+            </script>
           </div>
         </div>
       </form>
-    
+    </nav>
+    <main class="container mt-4 w-100 m-auto">
       
   <section class="container mt-3 m-auto justify-content-center">
     <div class="col">
-      <ul class="text-left search-results justify-content-center activities" data-pagefind-body>
+      <ul class="text-left search-results justify-content-center activities" data-pagefind-body data-pagefind-meta="title:2022&#x2F;09&#x2F;21">
 
         
             <li id="https://hackers.town/users/lmorchard/statuses/109038932067411588/activity" class="card activity post" data-pagefind-filter="activityType:Create">
   <div class="card-header">
-    <a href="https://hackers.town/@lmorchard" target="_blank"><img class="avatar"
-        src="../../media/acc0bb231a7a2757c7e5c63aa68ce3cdbcfd32a43eb67a6bdedffe173c721184/avatar.png" width="48" height="48" /></a>
+    <a href="https://hackers.town/@lmorchard" target="_blank"><img class="avatar" src="../../media/acc0bb231a7a2757c7e5c63aa68ce3cdbcfd32a43eb67a6bdedffe173c721184/avatar.png" width="48" height="48" data-pagefind-meta="image[src]" /></a>
     <h5 class="card-title" data-pagefind-filter="actorName">Les Orchard</h5>
     <h6 class="card-subtitle mb-2 text-muted">@<a href="https://hackers.town/@lmorchard" target="_blank" data-pagefind-filter="actorUrl">https:&#x2F;&#x2F;hackers.town&#x2F;@lmorchard</a></h6>
   </div>
@@ -63,14 +60,13 @@
     <div class="card-text"><p>Just replaced the battery in my wife's 2015-era Dell XPS 13" laptop for the 3rd time. This a) is annoying but b) I had a replacement overnight and c) it took 2 small screwdrivers and 15 minutes to replace it. So, not too bad. I'm mainly concerned about when they stop making batteries for this machine. It's a nice little laptop, except for the nose-cam</p></div>
   </div><div class="card-footer fs-6 text-end text-muted">
       <a href="https:&#x2F;&#x2F;hackers.town&#x2F;@lmorchard&#x2F;109038932067411588" target="_blank"><time datetime="2022-09-21T23:14:24Z" title="2022-09-21T23:14:24Z">2022-09-21T23:14:24Z</time></a>
-      <button title="Open in home instance" class="goto-home-instance btn btn-outline-primary" data-uri="https://hackers.town/@lmorchard/109038932067411588">🚀</button>
+      
     </div></li>        
 
         
             <li id="https://hackers.town/users/lmorchard/statuses/109038937624819916/activity" class="card activity post" data-pagefind-filter="activityType:Create">
   <div class="card-header">
-    <a href="https://hackers.town/@lmorchard" target="_blank"><img class="avatar"
-        src="../../media/acc0bb231a7a2757c7e5c63aa68ce3cdbcfd32a43eb67a6bdedffe173c721184/avatar.png" width="48" height="48" /></a>
+    <a href="https://hackers.town/@lmorchard" target="_blank"><img class="avatar" src="../../media/acc0bb231a7a2757c7e5c63aa68ce3cdbcfd32a43eb67a6bdedffe173c721184/avatar.png" width="48" height="48" data-pagefind-meta="image[src]" /></a>
     <h5 class="card-title" data-pagefind-filter="actorName">Les Orchard</h5>
     <h6 class="card-subtitle mb-2 text-muted">@<a href="https://hackers.town/@lmorchard" target="_blank" data-pagefind-filter="actorUrl">https:&#x2F;&#x2F;hackers.town&#x2F;@lmorchard</a></h6>
   </div>
@@ -78,7 +74,7 @@
     <div class="card-text"><p>I couldn't imagine doing this sort of parts-swap for anything Apple these days. Though, to be fair, I guess I did just read that ifixit gave them a 7 out of 10 for repairability on the new iPhone 14</p></div>
   </div><div class="card-footer fs-6 text-end text-muted">
       <a href="https:&#x2F;&#x2F;hackers.town&#x2F;@lmorchard&#x2F;109038937624819916" target="_blank"><time datetime="2022-09-21T23:15:48Z" title="2022-09-21T23:15:48Z">2022-09-21T23:15:48Z</time></a>
-      <button title="Open in home instance" class="goto-home-instance btn btn-outline-primary" data-uri="https://hackers.town/@lmorchard/109038937624819916">🚀</button>
+      
     </div></li>        
 
         
@@ -113,8 +109,6 @@
     </div>
   </div>
 
-
     </main>
-
   </body>
 </html>

@@ -25,37 +25,34 @@
     <script src="../../index.js" type="module"></script>
   </head>
   <body class="">
-    <main class="form-search w-100 m-auto">
-
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
       <form class="w-100 m-auto" method="GET" action="./">
         <div class="container">
           <div class="row">
-            <div class="col">    
-              <div id="search"></div>
-              <script>
-                  window.addEventListener('DOMContentLoaded', (event) => {
-                      new PagefindUI({
-                        element: "#search",
-                        showImages: true,
-                        baseUrl: "../..",
-                      });
+            <div id="search"></div>
+            <script>
+              window.addEventListener('DOMContentLoaded', (event) => {
+                  new PagefindUI({
+                    element: "#search",
+                    showImages: true,
+                    baseUrl: "../..",
                   });
-              </script>
-            </div>
+              });
+            </script>
           </div>
         </div>
       </form>
-    
+    </nav>
+    <main class="container mt-4 w-100 m-auto">
       
   <section class="container mt-3 m-auto justify-content-center">
     <div class="col">
-      <ul class="text-left search-results justify-content-center activities" data-pagefind-body>
+      <ul class="text-left search-results justify-content-center activities" data-pagefind-body data-pagefind-meta="title:2018&#x2F;11&#x2F;20">
 
         
             <li id="https://toot.cafe/users/lmorchard/statuses/101105565523057343/activity" class="card activity post" data-pagefind-filter="activityType:Create">
   <div class="card-header">
-    <a href="https://toot.cafe/@lmorchard" target="_blank"><img class="avatar"
-        src="../../media/a294c3d58a8e5881531080330d204da3b4807f757a519157752d47d2f09fd0d4/avatar.jpg" width="48" height="48" /></a>
+    <a href="https://toot.cafe/@lmorchard" target="_blank"><img class="avatar" src="../../media/a294c3d58a8e5881531080330d204da3b4807f757a519157752d47d2f09fd0d4/avatar.jpg" width="48" height="48" data-pagefind-meta="image[src]" /></a>
     <h5 class="card-title" data-pagefind-filter="actorName">Les Orchard</h5>
     <h6 class="card-subtitle mb-2 text-muted">@<a href="https://toot.cafe/@lmorchard" target="_blank" data-pagefind-filter="actorUrl">https:&#x2F;&#x2F;toot.cafe&#x2F;@lmorchard</a></h6>
   </div>
@@ -69,14 +66,13 @@
                 data-fullsrc="../../media/a294c3d58a8e5881531080330d204da3b4807f757a519157752d47d2f09fd0d4//media_attachments/files/001/135/035/original/ccc2b487cd4d5bed.jpg" title="" /></li>
       </ul><div class="card-footer fs-6 text-end text-muted">
       <a href="https:&#x2F;&#x2F;toot.cafe&#x2F;@lmorchard&#x2F;101105565523057343" target="_blank"><time datetime="2018-11-20T21:14:57Z" title="2018-11-20T21:14:57Z">2018-11-20T21:14:57Z</time></a>
-      <button title="Open in home instance" class="goto-home-instance btn btn-outline-primary" data-uri="https://toot.cafe/@lmorchard/101105565523057343">🚀</button>
+      
     </div></li>        
 
         
             <li id="https://toot.cafe/users/lmorchard/statuses/101105763051207925/activity" class="card activity post" data-pagefind-filter="activityType:Create">
   <div class="card-header">
-    <a href="https://toot.cafe/@lmorchard" target="_blank"><img class="avatar"
-        src="../../media/a294c3d58a8e5881531080330d204da3b4807f757a519157752d47d2f09fd0d4/avatar.jpg" width="48" height="48" /></a>
+    <a href="https://toot.cafe/@lmorchard" target="_blank"><img class="avatar" src="../../media/a294c3d58a8e5881531080330d204da3b4807f757a519157752d47d2f09fd0d4/avatar.jpg" width="48" height="48" data-pagefind-meta="image[src]" /></a>
     <h5 class="card-title" data-pagefind-filter="actorName">Les Orchard</h5>
     <h6 class="card-subtitle mb-2 text-muted">@<a href="https://toot.cafe/@lmorchard" target="_blank" data-pagefind-filter="actorUrl">https:&#x2F;&#x2F;toot.cafe&#x2F;@lmorchard</a></h6>
   </div>
@@ -84,7 +80,7 @@
     <div class="card-text"><p><span class="h-card"><a href="https://toot.cafe/@sivy" class="u-url mention">@<span>sivy</span></a></span> It&#39;s this thing. Surprisingly handy and the arms are pretty good at holding a position. Way better than the old helping hands with magnifying glass thing I had since high school heh</p><p><a href="http://a.co/d/awArWF0" target="_blank" rel="nofollow noopener noreferrer"><span class="invisible">http://</span><span class="">a.co/d/awArWF0</span><span class="invisible"></span></a></p></div>
   </div><div class="card-footer fs-6 text-end text-muted">
       <a href="https:&#x2F;&#x2F;toot.cafe&#x2F;@lmorchard&#x2F;101105763051207925" target="_blank"><time datetime="2018-11-20T22:05:11Z" title="2018-11-20T22:05:11Z">2018-11-20T22:05:11Z</time></a>
-      <button title="Open in home instance" class="goto-home-instance btn btn-outline-primary" data-uri="https://toot.cafe/@lmorchard/101105763051207925">🚀</button>
+      
     </div></li>        
 
         
@@ -119,8 +115,6 @@
     </div>
   </div>
 
-
     </main>
-
   </body>
 </html>

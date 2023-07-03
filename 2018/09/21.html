@@ -25,37 +25,34 @@
     <script src="../../index.js" type="module"></script>
   </head>
   <body class="">
-    <main class="form-search w-100 m-auto">
-
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
       <form class="w-100 m-auto" method="GET" action="./">
         <div class="container">
           <div class="row">
-            <div class="col">    
-              <div id="search"></div>
-              <script>
-                  window.addEventListener('DOMContentLoaded', (event) => {
-                      new PagefindUI({
-                        element: "#search",
-                        showImages: true,
-                        baseUrl: "../..",
-                      });
+            <div id="search"></div>
+            <script>
+              window.addEventListener('DOMContentLoaded', (event) => {
+                  new PagefindUI({
+                    element: "#search",
+                    showImages: true,
+                    baseUrl: "../..",
                   });
-              </script>
-            </div>
+              });
+            </script>
           </div>
         </div>
       </form>
-    
+    </nav>
+    <main class="container mt-4 w-100 m-auto">
       
   <section class="container mt-3 m-auto justify-content-center">
     <div class="col">
-      <ul class="text-left search-results justify-content-center activities" data-pagefind-body>
+      <ul class="text-left search-results justify-content-center activities" data-pagefind-body data-pagefind-meta="title:2018&#x2F;09&#x2F;21">
 
         
             <li id="https://toot.cafe/users/lmorchard/statuses/100761591863009743/activity" class="card activity post" data-pagefind-filter="activityType:Create">
   <div class="card-header">
-    <a href="https://toot.cafe/@lmorchard" target="_blank"><img class="avatar"
-        src="../../media/a294c3d58a8e5881531080330d204da3b4807f757a519157752d47d2f09fd0d4/avatar.jpg" width="48" height="48" /></a>
+    <a href="https://toot.cafe/@lmorchard" target="_blank"><img class="avatar" src="../../media/a294c3d58a8e5881531080330d204da3b4807f757a519157752d47d2f09fd0d4/avatar.jpg" width="48" height="48" data-pagefind-meta="image[src]" /></a>
     <h5 class="card-title" data-pagefind-filter="actorName">Les Orchard</h5>
     <h6 class="card-subtitle mb-2 text-muted">@<a href="https://toot.cafe/@lmorchard" target="_blank" data-pagefind-filter="actorUrl">https:&#x2F;&#x2F;toot.cafe&#x2F;@lmorchard</a></h6>
   </div>
@@ -63,14 +60,13 @@
     <div class="card-text"><p><span class="h-card"><a href="https://social.wxcafe.net/@riking" class="u-url mention">@<span>riking</span></a></span> <span class="h-card"><a href="https://toot-lab.reclaim.technology/@djsundog" class="u-url mention">@<span>djsundog</span></a></span> I haven&#39;t done this in awhile and had to look it up again, but I think you can redirect to multiple processes using tee:</p><p>tee &gt;(process1) &gt;(process2) &gt;(process3) | process4</p><p><a href="https://linux.byexamples.com/archives/144/redirect-output-to-multiple-processes/" target="_blank" rel="nofollow noopener noreferrer"><span class="invisible">https://</span><span class="ellipsis">linux.byexamples.com/archives/</span><span class="invisible">144/redirect-output-to-multiple-processes/</span></a></p></div>
   </div><div class="card-footer fs-6 text-end text-muted">
       <a href="https:&#x2F;&#x2F;toot.cafe&#x2F;@lmorchard&#x2F;100761591863009743" target="_blank"><time datetime="2018-09-21T03:17:55Z" title="2018-09-21T03:17:55Z">2018-09-21T03:17:55Z</time></a>
-      <button title="Open in home instance" class="goto-home-instance btn btn-outline-primary" data-uri="https://toot.cafe/@lmorchard/100761591863009743">🚀</button>
+      
     </div></li>        
 
         
             <li id="https://toot.cafe/users/lmorchard/statuses/100766462046930065/activity" class="card activity post" data-pagefind-filter="activityType:Create">
   <div class="card-header">
-    <a href="https://toot.cafe/@lmorchard" target="_blank"><img class="avatar"
-        src="../../media/a294c3d58a8e5881531080330d204da3b4807f757a519157752d47d2f09fd0d4/avatar.jpg" width="48" height="48" /></a>
+    <a href="https://toot.cafe/@lmorchard" target="_blank"><img class="avatar" src="../../media/a294c3d58a8e5881531080330d204da3b4807f757a519157752d47d2f09fd0d4/avatar.jpg" width="48" height="48" data-pagefind-meta="image[src]" /></a>
     <h5 class="card-title" data-pagefind-filter="actorName">Les Orchard</h5>
     <h6 class="card-subtitle mb-2 text-muted">@<a href="https://toot.cafe/@lmorchard" target="_blank" data-pagefind-filter="actorUrl">https:&#x2F;&#x2F;toot.cafe&#x2F;@lmorchard</a></h6>
   </div>
@@ -78,7 +74,7 @@
     <div class="card-text"><p>Is it just me, or is &quot;Cherry Lips (Go Baby Go!)&quot; by Garbage a really weird choice for a Microsoft Surface commercial?</p></div>
   </div><div class="card-footer fs-6 text-end text-muted">
       <a href="https:&#x2F;&#x2F;toot.cafe&#x2F;@lmorchard&#x2F;100766462046930065" target="_blank"><time datetime="2018-09-21T23:56:29Z" title="2018-09-21T23:56:29Z">2018-09-21T23:56:29Z</time></a>
-      <button title="Open in home instance" class="goto-home-instance btn btn-outline-primary" data-uri="https://toot.cafe/@lmorchard/100766462046930065">🚀</button>
+      
     </div></li>        
 
         
@@ -113,8 +109,6 @@
     </div>
   </div>
 
-
     </main>
-
   </body>
 </html>

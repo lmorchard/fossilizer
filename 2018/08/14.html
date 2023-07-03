@@ -25,37 +25,34 @@
     <script src="../../index.js" type="module"></script>
   </head>
   <body class="">
-    <main class="form-search w-100 m-auto">
-
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
       <form class="w-100 m-auto" method="GET" action="./">
         <div class="container">
           <div class="row">
-            <div class="col">    
-              <div id="search"></div>
-              <script>
-                  window.addEventListener('DOMContentLoaded', (event) => {
-                      new PagefindUI({
-                        element: "#search",
-                        showImages: true,
-                        baseUrl: "../..",
-                      });
+            <div id="search"></div>
+            <script>
+              window.addEventListener('DOMContentLoaded', (event) => {
+                  new PagefindUI({
+                    element: "#search",
+                    showImages: true,
+                    baseUrl: "../..",
                   });
-              </script>
-            </div>
+              });
+            </script>
           </div>
         </div>
       </form>
-    
+    </nav>
+    <main class="container mt-4 w-100 m-auto">
       
   <section class="container mt-3 m-auto justify-content-center">
     <div class="col">
-      <ul class="text-left search-results justify-content-center activities" data-pagefind-body>
+      <ul class="text-left search-results justify-content-center activities" data-pagefind-body data-pagefind-meta="title:2018&#x2F;08&#x2F;14">
 
         
             <li id="https://mastodon.social/users/lmorchard/statuses/100546340491374052/activity" class="card activity post" data-pagefind-filter="activityType:Create">
   <div class="card-header">
-    <a href="https://mastodon.social/@lmorchard" target="_blank"><img class="avatar"
-        src="../../media/568061efb46539864ffac087468e22639354e59b603ebc863e8462d57d6a1d3a/avatar.jpg" width="48" height="48" /></a>
+    <a href="https://mastodon.social/@lmorchard" target="_blank"><img class="avatar" src="../../media/568061efb46539864ffac087468e22639354e59b603ebc863e8462d57d6a1d3a/avatar.jpg" width="48" height="48" data-pagefind-meta="image[src]" /></a>
     <h5 class="card-title" data-pagefind-filter="actorName">Les Orchard 🕹️🔧🐱🐰</h5>
     <h6 class="card-subtitle mb-2 text-muted">@<a href="https://mastodon.social/@lmorchard" target="_blank" data-pagefind-filter="actorUrl">https:&#x2F;&#x2F;mastodon.social&#x2F;@lmorchard</a></h6>
   </div>
@@ -63,7 +60,7 @@
     <div class="card-text"><p>Welp, I think I accidentally nuked my personal Mastodon instance. Hoping I can restore the database backup</p></div>
   </div><div class="card-footer fs-6 text-end text-muted">
       <a href="https:&#x2F;&#x2F;mastodon.social&#x2F;@lmorchard&#x2F;100546340491374052" target="_blank"><time datetime="2018-08-14T02:56:40Z" title="2018-08-14T02:56:40Z">2018-08-14T02:56:40Z</time></a>
-      <button title="Open in home instance" class="goto-home-instance btn btn-outline-primary" data-uri="https://mastodon.social/@lmorchard/100546340491374052">🚀</button>
+      
     </div></li>        
 
         
@@ -98,8 +95,6 @@
     </div>
   </div>
 
-
     </main>
-
   </body>
 </html>

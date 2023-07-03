@@ -25,37 +25,34 @@
     <script src="../../index.js" type="module"></script>
   </head>
   <body class="">
-    <main class="form-search w-100 m-auto">
-
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
       <form class="w-100 m-auto" method="GET" action="./">
         <div class="container">
           <div class="row">
-            <div class="col">    
-              <div id="search"></div>
-              <script>
-                  window.addEventListener('DOMContentLoaded', (event) => {
-                      new PagefindUI({
-                        element: "#search",
-                        showImages: true,
-                        baseUrl: "../..",
-                      });
+            <div id="search"></div>
+            <script>
+              window.addEventListener('DOMContentLoaded', (event) => {
+                  new PagefindUI({
+                    element: "#search",
+                    showImages: true,
+                    baseUrl: "../..",
                   });
-              </script>
-            </div>
+              });
+            </script>
           </div>
         </div>
       </form>
-    
+    </nav>
+    <main class="container mt-4 w-100 m-auto">
       
   <section class="container mt-3 m-auto justify-content-center">
     <div class="col">
-      <ul class="text-left search-results justify-content-center activities" data-pagefind-body>
+      <ul class="text-left search-results justify-content-center activities" data-pagefind-body data-pagefind-meta="title:2019&#x2F;08&#x2F;08">
 
         
             <li id="https://toot.cafe/users/lmorchard/statuses/102581849732506158/activity" class="card activity post" data-pagefind-filter="activityType:Create">
   <div class="card-header">
-    <a href="https://toot.cafe/@lmorchard" target="_blank"><img class="avatar"
-        src="../../media/a294c3d58a8e5881531080330d204da3b4807f757a519157752d47d2f09fd0d4/avatar.jpg" width="48" height="48" /></a>
+    <a href="https://toot.cafe/@lmorchard" target="_blank"><img class="avatar" src="../../media/a294c3d58a8e5881531080330d204da3b4807f757a519157752d47d2f09fd0d4/avatar.jpg" width="48" height="48" data-pagefind-meta="image[src]" /></a>
     <h5 class="card-title" data-pagefind-filter="actorName">Les Orchard</h5>
     <h6 class="card-subtitle mb-2 text-muted">@<a href="https://toot.cafe/@lmorchard" target="_blank" data-pagefind-filter="actorUrl">https:&#x2F;&#x2F;toot.cafe&#x2F;@lmorchard</a></h6>
   </div>
@@ -63,14 +60,13 @@
     <div class="card-text"><p>The tools are limited but dang I love that space ninjas can make music in Warframe </p><p><a href="https://m.youtube.com/watch?v=LqLsqlLmz8U" target="_blank" rel="nofollow noopener noreferrer"><span class="invisible">https://</span><span class="ellipsis">m.youtube.com/watch?v=LqLsqlLm</span><span class="invisible">z8U</span></a></p></div>
   </div><div class="card-footer fs-6 text-end text-muted">
       <a href="https:&#x2F;&#x2F;toot.cafe&#x2F;@lmorchard&#x2F;102581849732506158" target="_blank"><time datetime="2019-08-08T14:33:26Z" title="2019-08-08T14:33:26Z">2019-08-08T14:33:26Z</time></a>
-      <button title="Open in home instance" class="goto-home-instance btn btn-outline-primary" data-uri="https://toot.cafe/@lmorchard/102581849732506158">🚀</button>
+      
     </div></li>        
 
         
             <li id="https://toot.cafe/users/lmorchard/statuses/102582402795772800/activity" class="card activity post" data-pagefind-filter="activityType:Create">
   <div class="card-header">
-    <a href="https://toot.cafe/@lmorchard" target="_blank"><img class="avatar"
-        src="../../media/a294c3d58a8e5881531080330d204da3b4807f757a519157752d47d2f09fd0d4/avatar.jpg" width="48" height="48" /></a>
+    <a href="https://toot.cafe/@lmorchard" target="_blank"><img class="avatar" src="../../media/a294c3d58a8e5881531080330d204da3b4807f757a519157752d47d2f09fd0d4/avatar.jpg" width="48" height="48" data-pagefind-meta="image[src]" /></a>
     <h5 class="card-title" data-pagefind-filter="actorName">Les Orchard</h5>
     <h6 class="card-subtitle mb-2 text-muted">@<a href="https://toot.cafe/@lmorchard" target="_blank" data-pagefind-filter="actorUrl">https:&#x2F;&#x2F;toot.cafe&#x2F;@lmorchard</a></h6>
   </div>
@@ -78,7 +74,7 @@
     <div class="card-text"><p>Shower thought: what if time travel is possible but only if spatial position stays fixed relative to, say, the galactic center? Maybe we have a continual trail of dead time travellers popping into vacuum ahead &amp; behind the Earth because they keep missing the planet</p></div>
   </div><div class="card-footer fs-6 text-end text-muted">
       <a href="https:&#x2F;&#x2F;toot.cafe&#x2F;@lmorchard&#x2F;102582402795772800" target="_blank"><time datetime="2019-08-08T16:54:05Z" title="2019-08-08T16:54:05Z">2019-08-08T16:54:05Z</time></a>
-      <button title="Open in home instance" class="goto-home-instance btn btn-outline-primary" data-uri="https://toot.cafe/@lmorchard/102582402795772800">🚀</button>
+      
     </div></li>        
 
         
@@ -113,8 +109,6 @@
     </div>
   </div>
 
-
     </main>
-
   </body>
 </html>

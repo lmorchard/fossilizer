@@ -25,37 +25,34 @@
     <script src="../../index.js" type="module"></script>
   </head>
   <body class="">
-    <main class="form-search w-100 m-auto">
-
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
       <form class="w-100 m-auto" method="GET" action="./">
         <div class="container">
           <div class="row">
-            <div class="col">    
-              <div id="search"></div>
-              <script>
-                  window.addEventListener('DOMContentLoaded', (event) => {
-                      new PagefindUI({
-                        element: "#search",
-                        showImages: true,
-                        baseUrl: "../..",
-                      });
+            <div id="search"></div>
+            <script>
+              window.addEventListener('DOMContentLoaded', (event) => {
+                  new PagefindUI({
+                    element: "#search",
+                    showImages: true,
+                    baseUrl: "../..",
                   });
-              </script>
-            </div>
+              });
+            </script>
           </div>
         </div>
       </form>
-    
+    </nav>
+    <main class="container mt-4 w-100 m-auto">
       
   <section class="container mt-3 m-auto justify-content-center">
     <div class="col">
-      <ul class="text-left search-results justify-content-center activities" data-pagefind-body>
+      <ul class="text-left search-results justify-content-center activities" data-pagefind-body data-pagefind-meta="title:2020&#x2F;07&#x2F;18">
 
         
             <li id="https://hackers.town/users/lmorchard/statuses/104532914057335704/activity" class="card activity post" data-pagefind-filter="activityType:Create">
   <div class="card-header">
-    <a href="https://hackers.town/@lmorchard" target="_blank"><img class="avatar"
-        src="../../media/acc0bb231a7a2757c7e5c63aa68ce3cdbcfd32a43eb67a6bdedffe173c721184/avatar.png" width="48" height="48" /></a>
+    <a href="https://hackers.town/@lmorchard" target="_blank"><img class="avatar" src="../../media/acc0bb231a7a2757c7e5c63aa68ce3cdbcfd32a43eb67a6bdedffe173c721184/avatar.png" width="48" height="48" data-pagefind-meta="image[src]" /></a>
     <h5 class="card-title" data-pagefind-filter="actorName">Les Orchard</h5>
     <h6 class="card-subtitle mb-2 text-muted">@<a href="https://hackers.town/@lmorchard" target="_blank" data-pagefind-filter="actorUrl">https:&#x2F;&#x2F;hackers.town&#x2F;@lmorchard</a></h6>
   </div>
@@ -63,7 +60,7 @@
     <div class="card-text"><p>You know how people sometimes have a sudden taste for, like, salt &amp; vinegar chips?</p><p>I had a sudden urge to play with Lisp.</p><p>Am I ill? Should I worry?</p></div>
   </div><div class="card-footer fs-6 text-end text-muted">
       <a href="https:&#x2F;&#x2F;hackers.town&#x2F;@lmorchard&#x2F;104532914057335704" target="_blank"><time datetime="2020-07-18T04:14:45Z" title="2020-07-18T04:14:45Z">2020-07-18T04:14:45Z</time></a>
-      <button title="Open in home instance" class="goto-home-instance btn btn-outline-primary" data-uri="https://hackers.town/@lmorchard/104532914057335704">🚀</button>
+      
     </div></li>        
 
         
@@ -98,8 +95,6 @@
     </div>
   </div>
 
-
     </main>
-
   </body>
 </html>

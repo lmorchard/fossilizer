@@ -25,37 +25,34 @@
     <script src="../../index.js" type="module"></script>
   </head>
   <body class="">
-    <main class="form-search w-100 m-auto">
-
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
       <form class="w-100 m-auto" method="GET" action="./">
         <div class="container">
           <div class="row">
-            <div class="col">    
-              <div id="search"></div>
-              <script>
-                  window.addEventListener('DOMContentLoaded', (event) => {
-                      new PagefindUI({
-                        element: "#search",
-                        showImages: true,
-                        baseUrl: "../..",
-                      });
+            <div id="search"></div>
+            <script>
+              window.addEventListener('DOMContentLoaded', (event) => {
+                  new PagefindUI({
+                    element: "#search",
+                    showImages: true,
+                    baseUrl: "../..",
                   });
-              </script>
-            </div>
+              });
+            </script>
           </div>
         </div>
       </form>
-    
+    </nav>
+    <main class="container mt-4 w-100 m-auto">
       
   <section class="container mt-3 m-auto justify-content-center">
     <div class="col">
-      <ul class="text-left search-results justify-content-center activities" data-pagefind-body>
+      <ul class="text-left search-results justify-content-center activities" data-pagefind-body data-pagefind-meta="title:2021&#x2F;12&#x2F;30">
 
         
             <li id="https://hackers.town/users/lmorchard/statuses/107534392020339262/activity" class="card activity post" data-pagefind-filter="activityType:Create">
   <div class="card-header">
-    <a href="https://hackers.town/@lmorchard" target="_blank"><img class="avatar"
-        src="../../media/acc0bb231a7a2757c7e5c63aa68ce3cdbcfd32a43eb67a6bdedffe173c721184/avatar.png" width="48" height="48" /></a>
+    <a href="https://hackers.town/@lmorchard" target="_blank"><img class="avatar" src="../../media/acc0bb231a7a2757c7e5c63aa68ce3cdbcfd32a43eb67a6bdedffe173c721184/avatar.png" width="48" height="48" data-pagefind-meta="image[src]" /></a>
     <h5 class="card-title" data-pagefind-filter="actorName">Les Orchard</h5>
     <h6 class="card-subtitle mb-2 text-muted">@<a href="https://hackers.town/@lmorchard" target="_blank" data-pagefind-filter="actorUrl">https:&#x2F;&#x2F;hackers.town&#x2F;@lmorchard</a></h6>
   </div>
@@ -63,14 +60,13 @@
     <div class="card-text"><p>This is the second span of extended PTO where I've found that I haven't written any code. Had a 2 week break in the summer where I didn't program anything either.</p><p>Almost every other span of time off in my life, I've coded. This year's been different. Not sure how I feel about it</p></div>
   </div><div class="card-footer fs-6 text-end text-muted">
       <a href="https:&#x2F;&#x2F;hackers.town&#x2F;@lmorchard&#x2F;107534392020339262" target="_blank"><time datetime="2021-12-30T06:10:04Z" title="2021-12-30T06:10:04Z">2021-12-30T06:10:04Z</time></a>
-      <button title="Open in home instance" class="goto-home-instance btn btn-outline-primary" data-uri="https://hackers.town/@lmorchard/107534392020339262">🚀</button>
+      
     </div></li>        
 
         
             <li id="https://hackers.town/users/lmorchard/statuses/107534399806082721/activity" class="card activity post" data-pagefind-filter="activityType:Create">
   <div class="card-header">
-    <a href="https://hackers.town/@lmorchard" target="_blank"><img class="avatar"
-        src="../../media/acc0bb231a7a2757c7e5c63aa68ce3cdbcfd32a43eb67a6bdedffe173c721184/avatar.png" width="48" height="48" /></a>
+    <a href="https://hackers.town/@lmorchard" target="_blank"><img class="avatar" src="../../media/acc0bb231a7a2757c7e5c63aa68ce3cdbcfd32a43eb67a6bdedffe173c721184/avatar.png" width="48" height="48" data-pagefind-meta="image[src]" /></a>
     <h5 class="card-title" data-pagefind-filter="actorName">Les Orchard</h5>
     <h6 class="card-subtitle mb-2 text-muted">@<a href="https://hackers.town/@lmorchard" target="_blank" data-pagefind-filter="actorUrl">https:&#x2F;&#x2F;hackers.town&#x2F;@lmorchard</a></h6>
   </div>
@@ -78,7 +74,7 @@
     <div class="card-text"><p>Like, I've always had Some Project going, whether I eventually finished it or not. Probably going all the way back to when I was 8 years old and first started programming around Christmas 1983.</p></div>
   </div><div class="card-footer fs-6 text-end text-muted">
       <a href="https:&#x2F;&#x2F;hackers.town&#x2F;@lmorchard&#x2F;107534399806082721" target="_blank"><time datetime="2021-12-30T06:12:03Z" title="2021-12-30T06:12:03Z">2021-12-30T06:12:03Z</time></a>
-      <button title="Open in home instance" class="goto-home-instance btn btn-outline-primary" data-uri="https://hackers.town/@lmorchard/107534399806082721">🚀</button>
+      
     </div></li>        
 
         
@@ -113,8 +109,6 @@
     </div>
   </div>
 
-
     </main>
-
   </body>
 </html>

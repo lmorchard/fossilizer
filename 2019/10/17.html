@@ -25,37 +25,34 @@
     <script src="../../index.js" type="module"></script>
   </head>
   <body class="">
-    <main class="form-search w-100 m-auto">
-
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
       <form class="w-100 m-auto" method="GET" action="./">
         <div class="container">
           <div class="row">
-            <div class="col">    
-              <div id="search"></div>
-              <script>
-                  window.addEventListener('DOMContentLoaded', (event) => {
-                      new PagefindUI({
-                        element: "#search",
-                        showImages: true,
-                        baseUrl: "../..",
-                      });
+            <div id="search"></div>
+            <script>
+              window.addEventListener('DOMContentLoaded', (event) => {
+                  new PagefindUI({
+                    element: "#search",
+                    showImages: true,
+                    baseUrl: "../..",
                   });
-              </script>
-            </div>
+              });
+            </script>
           </div>
         </div>
       </form>
-    
+    </nav>
+    <main class="container mt-4 w-100 m-auto">
       
   <section class="container mt-3 m-auto justify-content-center">
     <div class="col">
-      <ul class="text-left search-results justify-content-center activities" data-pagefind-body>
+      <ul class="text-left search-results justify-content-center activities" data-pagefind-body data-pagefind-meta="title:2019&#x2F;10&#x2F;17">
 
         
             <li id="https://toot.cafe/users/lmorchard/statuses/102979498720333307/activity" class="card activity post" data-pagefind-filter="activityType:Create">
   <div class="card-header">
-    <a href="https://toot.cafe/@lmorchard" target="_blank"><img class="avatar"
-        src="../../media/a294c3d58a8e5881531080330d204da3b4807f757a519157752d47d2f09fd0d4/avatar.jpg" width="48" height="48" /></a>
+    <a href="https://toot.cafe/@lmorchard" target="_blank"><img class="avatar" src="../../media/a294c3d58a8e5881531080330d204da3b4807f757a519157752d47d2f09fd0d4/avatar.jpg" width="48" height="48" data-pagefind-meta="image[src]" /></a>
     <h5 class="card-title" data-pagefind-filter="actorName">Les Orchard</h5>
     <h6 class="card-subtitle mb-2 text-muted">@<a href="https://toot.cafe/@lmorchard" target="_blank" data-pagefind-filter="actorUrl">https:&#x2F;&#x2F;toot.cafe&#x2F;@lmorchard</a></h6>
   </div>
@@ -63,14 +60,13 @@
     <div class="card-text"><p>We&#39;re hiring still at Mozilla!</p><p><a href="https://careers.mozilla.org/listings/" target="_blank" rel="nofollow noopener noreferrer"><span class="invisible">https://</span><span class="">careers.mozilla.org/listings/</span><span class="invisible"></span></a></p><p>This feels squickily like self-promotion (which I hate), but some folks round here might find something interesting there.</p><p>I will also mention that we have ongoing efforts to recruit folks who are *not* like me - i.e. straight old cis white guys.</p><p>So, if you are *not* like me along any of those axes, I especially encourage you to give it a looksee.</p></div>
   </div><div class="card-footer fs-6 text-end text-muted">
       <a href="https:&#x2F;&#x2F;toot.cafe&#x2F;@lmorchard&#x2F;102979498720333307" target="_blank"><time datetime="2019-10-17T20:00:48Z" title="2019-10-17T20:00:48Z">2019-10-17T20:00:48Z</time></a>
-      <button title="Open in home instance" class="goto-home-instance btn btn-outline-primary" data-uri="https://toot.cafe/@lmorchard/102979498720333307">🚀</button>
+      
     </div></li>        
 
         
             <li id="https://toot.cafe/users/lmorchard/statuses/102979794430969008/activity" class="card activity post" data-pagefind-filter="activityType:Create">
   <div class="card-header">
-    <a href="https://toot.cafe/@lmorchard" target="_blank"><img class="avatar"
-        src="../../media/a294c3d58a8e5881531080330d204da3b4807f757a519157752d47d2f09fd0d4/avatar.jpg" width="48" height="48" /></a>
+    <a href="https://toot.cafe/@lmorchard" target="_blank"><img class="avatar" src="../../media/a294c3d58a8e5881531080330d204da3b4807f757a519157752d47d2f09fd0d4/avatar.jpg" width="48" height="48" data-pagefind-meta="image[src]" /></a>
     <h5 class="card-title" data-pagefind-filter="actorName">Les Orchard</h5>
     <h6 class="card-subtitle mb-2 text-muted">@<a href="https://toot.cafe/@lmorchard" target="_blank" data-pagefind-filter="actorUrl">https:&#x2F;&#x2F;toot.cafe&#x2F;@lmorchard</a></h6>
   </div>
@@ -78,7 +74,7 @@
     <div class="card-text"><p>This is dangerously self-involved, but a thing I wrote earlier in my journal that made my head hurt:</p><p>I&#39;m going to continue to make myself feel terrible for questionable reasons all during the process of questioning my reasons for making myself feel terrible.</p></div>
   </div><div class="card-footer fs-6 text-end text-muted">
       <a href="https:&#x2F;&#x2F;toot.cafe&#x2F;@lmorchard&#x2F;102979794430969008" target="_blank"><time datetime="2019-10-17T21:16:01Z" title="2019-10-17T21:16:01Z">2019-10-17T21:16:01Z</time></a>
-      <button title="Open in home instance" class="goto-home-instance btn btn-outline-primary" data-uri="https://toot.cafe/@lmorchard/102979794430969008">🚀</button>
+      
     </div></li>        
 
         
@@ -113,8 +109,6 @@
     </div>
   </div>
 
-
     </main>
-
   </body>
 </html>

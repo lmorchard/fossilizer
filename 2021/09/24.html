@@ -25,37 +25,34 @@
     <script src="../../index.js" type="module"></script>
   </head>
   <body class="">
-    <main class="form-search w-100 m-auto">
-
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
       <form class="w-100 m-auto" method="GET" action="./">
         <div class="container">
           <div class="row">
-            <div class="col">    
-              <div id="search"></div>
-              <script>
-                  window.addEventListener('DOMContentLoaded', (event) => {
-                      new PagefindUI({
-                        element: "#search",
-                        showImages: true,
-                        baseUrl: "../..",
-                      });
+            <div id="search"></div>
+            <script>
+              window.addEventListener('DOMContentLoaded', (event) => {
+                  new PagefindUI({
+                    element: "#search",
+                    showImages: true,
+                    baseUrl: "../..",
                   });
-              </script>
-            </div>
+              });
+            </script>
           </div>
         </div>
       </form>
-    
+    </nav>
+    <main class="container mt-4 w-100 m-auto">
       
   <section class="container mt-3 m-auto justify-content-center">
     <div class="col">
-      <ul class="text-left search-results justify-content-center activities" data-pagefind-body>
+      <ul class="text-left search-results justify-content-center activities" data-pagefind-body data-pagefind-meta="title:2021&#x2F;09&#x2F;24">
 
         
             <li id="https://hackers.town/users/lmorchard/statuses/106985268867633427/activity" class="card activity post" data-pagefind-filter="activityType:Create">
   <div class="card-header">
-    <a href="https://hackers.town/@lmorchard" target="_blank"><img class="avatar"
-        src="../../media/acc0bb231a7a2757c7e5c63aa68ce3cdbcfd32a43eb67a6bdedffe173c721184/avatar.png" width="48" height="48" /></a>
+    <a href="https://hackers.town/@lmorchard" target="_blank"><img class="avatar" src="../../media/acc0bb231a7a2757c7e5c63aa68ce3cdbcfd32a43eb67a6bdedffe173c721184/avatar.png" width="48" height="48" data-pagefind-meta="image[src]" /></a>
     <h5 class="card-title" data-pagefind-filter="actorName">Les Orchard</h5>
     <h6 class="card-subtitle mb-2 text-muted">@<a href="https://hackers.town/@lmorchard" target="_blank" data-pagefind-filter="actorUrl">https:&#x2F;&#x2F;hackers.town&#x2F;@lmorchard</a></h6>
   </div>
@@ -63,14 +60,13 @@
     <div class="card-text"><p>Thanks to the magic of Github Actions, my little sketches for this maybe-someday-game are now published on commit! <a href="https://lmorchard.github.io/starnet/sketches/nodes/" target="_blank" rel="nofollow noopener noreferrer"><span class="invisible">https://</span><span class="ellipsis">lmorchard.github.io/starnet/sk</span><span class="invisible">etches/nodes/</span></a></p></div>
   </div><div class="card-footer fs-6 text-end text-muted">
       <a href="https:&#x2F;&#x2F;hackers.town&#x2F;@lmorchard&#x2F;106985268867633427" target="_blank"><time datetime="2021-09-24T06:40:50Z" title="2021-09-24T06:40:50Z">2021-09-24T06:40:50Z</time></a>
-      <button title="Open in home instance" class="goto-home-instance btn btn-outline-primary" data-uri="https://hackers.town/@lmorchard/106985268867633427">🚀</button>
+      
     </div></li>        
 
         
             <li id="https://hackers.town/users/lmorchard/statuses/106985276673332766/activity" class="card activity post" data-pagefind-filter="activityType:Create">
   <div class="card-header">
-    <a href="https://hackers.town/@lmorchard" target="_blank"><img class="avatar"
-        src="../../media/acc0bb231a7a2757c7e5c63aa68ce3cdbcfd32a43eb67a6bdedffe173c721184/avatar.png" width="48" height="48" /></a>
+    <a href="https://hackers.town/@lmorchard" target="_blank"><img class="avatar" src="../../media/acc0bb231a7a2757c7e5c63aa68ce3cdbcfd32a43eb67a6bdedffe173c721184/avatar.png" width="48" height="48" data-pagefind-meta="image[src]" /></a>
     <h5 class="card-title" data-pagefind-filter="actorName">Les Orchard</h5>
     <h6 class="card-subtitle mb-2 text-muted">@<a href="https://hackers.town/@lmorchard" target="_blank" data-pagefind-filter="actorUrl">https:&#x2F;&#x2F;hackers.town&#x2F;@lmorchard</a></h6>
   </div>
@@ -78,7 +74,7 @@
     <div class="card-text"><p>Also, this pixi + bitecs mashup sure can manage a bunch of spinning squares <a href="https://lmorchard.github.io/starnet/sketches/balls/" target="_blank" rel="nofollow noopener noreferrer"><span class="invisible">https://</span><span class="ellipsis">lmorchard.github.io/starnet/sk</span><span class="invisible">etches/balls/</span></a></p></div>
   </div><div class="card-footer fs-6 text-end text-muted">
       <a href="https:&#x2F;&#x2F;hackers.town&#x2F;@lmorchard&#x2F;106985276673332766" target="_blank"><time datetime="2021-09-24T06:42:49Z" title="2021-09-24T06:42:49Z">2021-09-24T06:42:49Z</time></a>
-      <button title="Open in home instance" class="goto-home-instance btn btn-outline-primary" data-uri="https://hackers.town/@lmorchard/106985276673332766">🚀</button>
+      
     </div></li>        
 
         
@@ -113,8 +109,6 @@
     </div>
   </div>
 
-
     </main>
-
   </body>
 </html>

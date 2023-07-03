@@ -25,37 +25,34 @@
     <script src="../../index.js" type="module"></script>
   </head>
   <body class="">
-    <main class="form-search w-100 m-auto">
-
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
       <form class="w-100 m-auto" method="GET" action="./">
         <div class="container">
           <div class="row">
-            <div class="col">    
-              <div id="search"></div>
-              <script>
-                  window.addEventListener('DOMContentLoaded', (event) => {
-                      new PagefindUI({
-                        element: "#search",
-                        showImages: true,
-                        baseUrl: "../..",
-                      });
+            <div id="search"></div>
+            <script>
+              window.addEventListener('DOMContentLoaded', (event) => {
+                  new PagefindUI({
+                    element: "#search",
+                    showImages: true,
+                    baseUrl: "../..",
                   });
-              </script>
-            </div>
+              });
+            </script>
           </div>
         </div>
       </form>
-    
+    </nav>
+    <main class="container mt-4 w-100 m-auto">
       
   <section class="container mt-3 m-auto justify-content-center">
     <div class="col">
-      <ul class="text-left search-results justify-content-center activities" data-pagefind-body>
+      <ul class="text-left search-results justify-content-center activities" data-pagefind-body data-pagefind-meta="title:2022&#x2F;03&#x2F;30">
 
         
             <li id="https://hackers.town/users/lmorchard/statuses/108047220526278443/activity" class="card activity post" data-pagefind-filter="activityType:Create">
   <div class="card-header">
-    <a href="https://hackers.town/@lmorchard" target="_blank"><img class="avatar"
-        src="../../media/acc0bb231a7a2757c7e5c63aa68ce3cdbcfd32a43eb67a6bdedffe173c721184/avatar.png" width="48" height="48" /></a>
+    <a href="https://hackers.town/@lmorchard" target="_blank"><img class="avatar" src="../../media/acc0bb231a7a2757c7e5c63aa68ce3cdbcfd32a43eb67a6bdedffe173c721184/avatar.png" width="48" height="48" data-pagefind-meta="image[src]" /></a>
     <h5 class="card-title" data-pagefind-filter="actorName">Les Orchard</h5>
     <h6 class="card-subtitle mb-2 text-muted">@<a href="https://hackers.town/@lmorchard" target="_blank" data-pagefind-filter="actorUrl">https:&#x2F;&#x2F;hackers.town&#x2F;@lmorchard</a></h6>
   </div>
@@ -63,14 +60,13 @@
     <div class="card-text"><p>Really wish I could peek in a Zoom meeting to see who's in there before committing to joining, like cruising by a conference room window in the Before Times and deciding to just keep cruising by</p></div>
   </div><div class="card-footer fs-6 text-end text-muted">
       <a href="https:&#x2F;&#x2F;hackers.town&#x2F;@lmorchard&#x2F;108047220526278443" target="_blank"><time datetime="2022-03-30T19:49:06Z" title="2022-03-30T19:49:06Z">2022-03-30T19:49:06Z</time></a>
-      <button title="Open in home instance" class="goto-home-instance btn btn-outline-primary" data-uri="https://hackers.town/@lmorchard/108047220526278443">🚀</button>
+      
     </div></li>        
 
         
             <li id="https://hackers.town/users/lmorchard/statuses/108047989166410613/activity" class="card activity post" data-pagefind-filter="activityType:Create">
   <div class="card-header">
-    <a href="https://hackers.town/@lmorchard" target="_blank"><img class="avatar"
-        src="../../media/acc0bb231a7a2757c7e5c63aa68ce3cdbcfd32a43eb67a6bdedffe173c721184/avatar.png" width="48" height="48" /></a>
+    <a href="https://hackers.town/@lmorchard" target="_blank"><img class="avatar" src="../../media/acc0bb231a7a2757c7e5c63aa68ce3cdbcfd32a43eb67a6bdedffe173c721184/avatar.png" width="48" height="48" data-pagefind-meta="image[src]" /></a>
     <h5 class="card-title" data-pagefind-filter="actorName">Les Orchard</h5>
     <h6 class="card-subtitle mb-2 text-muted">@<a href="https://hackers.town/@lmorchard" target="_blank" data-pagefind-filter="actorUrl">https:&#x2F;&#x2F;hackers.town&#x2F;@lmorchard</a></h6>
   </div>
@@ -78,7 +74,7 @@
     <div class="card-text"><p>Every now and then I move in my chair and it makes a creak nearly indistinguishable from the first "HUP" of a puking cat and there are a non-zero number of times per day that I look around in alarm for the cat</p></div>
   </div><div class="card-footer fs-6 text-end text-muted">
       <a href="https:&#x2F;&#x2F;hackers.town&#x2F;@lmorchard&#x2F;108047989166410613" target="_blank"><time datetime="2022-03-30T23:04:35Z" title="2022-03-30T23:04:35Z">2022-03-30T23:04:35Z</time></a>
-      <button title="Open in home instance" class="goto-home-instance btn btn-outline-primary" data-uri="https://hackers.town/@lmorchard/108047989166410613">🚀</button>
+      
     </div></li>        
 
         
@@ -113,8 +109,6 @@
     </div>
   </div>
 
-
     </main>
-
   </body>
 </html>

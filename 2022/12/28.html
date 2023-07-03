@@ -25,56 +25,45 @@
     <script src="../../index.js" type="module"></script>
   </head>
   <body class="">
-    <main class="form-search w-100 m-auto">
-
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
       <form class="w-100 m-auto" method="GET" action="./">
         <div class="container">
           <div class="row">
-            <div class="col">    
-              <div id="search"></div>
-              <script>
-                  window.addEventListener('DOMContentLoaded', (event) => {
-                      new PagefindUI({
-                        element: "#search",
-                        showImages: true,
-                        baseUrl: "../..",
-                      });
+            <div id="search"></div>
+            <script>
+              window.addEventListener('DOMContentLoaded', (event) => {
+                  new PagefindUI({
+                    element: "#search",
+                    showImages: true,
+                    baseUrl: "../..",
                   });
-              </script>
-            </div>
+              });
+            </script>
           </div>
         </div>
       </form>
-    
+    </nav>
+    <main class="container mt-4 w-100 m-auto">
       
   <section class="container mt-3 m-auto justify-content-center">
     <div class="col">
-      <ul class="text-left search-results justify-content-center activities" data-pagefind-body>
+      <ul class="text-left search-results justify-content-center activities" data-pagefind-body data-pagefind-meta="title:2022&#x2F;12&#x2F;28">
 
         
-            <li id="https://hackers.town/users/lmorchard/statuses/109589168808845110/activity" class="card activity post" data-pagefind-filter="activityType:Create">
+            <li id="https://hackers.town/users/lmorchard/statuses/109592591935891380/activity" class="card activity post" data-pagefind-filter="activityType:Announce">
   <div class="card-header">
-    <a href="https://hackers.town/@lmorchard" target="_blank"><img class="avatar"
-        src="../../media/acc0bb231a7a2757c7e5c63aa68ce3cdbcfd32a43eb67a6bdedffe173c721184/avatar.png" width="48" height="48" /></a>
+    <a href="https://hackers.town/@lmorchard" target="_blank"><img class="avatar" src="../../media/acc0bb231a7a2757c7e5c63aa68ce3cdbcfd32a43eb67a6bdedffe173c721184/avatar.png" width="48" height="48" data-pagefind-meta="image[src]" /></a>
     <h5 class="card-title" data-pagefind-filter="actorName">Les Orchard</h5>
     <h6 class="card-subtitle mb-2 text-muted">@<a href="https://hackers.town/@lmorchard" target="_blank" data-pagefind-filter="actorUrl">https:&#x2F;&#x2F;hackers.town&#x2F;@lmorchard</a></h6>
   </div>
   <div class="card-body">
-    <div class="card-text"><p><span class="h-card"><a href="https://mastodon.schulte.org/@christopher" class="u-url mention" rel="nofollow noopener noreferrer" target="_blank">@<span>christopher</span></a></span> Yup, I see it on the ring page and your profile</p></div>
-  </div><ul class="list-group list-group-flush">
-        <li class="list-group-item media-attachments"><img class="media-attachment" src="../../media/acc0bb231a7a2757c7e5c63aa68ce3cdbcfd32a43eb67a6bdedffe173c721184/media_attachments/files/109/589/168/705/245/660/original/9274271523807f04.png" width="48" height="48"
-                data-bs-toggle="modal" data-bs-target="#exampleModal"
-                data-fullsrc="../../media/acc0bb231a7a2757c7e5c63aa68ce3cdbcfd32a43eb67a6bdedffe173c721184/media_attachments/files/109/589/168/705/245/660/original/9274271523807f04.png" title="" /></li>
-      </ul><div class="card-footer fs-6 text-end text-muted">
-      <a href="https:&#x2F;&#x2F;hackers.town&#x2F;@lmorchard&#x2F;109589168808845110" target="_blank"><time datetime="2022-12-28T03:26:50Z" title="2022-12-28T03:26:50Z">2022-12-28T03:26:50Z</time></a>
-      <button title="Open in home instance" class="goto-home-instance btn btn-outline-primary" data-uri="https://hackers.town/@lmorchard/109589168808845110">🚀</button>
-    </div></li>        
+    <div class="card-text">♻️ <a href="https:&#x2F;&#x2F;techhub.social&#x2F;users&#x2F;linuxgal&#x2F;statuses&#x2F;109576311907071972" class="retoot">https:&#x2F;&#x2F;techhub.social&#x2F;users&#x2F;linuxgal&#x2F;statuses&#x2F;109576311907071972</a></div>
+  </div></li>        
 
         
             <li id="https://hackers.town/users/lmorchard/statuses/109590072652239154/activity" class="card activity post" data-pagefind-filter="activityType:Create">
   <div class="card-header">
-    <a href="https://hackers.town/@lmorchard" target="_blank"><img class="avatar"
-        src="../../media/acc0bb231a7a2757c7e5c63aa68ce3cdbcfd32a43eb67a6bdedffe173c721184/avatar.png" width="48" height="48" /></a>
+    <a href="https://hackers.town/@lmorchard" target="_blank"><img class="avatar" src="../../media/acc0bb231a7a2757c7e5c63aa68ce3cdbcfd32a43eb67a6bdedffe173c721184/avatar.png" width="48" height="48" data-pagefind-meta="image[src]" /></a>
     <h5 class="card-title" data-pagefind-filter="actorName">Les Orchard</h5>
     <h6 class="card-subtitle mb-2 text-muted">@<a href="https://hackers.town/@lmorchard" target="_blank" data-pagefind-filter="actorUrl">https:&#x2F;&#x2F;hackers.town&#x2F;@lmorchard</a></h6>
   </div>
@@ -86,14 +75,13 @@
                 data-fullsrc="../../media/acc0bb231a7a2757c7e5c63aa68ce3cdbcfd32a43eb67a6bdedffe173c721184/media_attachments/files/109/590/066/807/898/969/original/98610740dc040a18.jpg" title="A Raspberry Pi Pico W socketed into a dev board with a touchscreen displays a few toots as messy HTML source code" /></li>
       </ul><div class="card-footer fs-6 text-end text-muted">
       <a href="https:&#x2F;&#x2F;hackers.town&#x2F;@lmorchard&#x2F;109590072652239154" target="_blank"><time datetime="2022-12-28T07:16:41Z" title="2022-12-28T07:16:41Z">2022-12-28T07:16:41Z</time></a>
-      <button title="Open in home instance" class="goto-home-instance btn btn-outline-primary" data-uri="https://hackers.town/@lmorchard/109590072652239154">🚀</button>
+      
     </div></li>        
 
         
             <li id="https://hackers.town/users/lmorchard/statuses/109590083014359517/activity" class="card activity post" data-pagefind-filter="activityType:Create">
   <div class="card-header">
-    <a href="https://hackers.town/@lmorchard" target="_blank"><img class="avatar"
-        src="../../media/acc0bb231a7a2757c7e5c63aa68ce3cdbcfd32a43eb67a6bdedffe173c721184/avatar.png" width="48" height="48" /></a>
+    <a href="https://hackers.town/@lmorchard" target="_blank"><img class="avatar" src="../../media/acc0bb231a7a2757c7e5c63aa68ce3cdbcfd32a43eb67a6bdedffe173c721184/avatar.png" width="48" height="48" data-pagefind-meta="image[src]" /></a>
     <h5 class="card-title" data-pagefind-filter="actorName">Les Orchard</h5>
     <h6 class="card-subtitle mb-2 text-muted">@<a href="https://hackers.town/@lmorchard" target="_blank" data-pagefind-filter="actorUrl">https:&#x2F;&#x2F;hackers.town&#x2F;@lmorchard</a></h6>
   </div>
@@ -101,14 +89,13 @@
     <div class="card-text"><p>Even with the memory problems in parsing the API response, it twists my melon that this lil thing has enough oomph to run a Python dialect, connect to wifi, make HTTPS requests, parse JSON, and make lights blink (and I didn't even do much besides glue existing libraries together)</p></div>
   </div><div class="card-footer fs-6 text-end text-muted">
       <a href="https:&#x2F;&#x2F;hackers.town&#x2F;@lmorchard&#x2F;109590083014359517" target="_blank"><time datetime="2022-12-28T07:19:20Z" title="2022-12-28T07:19:20Z">2022-12-28T07:19:20Z</time></a>
-      <button title="Open in home instance" class="goto-home-instance btn btn-outline-primary" data-uri="https://hackers.town/@lmorchard/109590083014359517">🚀</button>
+      
     </div></li>        
 
         
             <li id="https://hackers.town/users/lmorchard/statuses/109590095020298990/activity" class="card activity post" data-pagefind-filter="activityType:Create">
   <div class="card-header">
-    <a href="https://hackers.town/@lmorchard" target="_blank"><img class="avatar"
-        src="../../media/acc0bb231a7a2757c7e5c63aa68ce3cdbcfd32a43eb67a6bdedffe173c721184/avatar.png" width="48" height="48" /></a>
+    <a href="https://hackers.town/@lmorchard" target="_blank"><img class="avatar" src="../../media/acc0bb231a7a2757c7e5c63aa68ce3cdbcfd32a43eb67a6bdedffe173c721184/avatar.png" width="48" height="48" data-pagefind-meta="image[src]" /></a>
     <h5 class="card-title" data-pagefind-filter="actorName">Les Orchard</h5>
     <h6 class="card-subtitle mb-2 text-muted">@<a href="https://hackers.town/@lmorchard" target="_blank" data-pagefind-filter="actorUrl">https:&#x2F;&#x2F;hackers.town&#x2F;@lmorchard</a></h6>
   </div>
@@ -116,14 +103,13 @@
     <div class="card-text"><p>I'm thinking a next-ish step is to get a websockets client on this thing and latch onto the Mastodon streaming API. Then again, occasional notification API polling is probably good enough for this thing while I think about what goofy things to make it do in reaction to toots</p></div>
   </div><div class="card-footer fs-6 text-end text-muted">
       <a href="https:&#x2F;&#x2F;hackers.town&#x2F;@lmorchard&#x2F;109590095020298990" target="_blank"><time datetime="2022-12-28T07:22:23Z" title="2022-12-28T07:22:23Z">2022-12-28T07:22:23Z</time></a>
-      <button title="Open in home instance" class="goto-home-instance btn btn-outline-primary" data-uri="https://hackers.town/@lmorchard/109590095020298990">🚀</button>
+      
     </div></li>        
 
         
             <li id="https://hackers.town/users/lmorchard/statuses/109590163613016693/activity" class="card activity post" data-pagefind-filter="activityType:Create">
   <div class="card-header">
-    <a href="https://hackers.town/@lmorchard" target="_blank"><img class="avatar"
-        src="../../media/acc0bb231a7a2757c7e5c63aa68ce3cdbcfd32a43eb67a6bdedffe173c721184/avatar.png" width="48" height="48" /></a>
+    <a href="https://hackers.town/@lmorchard" target="_blank"><img class="avatar" src="../../media/acc0bb231a7a2757c7e5c63aa68ce3cdbcfd32a43eb67a6bdedffe173c721184/avatar.png" width="48" height="48" data-pagefind-meta="image[src]" /></a>
     <h5 class="card-title" data-pagefind-filter="actorName">Les Orchard</h5>
     <h6 class="card-subtitle mb-2 text-muted">@<a href="https://hackers.town/@lmorchard" target="_blank" data-pagefind-filter="actorUrl">https:&#x2F;&#x2F;hackers.town&#x2F;@lmorchard</a></h6>
   </div>
@@ -131,14 +117,13 @@
     <div class="card-text"><p><span class="h-card"><a href="https://helvede.net/@davsebamse" class="u-url mention" rel="nofollow noopener noreferrer" target="_blank">@<span>davsebamse</span></a></span> It doesn't, yet, but that's a good idea!</p></div>
   </div><div class="card-footer fs-6 text-end text-muted">
       <a href="https:&#x2F;&#x2F;hackers.town&#x2F;@lmorchard&#x2F;109590163613016693" target="_blank"><time datetime="2022-12-28T07:39:49Z" title="2022-12-28T07:39:49Z">2022-12-28T07:39:49Z</time></a>
-      <button title="Open in home instance" class="goto-home-instance btn btn-outline-primary" data-uri="https://hackers.town/@lmorchard/109590163613016693">🚀</button>
+      
     </div></li>        
 
         
             <li id="https://hackers.town/users/lmorchard/statuses/109590197390606369/activity" class="card activity post" data-pagefind-filter="activityType:Create">
   <div class="card-header">
-    <a href="https://hackers.town/@lmorchard" target="_blank"><img class="avatar"
-        src="../../media/acc0bb231a7a2757c7e5c63aa68ce3cdbcfd32a43eb67a6bdedffe173c721184/avatar.png" width="48" height="48" /></a>
+    <a href="https://hackers.town/@lmorchard" target="_blank"><img class="avatar" src="../../media/acc0bb231a7a2757c7e5c63aa68ce3cdbcfd32a43eb67a6bdedffe173c721184/avatar.png" width="48" height="48" data-pagefind-meta="image[src]" /></a>
     <h5 class="card-title" data-pagefind-filter="actorName">Les Orchard</h5>
     <h6 class="card-subtitle mb-2 text-muted">@<a href="https://hackers.town/@lmorchard" target="_blank" data-pagefind-filter="actorUrl">https:&#x2F;&#x2F;hackers.town&#x2F;@lmorchard</a></h6>
   </div>
@@ -146,14 +131,13 @@
     <div class="card-text"><p><span class="h-card"><a href="https://ack.cringe.cafe/users/randomgeek" class="u-url mention" rel="nofollow noopener noreferrer" target="_blank">@<span>randomgeek</span></a></span> Haven't tried (or heard of) TinyGo yet, but this looks promising? <a href="https://tinygo.org/docs/reference/microcontrollers/pico/" target="_blank" rel="nofollow noopener noreferrer"><span class="invisible">https://</span><span class="ellipsis">tinygo.org/docs/reference/micr</span><span class="invisible">ocontrollers/pico/</span></a></p></div>
   </div><div class="card-footer fs-6 text-end text-muted">
       <a href="https:&#x2F;&#x2F;hackers.town&#x2F;@lmorchard&#x2F;109590197390606369" target="_blank"><time datetime="2022-12-28T07:48:25Z" title="2022-12-28T07:48:25Z">2022-12-28T07:48:25Z</time></a>
-      <button title="Open in home instance" class="goto-home-instance btn btn-outline-primary" data-uri="https://hackers.town/@lmorchard/109590197390606369">🚀</button>
+      
     </div></li>        
 
         
             <li id="https://hackers.town/users/lmorchard/statuses/109590207889156542/activity" class="card activity post" data-pagefind-filter="activityType:Create">
   <div class="card-header">
-    <a href="https://hackers.town/@lmorchard" target="_blank"><img class="avatar"
-        src="../../media/acc0bb231a7a2757c7e5c63aa68ce3cdbcfd32a43eb67a6bdedffe173c721184/avatar.png" width="48" height="48" /></a>
+    <a href="https://hackers.town/@lmorchard" target="_blank"><img class="avatar" src="../../media/acc0bb231a7a2757c7e5c63aa68ce3cdbcfd32a43eb67a6bdedffe173c721184/avatar.png" width="48" height="48" data-pagefind-meta="image[src]" /></a>
     <h5 class="card-title" data-pagefind-filter="actorName">Les Orchard</h5>
     <h6 class="card-subtitle mb-2 text-muted">@<a href="https://hackers.town/@lmorchard" target="_blank" data-pagefind-filter="actorUrl">https:&#x2F;&#x2F;hackers.town&#x2F;@lmorchard</a></h6>
   </div>
@@ -161,14 +145,13 @@
     <div class="card-text"><p><span class="h-card"><a href="https://ack.cringe.cafe/users/randomgeek" class="u-url mention" rel="nofollow noopener noreferrer" target="_blank">@<span>randomgeek</span></a></span> Looks like wireless support is still a to-do for the Pico W, but will need to keep an eye on that</p><p><a href="https://github.com/tinygo-org/tinygo/issues/2947" target="_blank" rel="nofollow noopener noreferrer"><span class="invisible">https://</span><span class="ellipsis">github.com/tinygo-org/tinygo/i</span><span class="invisible">ssues/2947</span></a></p></div>
   </div><div class="card-footer fs-6 text-end text-muted">
       <a href="https:&#x2F;&#x2F;hackers.town&#x2F;@lmorchard&#x2F;109590207889156542" target="_blank"><time datetime="2022-12-28T07:51:05Z" title="2022-12-28T07:51:05Z">2022-12-28T07:51:05Z</time></a>
-      <button title="Open in home instance" class="goto-home-instance btn btn-outline-primary" data-uri="https://hackers.town/@lmorchard/109590207889156542">🚀</button>
+      
     </div></li>        
 
         
             <li id="https://hackers.town/users/lmorchard/statuses/109590240490038370/activity" class="card activity post" data-pagefind-filter="activityType:Create">
   <div class="card-header">
-    <a href="https://hackers.town/@lmorchard" target="_blank"><img class="avatar"
-        src="../../media/acc0bb231a7a2757c7e5c63aa68ce3cdbcfd32a43eb67a6bdedffe173c721184/avatar.png" width="48" height="48" /></a>
+    <a href="https://hackers.town/@lmorchard" target="_blank"><img class="avatar" src="../../media/acc0bb231a7a2757c7e5c63aa68ce3cdbcfd32a43eb67a6bdedffe173c721184/avatar.png" width="48" height="48" data-pagefind-meta="image[src]" /></a>
     <h5 class="card-title" data-pagefind-filter="actorName">Les Orchard</h5>
     <h6 class="card-subtitle mb-2 text-muted">@<a href="https://hackers.town/@lmorchard" target="_blank" data-pagefind-filter="actorUrl">https:&#x2F;&#x2F;hackers.town&#x2F;@lmorchard</a></h6>
   </div>
@@ -176,29 +159,13 @@
     <div class="card-text"><p><span class="h-card"><a href="https://hackers.town/@maddiefuzz" class="u-url mention">@<span>maddiefuzz</span></a></span> This seems like something that would fit perfectly into Caves of Qud</p></div>
   </div><div class="card-footer fs-6 text-end text-muted">
       <a href="https:&#x2F;&#x2F;hackers.town&#x2F;@lmorchard&#x2F;109590240490038370" target="_blank"><time datetime="2022-12-28T07:59:22Z" title="2022-12-28T07:59:22Z">2022-12-28T07:59:22Z</time></a>
-      <button title="Open in home instance" class="goto-home-instance btn btn-outline-primary" data-uri="https://hackers.town/@lmorchard/109590240490038370">🚀</button>
-    </div></li>        
-
-        
-            <li id="https://hackers.town/users/lmorchard/statuses/109590278664107628/activity" class="card activity post" data-pagefind-filter="activityType:Create">
-  <div class="card-header">
-    <a href="https://hackers.town/@lmorchard" target="_blank"><img class="avatar"
-        src="../../media/acc0bb231a7a2757c7e5c63aa68ce3cdbcfd32a43eb67a6bdedffe173c721184/avatar.png" width="48" height="48" /></a>
-    <h5 class="card-title" data-pagefind-filter="actorName">Les Orchard</h5>
-    <h6 class="card-subtitle mb-2 text-muted">@<a href="https://hackers.town/@lmorchard" target="_blank" data-pagefind-filter="actorUrl">https:&#x2F;&#x2F;hackers.town&#x2F;@lmorchard</a></h6>
-  </div>
-  <div class="card-body">
-    <div class="card-text"><p><span class="h-card"><a href="https://sleeping.town/@QuaternionCats" class="u-url mention" rel="nofollow noopener noreferrer" target="_blank">@<span>QuaternionCats</span></a></span> 🤔 Hmm, I didn't find any but yeah that would be really handy for this</p></div>
-  </div><div class="card-footer fs-6 text-end text-muted">
-      <a href="https:&#x2F;&#x2F;hackers.town&#x2F;@lmorchard&#x2F;109590278664107628" target="_blank"><time datetime="2022-12-28T08:09:05Z" title="2022-12-28T08:09:05Z">2022-12-28T08:09:05Z</time></a>
-      <button title="Open in home instance" class="goto-home-instance btn btn-outline-primary" data-uri="https://hackers.town/@lmorchard/109590278664107628">🚀</button>
+      
     </div></li>        
 
         
             <li id="https://hackers.town/users/lmorchard/statuses/109592266680557367/activity" class="card activity post" data-pagefind-filter="activityType:Create">
   <div class="card-header">
-    <a href="https://hackers.town/@lmorchard" target="_blank"><img class="avatar"
-        src="../../media/acc0bb231a7a2757c7e5c63aa68ce3cdbcfd32a43eb67a6bdedffe173c721184/avatar.png" width="48" height="48" /></a>
+    <a href="https://hackers.town/@lmorchard" target="_blank"><img class="avatar" src="../../media/acc0bb231a7a2757c7e5c63aa68ce3cdbcfd32a43eb67a6bdedffe173c721184/avatar.png" width="48" height="48" data-pagefind-meta="image[src]" /></a>
     <h5 class="card-title" data-pagefind-filter="actorName">Les Orchard</h5>
     <h6 class="card-subtitle mb-2 text-muted">@<a href="https://hackers.town/@lmorchard" target="_blank" data-pagefind-filter="actorUrl">https:&#x2F;&#x2F;hackers.town&#x2F;@lmorchard</a></h6>
   </div>
@@ -206,26 +173,13 @@
     <div class="card-text"><p><span class="h-card"><a href="https://octodon.social/@kattni" class="u-url mention" rel="nofollow noopener noreferrer" target="_blank">@<span>kattni</span></a></span> heh, i may have seen your tutorial on posting with circuitpython just after i took that picture</p></div>
   </div><div class="card-footer fs-6 text-end text-muted">
       <a href="https:&#x2F;&#x2F;hackers.town&#x2F;@lmorchard&#x2F;109592266680557367" target="_blank"><time datetime="2022-12-28T16:34:40Z" title="2022-12-28T16:34:40Z">2022-12-28T16:34:40Z</time></a>
-      <button title="Open in home instance" class="goto-home-instance btn btn-outline-primary" data-uri="https://hackers.town/@lmorchard/109592266680557367">🚀</button>
+      
     </div></li>        
-
-        
-            <li id="https://hackers.town/users/lmorchard/statuses/109592591935891380/activity" class="card activity post" data-pagefind-filter="activityType:Announce">
-  <div class="card-header">
-    <a href="https://hackers.town/@lmorchard" target="_blank"><img class="avatar"
-        src="../../media/acc0bb231a7a2757c7e5c63aa68ce3cdbcfd32a43eb67a6bdedffe173c721184/avatar.png" width="48" height="48" /></a>
-    <h5 class="card-title" data-pagefind-filter="actorName">Les Orchard</h5>
-    <h6 class="card-subtitle mb-2 text-muted">@<a href="https://hackers.town/@lmorchard" target="_blank" data-pagefind-filter="actorUrl">https:&#x2F;&#x2F;hackers.town&#x2F;@lmorchard</a></h6>
-  </div>
-  <div class="card-body">
-    <div class="card-text">♻️ <a href="https:&#x2F;&#x2F;techhub.social&#x2F;users&#x2F;linuxgal&#x2F;statuses&#x2F;109576311907071972" class="retoot">https:&#x2F;&#x2F;techhub.social&#x2F;users&#x2F;linuxgal&#x2F;statuses&#x2F;109576311907071972</a></div>
-  </div></li>        
 
         
             <li id="https://hackers.town/users/lmorchard/statuses/109592917544460806/activity" class="card activity post" data-pagefind-filter="activityType:Create">
   <div class="card-header">
-    <a href="https://hackers.town/@lmorchard" target="_blank"><img class="avatar"
-        src="../../media/acc0bb231a7a2757c7e5c63aa68ce3cdbcfd32a43eb67a6bdedffe173c721184/avatar.png" width="48" height="48" /></a>
+    <a href="https://hackers.town/@lmorchard" target="_blank"><img class="avatar" src="../../media/acc0bb231a7a2757c7e5c63aa68ce3cdbcfd32a43eb67a6bdedffe173c721184/avatar.png" width="48" height="48" data-pagefind-meta="image[src]" /></a>
     <h5 class="card-title" data-pagefind-filter="actorName">Les Orchard</h5>
     <h6 class="card-subtitle mb-2 text-muted">@<a href="https://hackers.town/@lmorchard" target="_blank" data-pagefind-filter="actorUrl">https:&#x2F;&#x2F;hackers.town&#x2F;@lmorchard</a></h6>
   </div>
@@ -233,14 +187,13 @@
     <div class="card-text"><p><span class="h-card"><a href="https://xoxo.zone/@fraying" class="u-url mention" rel="nofollow noopener noreferrer" target="_blank">@<span>fraying</span></a></span> <span class="h-card"><a href="https://hachyderm.io/@timbray" class="u-url mention" rel="nofollow noopener noreferrer" target="_blank">@<span>timbray</span></a></span> FWIW, there have been a few attempts at scrapers over the years. The attempts tend to be rather rude and get blocked by a big chunk of servers. That tends to stymie the usefulness of the index. Not impossible but I think the old ask-forgiveness-later approach doesn't go as far on the fediverse as on the wider web</p></div>
   </div><div class="card-footer fs-6 text-end text-muted">
       <a href="https:&#x2F;&#x2F;hackers.town&#x2F;@lmorchard&#x2F;109592917544460806" target="_blank"><time datetime="2022-12-28T19:20:11Z" title="2022-12-28T19:20:11Z">2022-12-28T19:20:11Z</time></a>
-      <button title="Open in home instance" class="goto-home-instance btn btn-outline-primary" data-uri="https://hackers.town/@lmorchard/109592917544460806">🚀</button>
+      
     </div></li>        
 
         
             <li id="https://hackers.town/users/lmorchard/statuses/109593888982991904/activity" class="card activity post" data-pagefind-filter="activityType:Create">
   <div class="card-header">
-    <a href="https://hackers.town/@lmorchard" target="_blank"><img class="avatar"
-        src="../../media/acc0bb231a7a2757c7e5c63aa68ce3cdbcfd32a43eb67a6bdedffe173c721184/avatar.png" width="48" height="48" /></a>
+    <a href="https://hackers.town/@lmorchard" target="_blank"><img class="avatar" src="../../media/acc0bb231a7a2757c7e5c63aa68ce3cdbcfd32a43eb67a6bdedffe173c721184/avatar.png" width="48" height="48" data-pagefind-meta="image[src]" /></a>
     <h5 class="card-title" data-pagefind-filter="actorName">Les Orchard</h5>
     <h6 class="card-subtitle mb-2 text-muted">@<a href="https://hackers.town/@lmorchard" target="_blank" data-pagefind-filter="actorUrl">https:&#x2F;&#x2F;hackers.town&#x2F;@lmorchard</a></h6>
   </div>
@@ -248,14 +201,13 @@
     <div class="card-text"><p><span class="h-card"><a href="https://mastodon.wallera.computer/@gsora" class="u-url mention" rel="nofollow noopener noreferrer" target="_blank">@<span>gsora</span></a></span> <span class="h-card"><a href="https://glitterkitten.co.uk/@doot" class="u-url mention" rel="nofollow noopener noreferrer" target="_blank">@<span>doot</span></a></span> Yeah, that Model M isn't so much a "clicky" keyboard as a "TANG-TANG-PTING" keyboard</p></div>
   </div><div class="card-footer fs-6 text-end text-muted">
       <a href="https:&#x2F;&#x2F;hackers.town&#x2F;@lmorchard&#x2F;109593888982991904" target="_blank"><time datetime="2022-12-28T23:27:14Z" title="2022-12-28T23:27:14Z">2022-12-28T23:27:14Z</time></a>
-      <button title="Open in home instance" class="goto-home-instance btn btn-outline-primary" data-uri="https://hackers.town/@lmorchard/109593888982991904">🚀</button>
+      
     </div></li>        
 
         
             <li id="https://hackers.town/users/lmorchard/statuses/109593890715653428/activity" class="card activity post" data-pagefind-filter="activityType:Create">
   <div class="card-header">
-    <a href="https://hackers.town/@lmorchard" target="_blank"><img class="avatar"
-        src="../../media/acc0bb231a7a2757c7e5c63aa68ce3cdbcfd32a43eb67a6bdedffe173c721184/avatar.png" width="48" height="48" /></a>
+    <a href="https://hackers.town/@lmorchard" target="_blank"><img class="avatar" src="../../media/acc0bb231a7a2757c7e5c63aa68ce3cdbcfd32a43eb67a6bdedffe173c721184/avatar.png" width="48" height="48" data-pagefind-meta="image[src]" /></a>
     <h5 class="card-title" data-pagefind-filter="actorName">Les Orchard</h5>
     <h6 class="card-subtitle mb-2 text-muted">@<a href="https://hackers.town/@lmorchard" target="_blank" data-pagefind-filter="actorUrl">https:&#x2F;&#x2F;hackers.town&#x2F;@lmorchard</a></h6>
   </div>
@@ -263,7 +215,7 @@
     <div class="card-text"><p><span class="h-card"><a href="https://glitterkitten.co.uk/@doot" class="u-url mention" rel="nofollow noopener noreferrer" target="_blank">@<span>doot</span></a></span> <span class="h-card"><a href="https://mastodontech.de/@galadhremmen" class="u-url mention" rel="nofollow noopener noreferrer" target="_blank">@<span>galadhremmen</span></a></span> <span class="h-card"><a href="https://mastodon.wallera.computer/@gsora" class="u-url mention" rel="nofollow noopener noreferrer" target="_blank">@<span>gsora</span></a></span> Were the stairs okay?</p></div>
   </div><div class="card-footer fs-6 text-end text-muted">
       <a href="https:&#x2F;&#x2F;hackers.town&#x2F;@lmorchard&#x2F;109593890715653428" target="_blank"><time datetime="2022-12-28T23:27:40Z" title="2022-12-28T23:27:40Z">2022-12-28T23:27:40Z</time></a>
-      <button title="Open in home instance" class="goto-home-instance btn btn-outline-primary" data-uri="https://hackers.town/@lmorchard/109593890715653428">🚀</button>
+      
     </div></li>        
 
         
@@ -298,8 +250,6 @@
     </div>
   </div>
 
-
     </main>
-
   </body>
 </html>

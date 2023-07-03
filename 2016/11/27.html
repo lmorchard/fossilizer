@@ -25,37 +25,34 @@
     <script src="../../index.js" type="module"></script>
   </head>
   <body class="">
-    <main class="form-search w-100 m-auto">
-
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
       <form class="w-100 m-auto" method="GET" action="./">
         <div class="container">
           <div class="row">
-            <div class="col">    
-              <div id="search"></div>
-              <script>
-                  window.addEventListener('DOMContentLoaded', (event) => {
-                      new PagefindUI({
-                        element: "#search",
-                        showImages: true,
-                        baseUrl: "../..",
-                      });
+            <div id="search"></div>
+            <script>
+              window.addEventListener('DOMContentLoaded', (event) => {
+                  new PagefindUI({
+                    element: "#search",
+                    showImages: true,
+                    baseUrl: "../..",
                   });
-              </script>
-            </div>
+              });
+            </script>
           </div>
         </div>
       </form>
-    
+    </nav>
+    <main class="container mt-4 w-100 m-auto">
       
   <section class="container mt-3 m-auto justify-content-center">
     <div class="col">
-      <ul class="text-left search-results justify-content-center activities" data-pagefind-body>
+      <ul class="text-left search-results justify-content-center activities" data-pagefind-body data-pagefind-meta="title:2016&#x2F;11&#x2F;27">
 
         
             <li id="https://mastodon.social/users/lmorchard/statuses/237393/activity" class="card activity post" data-pagefind-filter="activityType:Create">
   <div class="card-header">
-    <a href="https://mastodon.social/@lmorchard" target="_blank"><img class="avatar"
-        src="../../media/568061efb46539864ffac087468e22639354e59b603ebc863e8462d57d6a1d3a/avatar.jpg" width="48" height="48" /></a>
+    <a href="https://mastodon.social/@lmorchard" target="_blank"><img class="avatar" src="../../media/568061efb46539864ffac087468e22639354e59b603ebc863e8462d57d6a1d3a/avatar.jpg" width="48" height="48" data-pagefind-meta="image[src]" /></a>
     <h5 class="card-title" data-pagefind-filter="actorName">Les Orchard 🕹️🔧🐱🐰</h5>
     <h6 class="card-subtitle mb-2 text-muted">@<a href="https://mastodon.social/@lmorchard" target="_blank" data-pagefind-filter="actorUrl">https:&#x2F;&#x2F;mastodon.social&#x2F;@lmorchard</a></h6>
   </div>
@@ -63,14 +60,13 @@
     <div class="card-text"><p>I should post here more, but I&#39;ve been procrastinating installing something GNU-Social-ish on my own domain</p></div>
   </div><div class="card-footer fs-6 text-end text-muted">
       <a href="https:&#x2F;&#x2F;mastodon.social&#x2F;@lmorchard&#x2F;237393" target="_blank"><time datetime="2016-11-27T23:56:46Z" title="2016-11-27T23:56:46Z">2016-11-27T23:56:46Z</time></a>
-      <button title="Open in home instance" class="goto-home-instance btn btn-outline-primary" data-uri="https://mastodon.social/@lmorchard/237393">🚀</button>
+      
     </div></li>        
 
         
             <li id="https://mastodon.social/users/lmorchard/statuses/237417/activity" class="card activity post" data-pagefind-filter="activityType:Create">
   <div class="card-header">
-    <a href="https://mastodon.social/@lmorchard" target="_blank"><img class="avatar"
-        src="../../media/568061efb46539864ffac087468e22639354e59b603ebc863e8462d57d6a1d3a/avatar.jpg" width="48" height="48" /></a>
+    <a href="https://mastodon.social/@lmorchard" target="_blank"><img class="avatar" src="../../media/568061efb46539864ffac087468e22639354e59b603ebc863e8462d57d6a1d3a/avatar.jpg" width="48" height="48" data-pagefind-meta="image[src]" /></a>
     <h5 class="card-title" data-pagefind-filter="actorName">Les Orchard 🕹️🔧🐱🐰</h5>
     <h6 class="card-subtitle mb-2 text-muted">@<a href="https://mastodon.social/@lmorchard" target="_blank" data-pagefind-filter="actorUrl">https:&#x2F;&#x2F;mastodon.social&#x2F;@lmorchard</a></h6>
   </div>
@@ -78,7 +74,7 @@
     <div class="card-text"><p><span class="h-card"><a href="https://mastodon.social/@sil" class="u-url mention">@<span>sil</span></a></span> Yeah, all of that basically.</p></div>
   </div><div class="card-footer fs-6 text-end text-muted">
       <a href="https:&#x2F;&#x2F;mastodon.social&#x2F;@lmorchard&#x2F;237417" target="_blank"><time datetime="2016-11-27T23:58:35Z" title="2016-11-27T23:58:35Z">2016-11-27T23:58:35Z</time></a>
-      <button title="Open in home instance" class="goto-home-instance btn btn-outline-primary" data-uri="https://mastodon.social/@lmorchard/237417">🚀</button>
+      
     </div></li>        
 
         
@@ -113,8 +109,6 @@
     </div>
   </div>
 
-
     </main>
-
   </body>
 </html>
