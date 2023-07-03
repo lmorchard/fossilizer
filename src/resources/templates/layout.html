@@ -17,25 +17,25 @@
     <script src="{{ site_root | safe }}/index.js" type="module"></script>
   </head>
   <body class="">
-    <main class="form-search w-100 m-auto">
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
       <form class="w-100 m-auto" method="GET" action="./">
         <div class="container">
           <div class="row">
-            <div class="col">    
-              <div id="search"></div>
-              <script>
-                window.addEventListener('DOMContentLoaded', (event) => {
-                    new PagefindUI({
-                      element: "#search",
-                      showImages: true,
-                      baseUrl: "{{ site_root | safe }}",
-                    });
-                });
-              </script>
-            </div>
+            <div id="search"></div>
+            <script>
+              window.addEventListener('DOMContentLoaded', (event) => {
+                  new PagefindUI({
+                    element: "#search",
+                    showImages: true,
+                    baseUrl: "{{ site_root | safe }}",
+                  });
+              });
+            </script>
           </div>
         </div>
       </form>
+    </nav>
+    <main class="container mt-4 w-100 m-auto">
       {% block content %} {% endblock content %}
     </main>
   </body>

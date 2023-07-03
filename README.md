@@ -5,8 +5,6 @@ This is maybe an attempt to build a static site generator for Mastodon export ta
 ## TODO
 
 - [ ] include actor info in site header?
-- [ ] position fixed floating search header
-- [ ] better index page, separate by year & month
 - [ ] special index just for activities with media attachments?
 - [ ] navigation between media attachments in dialog, prev & next
 - [ ] fetch outbox url for incremental imports
