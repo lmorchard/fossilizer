@@ -1,49 +1,64 @@
+use crate::cli::init::copy_embedded_assets;
 use anyhow::Result;
+use fossilizer::{activitystreams, config, db, templates};
 use rayon::prelude::*;
 use rust_embed::RustEmbed;
 use serde::{Deserialize, Serialize};
+use std::collections::hash_map::Entry::{Occupied, Vacant};
 use std::collections::HashMap;
 use std::error::Error;
 use std::fs;
-use std::io::prelude::*;
 use std::path::{Path, PathBuf};
 use std::thread;
 use tera::Tera;
-use std::collections::hash_map::Entry::{Occupied, Vacant};
-use fossilizer::{activitystreams, config, db, templates};
 
 // todo: move this to a different package?
 #[derive(RustEmbed)]
 #[folder = "src/resources/web"]
 pub struct WebAsset;
 
-pub fn command_build(clean: &bool) -> Result<(), Box<dyn Error>> {
+pub fn command_build(
+    clean: &bool,
+    skip_media: &bool,
+    skip_activities: &bool,
+    skip_assets: &bool,
+) -> Result<(), Box<dyn Error>> {
     let config = config::config()?;
+    let skip_media = skip_media.to_owned();
+    let skip_activities = skip_activities.to_owned();
+    let skip_assets = skip_assets.to_owned();
 
     setup_build_path(&config.build_path, &clean)?;
 
     let threads = vec![
         thread::spawn(move || -> Result<()> {
             let config = config::config().unwrap();
-            copy_web_assets(&config.build_path).unwrap();
-            copy_media_files(&[config.media_path()], &config.build_path).unwrap();
+            if !skip_assets {
+                copy_web_assets(&config.build_path).unwrap();
+            }
+            if !skip_media {
+                copy_media_files(&[config.media_path()], &config.build_path).unwrap();
+            }
             Ok(())
         }),
         thread::spawn(move || -> Result<()> {
-            let config = config::config().unwrap();
+            if !skip_activities {
+                let config = config::config().unwrap();
 
-            let tera = templates::init().unwrap();
+                let tera = templates::init().unwrap();
 
-            let db_conn = db::conn().unwrap();
-            let db_activities = db::activities::Activities::new(&db_conn);
-            let db_actors = db::actors::Actors::new(&db_conn);
+                let db_conn = db::conn().unwrap();
+                let db_activities = db::activities::Activities::new(&db_conn);
+                let db_actors = db::actors::Actors::new(&db_conn);
 
-            let actors = db_actors.get_actors_by_id().unwrap();
+                let actors = db_actors.get_actors_by_id().unwrap();
 
-            let day_entries = plan_activities_pages(&config.build_path, &db_activities).unwrap();
-            generate_index_page(&config.build_path, &day_entries, &tera).unwrap();
-            generate_activities_pages(&config.build_path, &tera, &actors, &day_entries).unwrap();
-
+                let day_entries =
+                    plan_activities_pages(&config.build_path, &db_activities).unwrap();
+                generate_index_page(&config.build_path, &day_entries, &tera).unwrap();
+                generate_activities_pages(&config.build_path, &tera, &actors, &day_entries)
+                    .unwrap();
+            }
             Ok(())
         }),
     ];
@@ -70,20 +85,22 @@ fn setup_build_path(build_path: &PathBuf, clean: &bool) -> Result<(), Box<dyn Er
 }
 
 fn copy_web_assets(build_path: &PathBuf) -> Result<(), Box<dyn Error>> {
-    info!("Copying static web assets");
-    // todo: copy from customized assets in data directory if configured
-    for filename in WebAsset::iter() {
-        let file = WebAsset::get(&filename).ok_or("no web asset")?;
-        let outpath = PathBuf::from(build_path).join(&filename.to_string());
+    let config = config::config()?;
 
-        let outparent = outpath.parent().ok_or("no parent path")?;
-        fs::create_dir_all(outparent)?;
-
-        let mut outfile = fs::File::create(&outpath)?;
-        outfile.write_all(file.data.as_ref())?;
-
-        debug!("Wrote {} to {:?}", filename, outpath);
+    let web_assets_path = config.web_assets_path();
+    if web_assets_path.is_dir() {
+        let mut web_assets_contents = Vec::new();
+        for entry in web_assets_path.read_dir()? {
+            if let Ok(entry) = entry {
+                web_assets_contents.push(entry.path());
+            }
+        }
+        copy_files(web_assets_contents.as_slice(), &build_path)?;
+    } else {
+        info!("Copying embedded static web assets");
+        copy_embedded_assets::<WebAsset>(&build_path)?;
     }
+
     Ok(())
 }
 
@@ -91,8 +108,15 @@ fn copy_media_files<P>(media_path: &[P], build_path: &P) -> Result<(), Box<dyn E
 where
     P: AsRef<Path> + std::fmt::Debug,
 {
+    copy_files(media_path, build_path)?;
+    Ok(())
+}
+
+fn copy_files<P>(media_path: &[P], build_path: &P) -> Result<(), Box<dyn Error>>
+where
+    P: AsRef<Path> + std::fmt::Debug,
+{
     info!("Copying {:?} to {:?}", media_path, build_path);
-    // todo: use with progress? https://docs.rs/fs_extra/latest/fs_extra/fn.copy_items_with_progress.html
     fs_extra::copy_items_with_progress(
         media_path,
         build_path,
@@ -235,7 +259,12 @@ fn generate_index_page(
     let mut calendar_outline: HashMap<&str, HashMap<&str, HashMap<&str, &IndexDayContext>>> =
         HashMap::new();
     for day_entry in day_entries {
-        let parts = day_entry.current.day.split("/").take(3).collect::<Vec<&str>>();
+        let parts = day_entry
+            .current
+            .day
+            .split("/")
+            .take(3)
+            .collect::<Vec<&str>>();
         if let [year, month, day] = parts[..] {
             let year_map = match calendar_outline.entry(year) {
                 Vacant(entry) => entry.insert(HashMap::new()),

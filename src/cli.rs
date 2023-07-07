@@ -2,7 +2,7 @@ use anyhow::Result;
 use clap::{Parser, Subcommand};
 use std::convert::From;
 use std::error::Error;
-use std::path::{Path,PathBuf};
+use std::path::{Path, PathBuf};
 
 use fossilizer::{app, db};
 
@@ -49,8 +49,18 @@ enum Commands {
     Import { filenames: Vec<String> },
     /// Build the static site
     Build {
+        /// Delete build directory before proceeding
         #[arg(short = 'k', long)]
         clean: bool,
+        /// Skip copying over media files
+        #[arg(long)]
+        skip_media: bool,
+        /// Skip building pages for activities
+        #[arg(long)]
+        skip_activities: bool,
+        /// Skip copying over web assets
+        #[arg(long)]
+        skip_assets: bool,
     },
 }
 
@@ -68,7 +78,12 @@ pub fn execute() -> Result<(), Box<dyn Error>> {
         Commands::Init { clean, customize } => init::command(&clean, &customize),
         Commands::Upgrade {} => command_upgrade(),
         Commands::Import { filenames } => import::command_import(filenames),
-        Commands::Build { clean } => build::command_build(&clean),
+        Commands::Build {
+            clean,
+            skip_media,
+            skip_activities,
+            skip_assets,
+        } => build::command_build(&clean, &skip_media, &skip_activities, &skip_assets),
     }
 }
 

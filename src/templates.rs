@@ -1,20 +1,36 @@
 use rust_embed::RustEmbed;
+use serde_json::value::{to_value, Value};
+use std::collections::HashMap;
 use std::error::Error;
 use std::fs;
 use std::io::prelude::*;
 use std::path::PathBuf;
 use tera::Tera;
-use serde_json::value::{to_value, Value};
-use std::collections::HashMap;
+
+use crate::config;
 
 #[derive(RustEmbed)]
 #[folder = "src/resources/templates"]
 pub struct TemplateAsset;
 
 pub fn init() -> Result<Tera, Box<dyn Error>> {
-    let mut tera = Tera::default();
+    let config = config::config()?;
 
-    tera.add_raw_templates(templates_source())?;
+    let mut tera: Tera;
+    let templates_path = config.templates_path();
+    if templates_path.is_dir() {
+        debug!("Using templates from {:?}", templates_path);
+        let templates_glob = templates_path.join("**/*.html");
+        tera = Tera::new(
+            templates_glob
+                .to_str()
+                .ok_or("failed to construct templates glob")?,
+        )?;
+    } else {
+        debug!("Using embedded templates");
+        tera = Tera::default();
+        tera.add_raw_templates(templates_source())?;
+    }
 
     tera.register_filter("sha256", filter_sha256);
 

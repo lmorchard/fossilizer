@@ -32,14 +32,19 @@ pub fn default_data_path() -> PathBuf {
     "./data".into()
 }
 impl AppConfig {
+    // todo: allow each of these to be individually overriden
     pub fn media_path(&self) -> PathBuf {
-        // todo: allow this to be individually overridden
         self.data_path.join("media")
     }
     pub fn database_path(&self) -> PathBuf {
-        // todo: allow this to be individually overridden
         self.data_path.join("data.sqlite3")
     }
+    pub fn templates_path(&self) -> PathBuf {
+        self.data_path.join("templates")
+    }
+    pub fn web_assets_path(&self) -> PathBuf {
+        self.data_path.join("web")
+    }    
 }
 
 pub fn init(config_path: &Path) -> Result<(), Box<dyn Error>> {

@@ -48,17 +48,14 @@ fn unpack_customizable_resources() -> Result<(), Box<dyn Error>> {
     let mut config_outfile = open_outfile_with_parent_dir(&config_outpath)?;
     config_outfile.write_all(&DEFAULT_CONFIG.as_bytes())?;
 
-    let web_assets_path = data_path.join("web");
-    copy_embedded_assets::<cli::build::WebAsset>(web_assets_path)?;
-
-    let templates_path = data_path.join("templates");
-    copy_embedded_assets::<templates::TemplateAsset>(templates_path)?;
+    copy_embedded_assets::<cli::build::WebAsset>(&config.web_assets_path())?;
+    copy_embedded_assets::<templates::TemplateAsset>(&config.templates_path())?;
 
     Ok(())
 }
 
-fn copy_embedded_assets<Assets: RustEmbed>(
-    assets_output_path: PathBuf,
+pub fn copy_embedded_assets<Assets: RustEmbed>(
+    assets_output_path: &PathBuf,
 ) -> Result<(), Box<dyn Error>> {
     Ok(for filename in Assets::iter() {
         let file = Assets::get(&filename).ok_or("no asset")?;
@@ -71,7 +68,7 @@ fn copy_embedded_assets<Assets: RustEmbed>(
     })
 }
 
-fn open_outfile_with_parent_dir(outpath: &PathBuf) -> Result<fs::File, Box<dyn Error>> {
+pub fn open_outfile_with_parent_dir(outpath: &PathBuf) -> Result<fs::File, Box<dyn Error>> {
     let outparent = outpath.parent().ok_or("no parent path")?;
     fs::create_dir_all(outparent)?;
     let outfile = fs::File::create(outpath)?;
