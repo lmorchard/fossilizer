@@ -1,4 +1,5 @@
 use anyhow::Result;
+use clap::Args;
 use rust_embed::RustEmbed;
 use std::error::Error;
 use std::fs;
@@ -13,10 +14,20 @@ lazy_static! {
         include_str!("../resources/default_config.toml").to_string();
 }
 
-pub fn command(clean: &bool, customize: &bool) -> Result<(), Box<dyn Error>> {
-    setup_data_path(&clean)?;
+#[derive(Debug, Args)]
+pub struct InitArgs {
+    /// Delete any existing data directory before initializing
+    #[arg(short = 'k', long)]
+    clean: bool,
+    /// Prepare the data directory with resources for customization
+    #[arg(short, long)]
+    customize: bool,
+}
+
+pub fn command(args: &InitArgs) -> Result<(), Box<dyn Error>> {
+    setup_data_path(&args.clean)?;
     db::upgrade()?;
-    if *customize {
+    if args.customize {
         unpack_customizable_resources()?;
     }
     Ok(())
@@ -54,6 +65,7 @@ fn unpack_customizable_resources() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
+// todo: move this to a shared utils module? build.rs also uses
 pub fn copy_embedded_assets<Assets: RustEmbed>(
     assets_output_path: &PathBuf,
 ) -> Result<(), Box<dyn Error>> {

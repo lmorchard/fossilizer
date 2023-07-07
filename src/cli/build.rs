@@ -1,5 +1,5 @@
-use crate::cli::init::copy_embedded_assets;
 use anyhow::Result;
+use clap::Args;
 use fossilizer::{activitystreams, config, db, templates};
 use rayon::prelude::*;
 use rust_embed::RustEmbed;
@@ -12,21 +12,35 @@ use std::path::{Path, PathBuf};
 use std::thread;
 use tera::Tera;
 
+use crate::cli::init::copy_embedded_assets;
+
 // todo: move this to a different package?
 #[derive(RustEmbed)]
 #[folder = "src/resources/web"]
 pub struct WebAsset;
 
-pub fn command_build(
-    clean: &bool,
-    skip_media: &bool,
-    skip_activities: &bool,
-    skip_assets: &bool,
-) -> Result<(), Box<dyn Error>> {
+#[derive(Debug, Args)]
+pub struct BuildArgs {
+    /// Delete build directory before proceeding
+    #[arg(short = 'k', long)]
+    clean: bool,
+    /// Skip copying over media files
+    #[arg(long)]
+    skip_media: bool,
+    /// Skip building pages for activities
+    #[arg(long)]
+    skip_activities: bool,
+    /// Skip copying over web assets
+    #[arg(long)]
+    skip_assets: bool,
+}
+
+pub fn command(args: &BuildArgs) -> Result<(), Box<dyn Error>> {
     let config = config::config()?;
-    let skip_media = skip_media.to_owned();
-    let skip_activities = skip_activities.to_owned();
-    let skip_assets = skip_assets.to_owned();
+    let clean = args.clean;
+    let skip_media = args.skip_media;
+    let skip_activities = args.skip_activities;
+    let skip_assets = args.skip_assets;
 
     setup_build_path(&config.build_path, &clean)?;
 

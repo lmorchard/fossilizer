@@ -35,33 +35,13 @@ struct Cli {
 #[derive(Subcommand)]
 enum Commands {
     /// Initialize the data directory
-    Init {
-        /// Delete any existing data directory before initializing
-        #[arg(short = 'k', long)]
-        clean: bool,
-        /// Prepare the data directory with resources for customization
-        #[arg(short, long)]
-        customize: bool,
-    },
+    Init(init::InitArgs),
     /// Upgrade the database
     Upgrade {},
     /// Adds files to myapp
-    Import { filenames: Vec<String> },
+    Import(import::ImportArgs),
     /// Build the static site
-    Build {
-        /// Delete build directory before proceeding
-        #[arg(short = 'k', long)]
-        clean: bool,
-        /// Skip copying over media files
-        #[arg(long)]
-        skip_media: bool,
-        /// Skip building pages for activities
-        #[arg(long)]
-        skip_activities: bool,
-        /// Skip copying over web assets
-        #[arg(long)]
-        skip_assets: bool,
-    },
+    Build(build::BuildArgs),
 }
 
 pub fn execute() -> Result<(), Box<dyn Error>> {
@@ -75,15 +55,10 @@ pub fn execute() -> Result<(), Box<dyn Error>> {
     app::init(config_path)?;
 
     match &cli.command {
-        Commands::Init { clean, customize } => init::command(&clean, &customize),
+        Commands::Init(args) => init::command(args),
         Commands::Upgrade {} => command_upgrade(),
-        Commands::Import { filenames } => import::command_import(filenames),
-        Commands::Build {
-            clean,
-            skip_media,
-            skip_activities,
-            skip_assets,
-        } => build::command_build(&clean, &skip_media, &skip_activities, &skip_assets),
+        Commands::Import(args) => import::command(args),
+        Commands::Build(args) => build::command(args),
     }
 }
 

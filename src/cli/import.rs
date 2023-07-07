@@ -1,17 +1,24 @@
 use anyhow::Result;
+use clap::Args;
 use std::convert::From;
 use std::error::Error;
-use std::path::PathBuf;
 use std::fs;
+use std::path::PathBuf;
 
-use fossilizer::{config, db, mastodon, activitystreams};
+use fossilizer::{activitystreams, config, db, mastodon};
 
-pub fn command_import(filenames: &Vec<String>) -> Result<(), Box<dyn Error>> {
+#[derive(Debug, Args)]
+pub struct ImportArgs {
+    /// List of Mastodon .tar.gz export filenames to be imported
+    filenames: Vec<String>,
+}
+
+pub fn command(args: &ImportArgs) -> Result<(), Box<dyn Error>> {
     let config = config::config()?;
     let data_path = PathBuf::from(&config.data_path);
     fs::create_dir_all(&data_path)?;
 
-    for filename in filenames {
+    for filename in &args.filenames {
         info!("Importing {:?}", filename);
 
         let conn = db::conn()?;
