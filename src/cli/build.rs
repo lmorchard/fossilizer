@@ -12,9 +12,10 @@ use tera::Tera;
 use std::collections::hash_map::Entry::{Occupied, Vacant};
 use fossilizer::{activitystreams, config, db, templates};
 
+// todo: move this to a different package?
 #[derive(RustEmbed)]
 #[folder = "src/resources/web"]
-struct WebAsset;
+pub struct WebAsset;
 
 pub fn command_build(clean: &bool) -> Result<(), Box<dyn Error>> {
     let config = config::config()?;
@@ -70,6 +71,7 @@ fn setup_build_path(build_path: &PathBuf, clean: &bool) -> Result<(), Box<dyn Er
 
 fn copy_web_assets(build_path: &PathBuf) -> Result<(), Box<dyn Error>> {
     info!("Copying static web assets");
+    // todo: copy from customized assets in data directory if configured
     for filename in WebAsset::iter() {
         let file = WebAsset::get(&filename).ok_or("no web asset")?;
         let outpath = PathBuf::from(build_path).join(&filename.to_string());

@@ -5,7 +5,7 @@ const DEFAULT_LOG_LEVEL: &str = "info";
 
 use crate::config;
 
-pub fn init(config_path: Option<&Path>) -> Result<(), Box<dyn Error>> {
+pub fn init(config_path: &Path) -> Result<(), Box<dyn Error>> {
     config::init(config_path)?;
     init_logging()?;
     Ok(())

@@ -2,12 +2,13 @@ use anyhow::Result;
 use clap::{Parser, Subcommand};
 use std::convert::From;
 use std::error::Error;
-use std::path::PathBuf;
+use std::path::{Path,PathBuf};
 
 use fossilizer::{app, db};
 
 pub mod build;
 pub mod import;
+pub mod init;
 
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
@@ -33,8 +34,15 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Commands {
-    /// Initialize the database
-    Init {},
+    /// Initialize the data directory
+    Init {
+        /// Delete any existing data directory before initializing
+        #[arg(short = 'k', long)]
+        clean: bool,
+        /// Prepare the data directory with resources for customization
+        #[arg(short, long)]
+        customize: bool,
+    },
     /// Upgrade the database
     Upgrade {},
     /// Adds files to myapp
@@ -49,23 +57,19 @@ enum Commands {
 pub fn execute() -> Result<(), Box<dyn Error>> {
     let cli = Cli::parse();
 
-    app::init(cli.config.as_deref())?;
-
-    // todo: come up with a more useful way to report status after subcommand
-    match &cli.command {
-        Commands::Init {} => info!("INIT {:?}", command_init()),
-        Commands::Upgrade {} => info!("UPGRADE {:?}", command_upgrade()),
-        Commands::Import { filenames } => info!("IMPORT {:?}", import::command_import(filenames)),
-        Commands::Build { clean } => info!("BUILD {:?}", build::command_build(&clean)),
+    let config_path = match cli.config.as_deref() {
+        Some(path) => path,
+        None => &Path::new("./data/config.toml"),
     };
 
-    Ok(())
-}
+    app::init(config_path)?;
 
-fn command_init() -> Result<(), Box<dyn Error>> {
-    // todo: remove existing DB?
-    db::upgrade()?;
-    Ok(())
+    match &cli.command {
+        Commands::Init { clean, customize } => init::command(&clean, &customize),
+        Commands::Upgrade {} => command_upgrade(),
+        Commands::Import { filenames } => import::command_import(filenames),
+        Commands::Build { clean } => build::command_build(&clean),
+    }
 }
 
 fn command_upgrade() -> Result<(), Box<dyn Error>> {

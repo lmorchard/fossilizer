@@ -24,9 +24,6 @@ pub struct AppConfig {
 
     #[serde(default = "default_data_path")]
     pub data_path: PathBuf,
-
-    #[serde(default = "default_database_path")]
-    pub database_path: PathBuf,
 }
 pub fn default_build_path() -> PathBuf {
     "./build".into()
@@ -34,25 +31,24 @@ pub fn default_build_path() -> PathBuf {
 pub fn default_data_path() -> PathBuf {
     "./data".into()
 }
-pub fn default_database_path() -> PathBuf {
-    "./data/data.sqlite3".into()
-}
 impl AppConfig {
     pub fn media_path(&self) -> PathBuf {
+        // todo: allow this to be individually overridden
         self.data_path.join("media")
+    }
+    pub fn database_path(&self) -> PathBuf {
+        // todo: allow this to be individually overridden
+        self.data_path.join("data.sqlite3")
     }
 }
 
-pub fn init(config_path: Option<&Path>) -> Result<(), Box<dyn Error>> {
+pub fn init(config_path: &Path) -> Result<(), Box<dyn Error>> {
     dotenv::dotenv().ok();
 
     let mut config = Config::builder();
-
-    if let Some(config_path) = config_path {
-        let config_path = config_path.to_str().unwrap();
-        config = config.add_source(config::File::with_name(config_path));
+    if config_path.is_file() {
+        config = config.add_source(config::File::from(config_path));
     }
-
     config = config.add_source(config::Environment::with_prefix(ENV_PREFIX));
 
     let config = config.build().unwrap();

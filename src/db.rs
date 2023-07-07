@@ -27,12 +27,12 @@ lazy_static! {
 pub fn conn() -> Result<Connection, Box<dyn Error>> {
     let config = config::config()?;
 
-    let database_path = Path::new(&config.database_path);
-    let database_parent_path = database_path.parent().ok_or("no parent path")?;
+    let database_path = config.database_path();
+    let database_parent_path = Path::new(&database_path).parent().ok_or("no parent path")?;
     trace!("database path {:?}", database_path);
     fs::create_dir_all(&database_parent_path).unwrap();
 
-    let conn = Connection::open(database_path)?;
+    let conn = Connection::open(&database_path)?;
     conn.pragma_update(None, "journal_mode", "WAL").unwrap();
     conn.pragma_update(None, "foreign_keys", "ON").unwrap();
 
@@ -43,7 +43,7 @@ pub fn conn() -> Result<Connection, Box<dyn Error>> {
 pub fn upgrade() -> Result<(), Box<dyn Error>> {
     let config = config::config()?;
 
-    let mut conn = Connection::open(config.database_path)?;
+    let mut conn = Connection::open(config.database_path())?;
     MIGRATIONS.to_latest(&mut conn)?;
     Ok(())
 }
