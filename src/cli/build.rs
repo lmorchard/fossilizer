@@ -27,6 +27,9 @@ pub struct BuildArgs {
     /// Skip copying over media files
     #[arg(long)]
     skip_media: bool,
+    /// Skip building index page
+    #[arg(long)]
+    skip_index: bool,
     /// Skip building pages for activities
     #[arg(long)]
     skip_activities: bool,
@@ -39,6 +42,7 @@ pub fn command(args: &BuildArgs) -> Result<(), Box<dyn Error>> {
     let config = config::config()?;
     let clean = args.clean;
     let skip_media = args.skip_media;
+    let skip_index = args.skip_index;
     let skip_activities = args.skip_activities;
     let skip_assets = args.skip_assets;
 
@@ -56,22 +60,23 @@ pub fn command(args: &BuildArgs) -> Result<(), Box<dyn Error>> {
             Ok(())
         }),
         thread::spawn(move || -> Result<()> {
-            if !skip_activities {
-                let config = config::config().unwrap();
+            let config = config::config().unwrap();
+            let tera = templates::init().unwrap();
+            let db_conn = db::conn().unwrap();
+            let db_activities = db::activities::Activities::new(&db_conn);
+            let db_actors = db::actors::Actors::new(&db_conn);
 
-                let tera = templates::init().unwrap();
-
-                let db_conn = db::conn().unwrap();
-                let db_activities = db::activities::Activities::new(&db_conn);
-                let db_actors = db::actors::Actors::new(&db_conn);
-
+            if !skip_activities || !skip_index {
                 let actors = db_actors.get_actors_by_id().unwrap();
-
                 let day_entries =
                     plan_activities_pages(&config.build_path, &db_activities).unwrap();
-                generate_index_page(&config.build_path, &day_entries, &tera).unwrap();
-                generate_activities_pages(&config.build_path, &tera, &actors, &day_entries)
-                    .unwrap();
+                if !skip_index {
+                   generate_index_page(&config.build_path, &day_entries, &tera).unwrap();
+                }
+                if !skip_activities {
+                    generate_activities_pages(&config.build_path, &tera, &actors, &day_entries)
+                        .unwrap();
+                }
             }
             Ok(())
         }),
@@ -80,6 +85,8 @@ pub fn command(args: &BuildArgs) -> Result<(), Box<dyn Error>> {
     for t in threads {
         t.join().unwrap()?
     }
+
+    info!("Build finished");
 
     Ok(())
 }
