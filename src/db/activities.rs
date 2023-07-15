@@ -2,7 +2,7 @@ use anyhow::Result;
 use rusqlite::{params, Connection};
 use serde::Serialize;
 
-use crate::activitystreams::{Activity, Outbox};
+use crate::activitystreams::{Activity, OrderedItems};
 
 // todo: make this configurable?
 const IMPORT_TRANSACTION_PAGE_SIZE: usize = 500;
@@ -26,19 +26,19 @@ impl<'a> Activities<'a> {
         Ok(())
     }
 
-    pub fn import_outbox<T: Serialize>(&self, outbox: Outbox<T>) -> Result<()> {
+    pub fn import_collection<T: Serialize>(&self, collection: &impl OrderedItems<T>) -> Result<()> {
         let conn = &self.conn;
 
         // todo: use conn.transaction()?
         conn.execute("BEGIN TRANSACTION", ())?;
 
-        for (count, item) in outbox.ordered_items.into_iter().enumerate() {
+        for (count, item) in collection.ordered_items().into_iter().enumerate() {
             if count > 0 && (count % IMPORT_TRANSACTION_PAGE_SIZE) == 0 {
                 info!("Imported {:?} items", count);
                 conn.execute("COMMIT TRANSACTION", ())?;
                 conn.execute("BEGIN TRANSACTION", ())?;
             }
-            debug!("Inserting {:?}", count);
+            trace!("Inserting {:?}", count);
             self.import_activity(item)?;
         }
 

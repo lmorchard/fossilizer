@@ -4,14 +4,50 @@ lazy_static! {
     pub static ref PUBLIC_ID: String = "https://www.w3.org/ns/activitystreams#Public".to_string();
 }
 
+pub trait OrderedItems<TItem: Serialize> {
+    fn ordered_items(&self) -> &Vec<TItem>;
+}
+
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub struct Outbox<TItem> {
+pub struct Outbox<TItem: Serialize> {
     pub id: String,
     #[serde(rename = "type")]
     pub type_field: String,
     pub total_items: i32,
     pub ordered_items: Vec<TItem>,
+}
+impl<TItem: Serialize> OrderedItems<TItem> for Outbox<TItem> {
+    fn ordered_items(&self) -> &Vec<TItem> {
+        &self.ordered_items
+    }
+}
+
+#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct OrderedCollection {
+    pub id: String,
+    #[serde(rename = "type")]
+    pub type_field: String,
+    pub total_items: i32,
+    pub first: String,
+    pub last: String,
+}
+
+#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct OrderedCollectionPage<TItem: Serialize> {
+    pub id: String,
+    #[serde(rename = "type")]
+    pub type_field: String,
+    pub next: Option<String>,
+    pub prev: Option<String>,
+    pub ordered_items: Vec<TItem>,
+}
+impl<TItem: Serialize> OrderedItems<TItem> for OrderedCollectionPage<TItem> {
+    fn ordered_items(&self) -> &Vec<TItem> {
+        &self.ordered_items
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -24,8 +60,8 @@ pub struct Actor {
     pub followers: String,
     pub inbox: String,
     pub outbox: String,
-    pub likes: String,
-    pub bookmarks: String,
+    pub likes: Option<String>,
+    pub bookmarks: Option<String>,
     pub preferred_username: String,
     pub name: String,
     pub summary: Option<String>,

@@ -8,6 +8,7 @@ use fossilizer::{app, db};
 
 pub mod build;
 pub mod import;
+pub mod fetch;
 pub mod init;
 
 #[derive(Parser)]
@@ -38,8 +39,10 @@ enum Commands {
     Init(init::InitArgs),
     /// Upgrade the database
     Upgrade {},
-    /// Adds files to myapp
+    /// Import Mastodon export tarballs
     Import(import::ImportArgs),
+    /// Fetch an ActivityPub outbox URL
+    Fetch(fetch::Args),
     /// Build the static site
     Build(build::BuildArgs),
 }
@@ -58,6 +61,7 @@ pub fn execute() -> Result<(), Box<dyn Error>> {
         Commands::Init(args) => init::command(args),
         Commands::Upgrade {} => command_upgrade(),
         Commands::Import(args) => import::command(args),
+        Commands::Fetch(args) => fetch::command(args),
         Commands::Build(args) => build::command(args),
     }
 }

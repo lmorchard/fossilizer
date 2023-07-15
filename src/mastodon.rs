@@ -1,6 +1,6 @@
 use anyhow::Result;
 use flate2::read::GzDecoder;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use std::convert::From;
 use std::error::Error;
 use std::fs;
@@ -79,13 +79,15 @@ impl Export {
     }
 
     // todo: define more specific error type
-    pub fn outbox<T: for<'de> Deserialize<'de>>(&mut self) -> Result<Outbox<T>, Box<dyn Error>> {
+    pub fn outbox<T: for<'de> Deserialize<'de> + Serialize>(
+        &mut self,
+    ) -> Result<Outbox<T>, Box<dyn Error>> {
         let entry = self.find_entry("outbox.json")?;
         let outbox: Outbox<T> = serde_json::from_reader(entry)?;
         Ok(outbox)
     }
 
-    pub fn actor<T: for<'de> Deserialize<'de>>(&mut self) -> Result<T, Box<dyn Error>> {
+    pub fn actor<T: for<'de> Deserialize<'de> + Serialize>(&mut self) -> Result<T, Box<dyn Error>> {
         let entry = self.find_entry("actor.json")?;
         let actor: T = serde_json::from_reader(entry)?;
         Ok(actor)

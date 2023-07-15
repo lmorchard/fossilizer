@@ -37,7 +37,7 @@ pub fn command(args: &ImportArgs) -> Result<(), Box<dyn Error>> {
         let outbox: activitystreams::Outbox<serde_json::Value> = export.outbox()?;
         info!("Found {:?} items", outbox.ordered_items.len());
         let activities = db::activities::Activities::new(&conn);
-        activities.import_outbox(outbox)?;
+        activities.import_collection(&outbox)?;
 
         debug!("Imported {:?}", filename);
     }

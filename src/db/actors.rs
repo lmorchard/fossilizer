@@ -15,8 +15,8 @@ impl<'a> Actors<'a> {
         Self { conn }
     }
 
-    pub fn import_actor<T: Serialize>(&self, activity: T) -> Result<()> {
-        let json_text = serde_json::to_string_pretty(&activity)?;
+    pub fn import_actor<T: Serialize>(&self, actor: T) -> Result<()> {
+        let json_text = serde_json::to_string_pretty(&actor)?;
         self.conn.execute(
             "INSERT OR REPLACE INTO actors (json) VALUES (?1)",
             params![json_text],
