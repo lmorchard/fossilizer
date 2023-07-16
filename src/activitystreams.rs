@@ -1,8 +1,7 @@
 use serde::{Deserialize, Serialize};
 
-lazy_static! {
-    pub static ref PUBLIC_ID: String = "https://www.w3.org/ns/activitystreams#Public".to_string();
-}
+pub static PUBLIC_ID: &str = "https://www.w3.org/ns/activitystreams#Public";
+pub static CONTENT_TYPE: &str = "application/activity+json";
 
 pub trait OrderedItems<TItem: Serialize> {
     fn ordered_items(&self) -> &Vec<TItem>;
@@ -124,7 +123,8 @@ pub struct Activity {
 
 impl Activity {
     pub fn is_public(&self) -> bool {
-        self.to.contains(&PUBLIC_ID) || self.cc.contains(&PUBLIC_ID)
+        let public_id = PUBLIC_ID.to_string();
+        self.to.contains(&public_id) || self.cc.contains(&public_id)
     }
 }
 
