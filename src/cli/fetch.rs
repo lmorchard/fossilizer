@@ -30,14 +30,14 @@ pub async fn command(args: &Args) -> Result<(), Box<dyn Error>> {
         header::ACCEPT,
         header::HeaderValue::from_static(CONTENT_TYPE),
     );
-    let ap_client = reqwest::blocking::ClientBuilder::new()
+    let ap_client = reqwest::ClientBuilder::new()
         .default_headers(ap_default_headers)
         .build()?;
 
     // todo: need a threaded URL download queue? async queue?
 
     for actor_url in &args.actor_urls {
-        let actor_raw: serde_json::Value = ap_client.get(actor_url).send()?.json()?;
+        let actor_raw: serde_json::Value = ap_client.get(actor_url).send().await?.json().await?;
         actors.import_actor(&actor_raw)?;
         // todo: fetch media and adjust URLs in actor
 
@@ -50,13 +50,13 @@ pub async fn command(args: &Args) -> Result<(), Box<dyn Error>> {
             );
         }
 
-        let outbox: OrderedCollection = ap_client.get(&actor.outbox).send()?.json()?;
+        let outbox: OrderedCollection = ap_client.get(&actor.outbox).send().await?.json().await?;
 
         let mut page_url = Some(outbox.first);
         while page_url.is_some() {
             debug!("importing {:?}", page_url);
             let page: OrderedCollectionPage<serde_json::Value> =
-                ap_client.get(page_url.unwrap()).send()?.json()?;
+                ap_client.get(page_url.unwrap()).send().await?.json().await?;
 
             activities.import_collection(&page)?;
 
