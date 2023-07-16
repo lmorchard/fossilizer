@@ -3,8 +3,8 @@ use lazy_static::lazy_static;
 use rusqlite::Connection;
 use rusqlite_migration::{Migrations, M};
 use std::error::Error;
-use std::path::Path;
 use std::fs;
+use std::path::Path;
 
 pub mod activities;
 pub mod actors;

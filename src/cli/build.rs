@@ -71,7 +71,7 @@ pub async fn command(args: &BuildArgs) -> Result<(), Box<dyn Error>> {
                 let day_entries =
                     plan_activities_pages(&config.build_path, &db_activities).unwrap();
                 if !skip_index {
-                   generate_index_page(&config.build_path, &day_entries, &tera).unwrap();
+                    generate_index_page(&config.build_path, &day_entries, &tera).unwrap();
                 }
                 if !skip_activities {
                     generate_activities_pages(&config.build_path, &tera, &actors, &day_entries)

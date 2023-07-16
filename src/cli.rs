@@ -7,8 +7,8 @@ use std::path::{Path, PathBuf};
 use fossilizer::app;
 
 pub mod build;
-pub mod import;
 pub mod fetch;
+pub mod import;
 pub mod init;
 pub mod upgrade;
 

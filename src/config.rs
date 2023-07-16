@@ -44,7 +44,7 @@ impl AppConfig {
     }
     pub fn web_assets_path(&self) -> PathBuf {
         self.data_path.join("web")
-    }    
+    }
 }
 
 pub fn init(config_path: &Path) -> Result<(), Box<dyn Error>> {

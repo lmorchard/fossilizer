@@ -11,7 +11,8 @@ This is maybe an attempt to build a static site generator for Mastodon export ta
 - [ ] fetch outbox url for incremental imports
 - [ ] improve error handling in general
 - [ ] GitHub pages publish action?
+- [ ] CI automation on github for tests
 - [ ] automated cross platform build on GitHub
-- [ ] build pagefind indices
+- [ ] build pagefind indices within single executable
 - [ ] try [tinysearch](https://github.com/tinysearch/tinysearch) to index individual activities and link to within-page anchors?
 

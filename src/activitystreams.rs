@@ -239,8 +239,8 @@ impl Attachments for Tag {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::path::Path;
     use std::error::Error;
+    use std::path::Path;
 
     const JSON_OUTBOX: &str = include_str!("./resources/test/outbox.json");
     const JSON_ACTIVITY_WITH_EMOJI: &str =

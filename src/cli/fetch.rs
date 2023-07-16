@@ -4,8 +4,8 @@ use std::convert::From;
 use std::error::Error;
 
 use fossilizer::activitystreams::{
-    Activity, Actor, Attachments, OrderedCollection, OrderedCollectionPage, OrderedItems, IdOrObject,
-    CONTENT_TYPE,
+    Activity, Actor, Attachments, IdOrObject, OrderedCollection, OrderedCollectionPage,
+    OrderedItems, CONTENT_TYPE,
 };
 use fossilizer::{config, db};
 
