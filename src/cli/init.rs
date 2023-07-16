@@ -24,7 +24,7 @@ pub struct InitArgs {
     customize: bool,
 }
 
-pub fn command(args: &InitArgs) -> Result<(), Box<dyn Error>> {
+pub async fn command(args: &InitArgs) -> Result<(), Box<dyn Error>> {
     setup_data_path(&args.clean)?;
     db::upgrade()?;
     if args.customize {

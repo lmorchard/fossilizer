@@ -13,7 +13,7 @@ pub struct ImportArgs {
     filenames: Vec<String>,
 }
 
-pub fn command(args: &ImportArgs) -> Result<(), Box<dyn Error>> {
+pub async fn command(args: &ImportArgs) -> Result<(), Box<dyn Error>> {
     let config = config::config()?;
     let data_path = PathBuf::from(&config.data_path);
     fs::create_dir_all(&data_path)?;

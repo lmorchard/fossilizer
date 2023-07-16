@@ -38,7 +38,7 @@ pub struct BuildArgs {
     skip_assets: bool,
 }
 
-pub fn command(args: &BuildArgs) -> Result<(), Box<dyn Error>> {
+pub async fn command(args: &BuildArgs) -> Result<(), Box<dyn Error>> {
     let config = config::config()?;
     let clean = args.clean;
     let skip_media = args.skip_media;

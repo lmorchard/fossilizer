@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 use std::error::Error;
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 use url::Url;
 
 pub static PUBLIC_ID: &str = "https://www.w3.org/ns/activitystreams#Public";
@@ -239,6 +239,7 @@ impl Attachments for Tag {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::path::Path;
     use std::error::Error;
 
     const JSON_OUTBOX: &str = include_str!("./resources/test/outbox.json");

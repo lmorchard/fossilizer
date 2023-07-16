@@ -15,7 +15,7 @@ pub struct Args {
     actor_urls: Vec<String>,
 }
 
-pub fn command(args: &Args) -> Result<(), Box<dyn Error>> {
+pub async fn command(args: &Args) -> Result<(), Box<dyn Error>> {
     let config = config::config()?;
     let media_path = config.media_path();
 
@@ -33,6 +33,8 @@ pub fn command(args: &Args) -> Result<(), Box<dyn Error>> {
     let ap_client = reqwest::blocking::ClientBuilder::new()
         .default_headers(ap_default_headers)
         .build()?;
+
+    // todo: need a threaded URL download queue? async queue?
 
     for actor_url in &args.actor_urls {
         let actor_raw: serde_json::Value = ap_client.get(actor_url).send()?.json()?;

@@ -6,8 +6,9 @@ extern crate lazy_static;
 #[macro_use]
 extern crate log;
 
-fn main() {
-    match cli::execute() {
+#[tokio::main]
+async fn main() {
+    match cli::execute().await {
         Ok(_) => {}
         Err(err) => println!("Error: {:?}", err),
     }

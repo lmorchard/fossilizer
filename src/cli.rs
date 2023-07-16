@@ -4,12 +4,13 @@ use std::convert::From;
 use std::error::Error;
 use std::path::{Path, PathBuf};
 
-use fossilizer::{app, db};
+use fossilizer::app;
 
 pub mod build;
 pub mod import;
 pub mod fetch;
 pub mod init;
+pub mod upgrade;
 
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
@@ -38,7 +39,7 @@ enum Commands {
     /// Initialize the data directory
     Init(init::InitArgs),
     /// Upgrade the database
-    Upgrade {},
+    Upgrade(upgrade::UpgradeArgs),
     /// Import Mastodon export tarballs
     Import(import::ImportArgs),
     /// Fetch an ActivityPub outbox URL
@@ -47,7 +48,7 @@ enum Commands {
     Build(build::BuildArgs),
 }
 
-pub fn execute() -> Result<(), Box<dyn Error>> {
+pub async fn execute() -> Result<(), Box<dyn Error>> {
     let cli = Cli::parse();
 
     let config_path = match cli.config.as_deref() {
@@ -58,15 +59,10 @@ pub fn execute() -> Result<(), Box<dyn Error>> {
     app::init(config_path)?;
 
     match &cli.command {
-        Commands::Init(args) => init::command(args),
-        Commands::Upgrade {} => command_upgrade(),
-        Commands::Import(args) => import::command(args),
-        Commands::Fetch(args) => fetch::command(args),
-        Commands::Build(args) => build::command(args),
+        Commands::Init(args) => init::command(args).await,
+        Commands::Upgrade(args) => upgrade::command(args).await,
+        Commands::Import(args) => import::command(args).await,
+        Commands::Fetch(args) => fetch::command(args).await,
+        Commands::Build(args) => build::command(args).await,
     }
-}
-
-fn command_upgrade() -> Result<(), Box<dyn Error>> {
-    db::upgrade()?;
-    Ok(())
 }
