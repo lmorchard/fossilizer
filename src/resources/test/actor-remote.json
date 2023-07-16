@@ -1,0 +1,113 @@
+{
+  "@context": [
+    "https://www.w3.org/ns/activitystreams",
+    "https://w3id.org/security/v1",
+    {
+      "manuallyApprovesFollowers": "as:manuallyApprovesFollowers",
+      "toot": "http://joinmastodon.org/ns#",
+      "featured": {
+        "@id": "toot:featured",
+        "@type": "@id"
+      },
+      "featuredTags": {
+        "@id": "toot:featuredTags",
+        "@type": "@id"
+      },
+      "alsoKnownAs": {
+        "@id": "as:alsoKnownAs",
+        "@type": "@id"
+      },
+      "movedTo": {
+        "@id": "as:movedTo",
+        "@type": "@id"
+      },
+      "schema": "http://schema.org#",
+      "PropertyValue": "schema:PropertyValue",
+      "value": "schema:value",
+      "discoverable": "toot:discoverable",
+      "Device": "toot:Device",
+      "Ed25519Signature": "toot:Ed25519Signature",
+      "Ed25519Key": "toot:Ed25519Key",
+      "Curve25519Key": "toot:Curve25519Key",
+      "EncryptedMessage": "toot:EncryptedMessage",
+      "publicKeyBase64": "toot:publicKeyBase64",
+      "deviceId": "toot:deviceId",
+      "claim": {
+        "@type": "@id",
+        "@id": "toot:claim"
+      },
+      "fingerprintKey": {
+        "@type": "@id",
+        "@id": "toot:fingerprintKey"
+      },
+      "identityKey": {
+        "@type": "@id",
+        "@id": "toot:identityKey"
+      },
+      "devices": {
+        "@type": "@id",
+        "@id": "toot:devices"
+      },
+      "messageFranking": "toot:messageFranking",
+      "messageType": "toot:messageType",
+      "cipherText": "toot:cipherText",
+      "suspended": "toot:suspended",
+      "focalPoint": {
+        "@container": "@list",
+        "@id": "toot:focalPoint"
+      }
+    }
+  ],
+  "id": "https://hackers.town/users/lmorchard",
+  "type": "Person",
+  "following": "https://hackers.town/users/lmorchard/following",
+  "followers": "https://hackers.town/users/lmorchard/followers",
+  "inbox": "https://hackers.town/users/lmorchard/inbox",
+  "outbox": "https://hackers.town/users/lmorchard/outbox",
+  "featured": "https://hackers.town/users/lmorchard/collections/featured",
+  "featuredTags": "https://hackers.town/users/lmorchard/collections/tags",
+  "preferredUsername": "lmorchard",
+  "name": "Les Orchard",
+  "summary": "<p>he / him; semi-hermit in PDX, USA; tinkerer; old adhd cat dad; serial enthusiast; editor-at-large for <a href=\"http://lmorchard.com\" target=\"_blank\" rel=\"nofollow noopener noreferrer\" translate=\"no\"><span class=\"invisible\">http://</span><span class=\"\">lmorchard.com</span><span class=\"invisible\"></span></a>; astra mortemque superare gradatim; tootfinder</p>",
+  "url": "https://hackers.town/@lmorchard",
+  "manuallyApprovesFollowers": false,
+  "discoverable": true,
+  "published": "2020-06-28T00:00:00Z",
+  "devices": "https://hackers.town/users/lmorchard/collections/devices",
+  "publicKey": {
+    "id": "https://hackers.town/users/lmorchard#main-key",
+    "owner": "https://hackers.town/users/lmorchard",
+    "publicKeyPem": "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAp2fiC0Me5LwbTH+FkEtj\n+v9baRm9GD9BKwOqn+VE2z9lw6ZYu5nwiD9f0uDyjGtBQB0H+bvvWwetmZYRFM02\ncr+xJMlv1n6PWiKGvDr0rs1+iOvrCRWQIFgQ19DoZEd7HAgtM92LPxztfVlfZgll\n+OdG1nmW188cYM9BnFocJvZJpnzoDZrm5nXr53sBQet/+OulLq7anw7esvI1DuAC\n3W7kYyNyOUbHJ/CdniXlR0YlWGmzD1GR/YtV8CsC+K6e1kmHjeQTCPstXnbZwuj/\n5lIDDpXTEPunN5Nv3VelQNn8jqDrjo4/uoVJWcUvcub9l7a3YIxwcD34qV0Sqkqy\nyQIDAQAB\n-----END PUBLIC KEY-----\n"
+  },
+  "tag": [],
+  "attachment": [
+    {
+      "type": "PropertyValue",
+      "name": "Home",
+      "value": "<a href=\"http://lmorchard.com/\" target=\"_blank\" rel=\"nofollow noopener noreferrer me\" translate=\"no\"><span class=\"invisible\">http://</span><span class=\"\">lmorchard.com/</span><span class=\"invisible\"></span></a>"
+    },
+    {
+      "type": "PropertyValue",
+      "name": "Webring Enthusiasts!",
+      "value": "<a href=\"https://fediverse-webring-enthusiasts.glitch.me/profiles/lmorchard_hackers.town/index.html\" target=\"_blank\" rel=\"nofollow noopener noreferrer me\" translate=\"no\"><span class=\"invisible\">https://</span><span class=\"ellipsis\">fediverse-webring-enthusiasts.</span><span class=\"invisible\">glitch.me/profiles/lmorchard_hackers.town/index.html</span></a>"
+    },
+    {
+      "type": "PropertyValue",
+      "name": "0xDECAFBAD BBS",
+      "value": "<a href=\"https://bbs.decafbad.com/\" target=\"_blank\" rel=\"nofollow noopener noreferrer me\" translate=\"no\"><span class=\"invisible\">https://</span><span class=\"\">bbs.decafbad.com/</span><span class=\"invisible\"></span></a>"
+    }
+  ],
+  "endpoints": {
+    "sharedInbox": "https://hackers.town/inbox"
+  },
+  "icon": {
+    "type": "Image",
+    "mediaType": "image/png",
+    "url": "https://hackers.town/system/accounts/avatars/000/136/533/original/1a8c651efe14fcd6.png"
+  },
+  "image": {
+    "type": "Image",
+    "mediaType": "image/jpeg",
+    "url": "https://hackers.town/system/accounts/headers/000/136/533/original/60af00520bbf3704.jpg"
+  }
+}

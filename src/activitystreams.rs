@@ -1,10 +1,45 @@
 use serde::{Deserialize, Serialize};
+use std::error::Error;
+use std::path::{Path, PathBuf};
+use url::Url;
 
 pub static PUBLIC_ID: &str = "https://www.w3.org/ns/activitystreams#Public";
 pub static CONTENT_TYPE: &str = "application/activity+json";
 
 pub trait OrderedItems<TItem: Serialize> {
     fn ordered_items(&self) -> &Vec<TItem>;
+}
+
+#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Attachment {
+    #[serde(rename = "type")]
+    pub type_field: String,
+    pub media_type: String,
+    pub url: String,
+    pub name: Option<String>,
+    pub blurhash: Option<String>,
+}
+
+impl Attachment {
+    pub fn local_media_path(
+        self: &Self,
+        dest_path: &PathBuf,
+        actor: &Actor,
+    ) -> Result<PathBuf, Box<dyn Error>> {
+        let id_hash = &actor.id_hash();
+        let attachment_url = Url::parse(&actor.id)?.join(&self.url)?;
+        let attachment_path = attachment_url.path();
+
+        Ok(PathBuf::new()
+            .join(&dest_path)
+            .join(&id_hash)
+            .join(&attachment_path[1..]))
+    }
+}
+
+pub trait Attachments {
+    fn attachments(self: &Self) -> Vec<&Attachment>;
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -43,6 +78,7 @@ pub struct OrderedCollectionPage<TItem: Serialize> {
     pub prev: Option<String>,
     pub ordered_items: Vec<TItem>,
 }
+
 impl<TItem: Serialize> OrderedItems<TItem> for OrderedCollectionPage<TItem> {
     fn ordered_items(&self) -> &Vec<TItem> {
         &self.ordered_items
@@ -77,6 +113,19 @@ impl Actor {
     }
 }
 
+impl Attachments for Actor {
+    fn attachments(self: &Self) -> Vec<&Attachment> {
+        let mut attachments = Vec::new();
+        if let Some(icon) = &self.icon {
+            attachments.push(icon);
+        }
+        if let Some(image) = &self.image {
+            attachments.push(image);
+        }
+        attachments
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct PublicKey {}
@@ -93,6 +142,12 @@ pub enum IdOrObject<T> {
 impl<T> IdOrObject<T> {
     pub fn is_none(&self) -> bool {
         matches!(self, IdOrObject::None)
+    }
+    pub fn is_id(&self) -> bool {
+        matches!(self, IdOrObject::Id(_))
+    }
+    pub fn is_object(&self) -> bool {
+        matches!(self, IdOrObject::Object(_))
     }
     pub fn id(&self) -> Option<&String> {
         match &self {
@@ -145,6 +200,21 @@ pub struct Object {
     pub attachment: Vec<Attachment>,
 }
 
+impl Attachments for Object {
+    fn attachments(self: &Self) -> Vec<&Attachment> {
+        let mut attachments = Vec::new();
+        for attachment in &self.attachment {
+            attachments.push(attachment);
+        }
+        for tag in &self.tag {
+            if let Some(icon) = &tag.icon {
+                attachments.push(icon);
+            }
+        }
+        attachments
+    }
+}
+
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Tag {
@@ -156,15 +226,14 @@ pub struct Tag {
     pub icon: Option<Attachment>,
 }
 
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct Attachment {
-    #[serde(rename = "type")]
-    pub type_field: String,
-    pub media_type: String,
-    pub url: String,
-    pub name: Option<String>,
-    pub blurhash: Option<String>,
+impl Attachments for Tag {
+    fn attachments(self: &Self) -> Vec<&Attachment> {
+        let mut attachments = Vec::new();
+        if let Some(icon) = &self.icon {
+            attachments.push(icon);
+        }
+        attachments
+    }
 }
 
 #[cfg(test)]
@@ -175,6 +244,53 @@ mod tests {
     const JSON_OUTBOX: &str = include_str!("./resources/test/outbox.json");
     const JSON_ACTIVITY_WITH_EMOJI: &str =
         include_str!("./resources/test/activity-with-emoji.json");
+    const JSON_ACTIVITY_WITH_ATTACHMENT: &str =
+        include_str!("./resources/test/activity-with-attachment.json");
+    const JSON_REMOTE_ACTOR: &str = include_str!("./resources/test/actor-remote.json");
+
+    #[test]
+    fn test_remote_actor_attachments() -> Result<(), Box<dyn Error>> {
+        let actor: Actor = serde_json::from_str(JSON_REMOTE_ACTOR)?;
+        let icon = actor.icon.as_ref().unwrap();
+        let image = actor.image.as_ref().unwrap();
+        let media_path = PathBuf::new().join("media");
+        assert_eq!(
+            icon.local_media_path(&media_path, &actor)?,
+            Path::new("media/acc0bb231a7a2757c7e5c63aa68ce3cdbcfd32a43eb67a6bdedffe173c721184/system/accounts/avatars/000/136/533/original/1a8c651efe14fcd6.png"),
+        );
+        assert_eq!(
+            image.local_media_path(&media_path, &actor)?,
+            Path::new("media/acc0bb231a7a2757c7e5c63aa68ce3cdbcfd32a43eb67a6bdedffe173c721184/system/accounts/headers/000/136/533/original/60af00520bbf3704.jpg"),
+        );
+        Ok(())
+    }
+
+    #[test]
+    fn test_activity_with_attachments() -> Result<(), Box<dyn Error>> {
+        let actor: Actor = serde_json::from_str(JSON_REMOTE_ACTOR)?;
+        let activity: Activity = serde_json::from_str(JSON_ACTIVITY_WITH_ATTACHMENT)?;
+        let media_path = PathBuf::new().join("media");
+
+        let object = activity.object;
+        assert!(object.is_object());
+        let object = object.object().unwrap();
+
+        let result: Vec<PathBuf> = object
+            .attachments()
+            .iter()
+            .map(|attachment| attachment.local_media_path(&media_path, &actor).unwrap())
+            .collect();
+
+        let expected = vec![
+            Path::new("media/acc0bb231a7a2757c7e5c63aa68ce3cdbcfd32a43eb67a6bdedffe173c721184/users/media_attachments/files/002/337/518/original/ebbb5d342877102f.jpg"),
+            Path::new("media/acc0bb231a7a2757c7e5c63aa68ce3cdbcfd32a43eb67a6bdedffe173c721184/users/media_attachments/files/002/337/520/original/63a81769839a7ef6.jpg"),
+            Path::new("media/acc0bb231a7a2757c7e5c63aa68ce3cdbcfd32a43eb67a6bdedffe173c721184/system/custom_emojis/images/000/043/882/original/5cd6640bb919cf64.png"),
+        ];
+
+        assert_eq!(result, expected);
+
+        Ok(())
+    }
 
     #[test]
     fn test_outbox_parsing_with_local_model() -> Result<(), Box<dyn Error>> {
