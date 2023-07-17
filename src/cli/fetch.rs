@@ -55,8 +55,12 @@ pub async fn command(args: &Args) -> Result<(), Box<dyn Error>> {
         let mut page_url = Some(outbox.first);
         while page_url.is_some() {
             debug!("importing {:?}", page_url);
-            let page: OrderedCollectionPage<serde_json::Value> =
-                ap_client.get(page_url.unwrap()).send().await?.json().await?;
+            let page: OrderedCollectionPage<serde_json::Value> = ap_client
+                .get(page_url.unwrap())
+                .send()
+                .await?
+                .json()
+                .await?;
 
             activities.import_collection(&page)?;
 

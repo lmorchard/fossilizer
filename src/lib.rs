@@ -11,5 +11,6 @@ pub mod activitystreams;
 pub mod app;
 pub mod config;
 pub mod db;
+pub mod downloader;
 pub mod mastodon;
 pub mod templates;
