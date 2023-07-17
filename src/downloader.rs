@@ -24,6 +24,7 @@ pub struct DownloadTask {
 
 impl DownloadTask {
     async fn execute(self: Self) -> Result<DownloadTask> {
+        // todo: download with progress narration? https://gist.github.com/giuliano-oliveira/4d11d6b3bb003dba3a1b53f43d81b30d
         let client = reqwest::ClientBuilder::new().build().unwrap();
         let response = client.get(self.url.clone()).send().await?;
 
@@ -45,6 +46,12 @@ pub struct Downloader {
     tasks: Arc<Mutex<VecDeque<DownloadTask>>>,
     new_task_notify: Arc<Notify>,
     queue_closed: Arc<Notify>,
+}
+
+impl Default for Downloader {
+    fn default() -> Self {
+        Self::new(DEFAULT_CONCURRENCY)
+    }
 }
 
 impl Downloader {
@@ -69,7 +76,7 @@ impl Downloader {
         Ok(())
     }
 
-    pub fn run(self: &Self) -> tokio::task::JoinHandle<()> {
+    pub fn run(self: &Self) -> tokio::task::JoinHandle<anyhow::Result<()>> {
         let concurrency = self.concurrency;
         let tasks = self.tasks.clone();
         let new_task_notify = self.new_task_notify.clone();
@@ -81,7 +88,7 @@ impl Downloader {
             loop {
                 // Check whether it's time to bail out when all known work is done
                 {
-                    let tasks = tasks.lock().unwrap();
+                    let tasks = tasks.lock().or(Err(anyhow!("failed to lock tasks")))?;
                     if tasks.is_empty() && workers.is_empty() && should_exit_when_empty {
                         trace!("Exiting after last task");
                         break;
@@ -90,7 +97,7 @@ impl Downloader {
 
                 // Fire up workers for available tasks up to concurrency limit
                 loop {
-                    let mut tasks = tasks.lock().unwrap();
+                    let mut tasks = tasks.lock().or(Err(anyhow!("failed to lock tasks")))?;
                     if tasks.is_empty() || workers.len() >= concurrency {
                         trace!(
                             "Not spawning worker - tasks.is_empty = {}; workers.len() = {}",
@@ -123,19 +130,10 @@ impl Downloader {
                 // Yield, so we're less of a hot loop here
                 tokio::task::yield_now().await;
             }
+            anyhow::Ok(())
         })
     }
 }
-
-impl Default for Downloader {
-    fn default() -> Self {
-        Self::new(DEFAULT_CONCURRENCY)
-    }
-}
-
-// manager task that monitors the queue
-// semaphore to manage concurrency?
-// spawn downloader tasks that download the files
 
 #[cfg(test)]
 mod tests {
@@ -149,7 +147,6 @@ mod tests {
         let base_path = generate_base_path();
         let mut server = mockito::Server::new();
         let (task, mock, expected_data) = generate_download_task(&base_path, &mut server);
-        println!("data {:?}", task.destination);
         task.clone().execute().await?;
         mock.assert();
         let result_data = fs::read_to_string(task.destination)?;
@@ -165,32 +162,36 @@ mod tests {
         let mut server = mockito::Server::new();
 
         let task_count = 32;
-        let mut test_tasks = Vec::new();
+        let mut test_downloads = Vec::new();
         for _ in 0..task_count {
-            test_tasks.push(generate_download_task(&base_path, &mut server));
+            test_downloads.push(generate_download_task(&base_path, &mut server));
         }
 
-        let tasks: Vec<DownloadTask> = test_tasks.iter().map(|(task, _, _)| task.clone()).collect();
+        let tasks: Vec<DownloadTask> = test_downloads
+            .iter()
+            .map(|(task, _, _)| task.clone())
+            .collect();
+
         let downloader = Downloader::default();
         let consumer = downloader.run();
         let producer = tokio::spawn(async move {
             for task in tasks {
-                println!("PUSHING TASK {:?}", task);
-                downloader.queue(task).unwrap();
-                let duration = {
-                    let mut rng = rand::thread_rng();
-                    Duration::from_millis(rng.gen_range(25..100))
-                };
-                sleep(duration).await;
+                downloader
+                    .queue(task)
+                    .or(Err(anyhow!("downloader queue")))?;
+                random_sleep(10, 100).await;
             }
-            downloader.close().unwrap();
+            downloader
+                .close()
+                .or(Err(anyhow!("downloader close failed")))?;
+            anyhow::Ok(())
         });
 
         let result = tokio::join!(consumer, producer,);
-        result.0?;
-        result.1?;
+        result.0??;
+        result.1??;
 
-        for (task, mock, expected_data) in test_tasks {
+        for (task, mock, expected_data) in test_downloads {
             mock.assert();
             let result_data = fs::read_to_string(task.destination)?;
             assert_eq!(result_data, expected_data);
@@ -201,10 +202,17 @@ mod tests {
         Ok(())
     }
 
+    async fn random_sleep(min: u64, max: u64) {
+        let duration = {
+            let mut rng = rand::thread_rng();
+            Duration::from_millis(rng.gen_range(min..max))
+        };
+        sleep(duration).await;
+    }
+
     fn generate_base_path() -> PathBuf {
         let rand_path: u16 = random();
         let base_path = env::temp_dir().join(format!("fossilizer-{}", rand_path));
-        println!("Base path = {:?}", base_path);
         base_path
     }
 
