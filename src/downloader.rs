@@ -1,16 +1,19 @@
+use anyhow::{anyhow, Result};
 use serde::{Deserialize, Serialize};
 use std::collections::VecDeque;
 use std::error::Error;
+use std::fs;
 use std::path::PathBuf;
 use std::sync::{Arc, Mutex};
+use std::{
+    fs::File,
+    io::{copy, Cursor},
+};
 use tokio::sync::Notify;
 use tokio::task::JoinSet;
-use tokio::time::{sleep, Duration};
 use url::Url;
 
 static DEFAULT_CONCURRENCY: usize = 4;
-
-use rand::Rng;
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -20,18 +23,24 @@ pub struct DownloadTask {
 }
 
 impl DownloadTask {
-    async fn execute(self: Self) {
-        println!("TASK START {:?}", self);
-        let duration = {
-            let mut rng = rand::thread_rng();
-            Duration::from_millis(rng.gen_range(100..1000))
-        };
-        sleep(duration).await;
-        println!("TASK END {:?}", self);
+    async fn execute(self: Self) -> Result<DownloadTask> {
+        let client = reqwest::ClientBuilder::new().build().unwrap();
+        let response = client.get(self.url.clone()).send().await?;
+
+        let file_parent_path = self.destination.parent().ok_or(anyhow!("no parent path"))?;
+        fs::create_dir_all(file_parent_path)?;
+
+        let mut file = File::create(&self.destination)?;
+        let mut content = Cursor::new(response.bytes().await?);
+
+        copy(&mut content, &mut file)?;
+
+        Ok(self)
     }
 }
 
 pub struct Downloader {
+    // todo: make concurrency adjustable during run via channels?
     pub concurrency: usize,
     tasks: Arc<Mutex<VecDeque<DownloadTask>>>,
     new_task_notify: Arc<Notify>,
@@ -98,6 +107,7 @@ impl Downloader {
 
                 // Wait for something important to happen...
                 tokio::select! {
+                    // todo: report progress via some channel
                     _ = workers.join_next(), if workers.len() > 0 => {
                         trace!("Worker done - workers.len() = {}", workers.len());
                     }
@@ -132,84 +142,96 @@ mod tests {
     use super::*;
     use rand::prelude::*;
     use std::env;
+    use tokio::time::{sleep, Duration};
 
     #[tokio::test]
-    async fn my_test() -> Result<(), Box<dyn Error>> {
-        let rand_path: u16 = random();
-        let base_path: PathBuf = env::temp_dir().join(format!("fossilizer-{}", rand_path));
+    async fn test_downloadtask_execute_downloads_url() -> Result<()> {
+        let base_path = generate_base_path();
+        let mut server = mockito::Server::new();
+        let (task, mock, expected_data) = generate_download_task(&base_path, &mut server);
+        println!("data {:?}", task.destination);
+        task.clone().execute().await?;
+        mock.assert();
+        let result_data = fs::read_to_string(task.destination)?;
+        assert_eq!(result_data, expected_data);
+        fs::remove_dir_all(base_path)?;
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn test_producer_consumer_tasks() -> Result<()> {
+        let base_path = generate_base_path();
 
         let mut server = mockito::Server::new();
 
-        let host = server.host_with_port();
-        println!("HOST {}", host);
-
-        let mock_server_url = server.url();
-
-        let resources_count = 64;
-
-        let mut data_resources: Vec<String> = Vec::new();
-        let mut mock_resources: Vec<mockito::Mock> = Vec::new();
-        let mut tasks: Vec<DownloadTask> = Vec::new();
-
-        for idx in 0..resources_count {
-            let data = format!("task {} data", idx);
-            let destination = base_path.join(format!("tasks/task-{}.txt", idx));
-            let url = Url::parse(&mock_server_url)
-                .unwrap()
-                .join(format!("/task-{}", idx).as_str())
-                .unwrap();
-
-            mock_resources.push(
-                server
-                    .mock("GET", url.as_str())
-                    .with_status(200)
-                    .with_header("content-type", "text/plain")
-                    .with_body(data.clone())
-                    .create(),
-            );
-            data_resources.push(data);
-            tasks.push(DownloadTask { url, destination });
+        let task_count = 32;
+        let mut test_tasks = Vec::new();
+        for _ in 0..task_count {
+            test_tasks.push(generate_download_task(&base_path, &mut server));
         }
 
-        {
-            let downloader = Downloader::default();
+        let tasks: Vec<DownloadTask> = test_tasks.iter().map(|(task, _, _)| task.clone()).collect();
+        let downloader = Downloader::default();
+        let consumer = downloader.run();
+        let producer = tokio::spawn(async move {
+            for task in tasks {
+                println!("PUSHING TASK {:?}", task);
+                downloader.queue(task).unwrap();
+                let duration = {
+                    let mut rng = rand::thread_rng();
+                    Duration::from_millis(rng.gen_range(25..100))
+                };
+                sleep(duration).await;
+            }
+            downloader.close().unwrap();
+        });
 
-            let consumer = downloader.run();
+        let result = tokio::join!(consumer, producer,);
+        result.0?;
+        result.1?;
 
-            let producer = tokio::spawn(async move {
-                for task in tasks {
-                    println!("PUSHING TASK {:?}", task);
-                    downloader.queue(task.clone()).unwrap();
-                    let duration = {
-                        let mut rng = rand::thread_rng();
-                        Duration::from_millis(rng.gen_range(100..150))
-                    };
-                    sleep(duration).await;
-                }
-                downloader.close().unwrap();
-            });
-
-            /*
-            let producer_downloader = downloader.clone();
-            let producer = tokio::spawn(async move {
-                for task in tasks {
-                    producer_downloader.as_ref().lock().await.queue(task.clone()).unwrap();
-                }
-                producer_downloader.as_ref().lock().await.close().unwrap();
-            });
-            */
-
-            tokio::join!(consumer, producer,);
-        }
-
-        /*
-        for mock in mock_resources {
+        for (task, mock, expected_data) in test_tasks {
             mock.assert();
+            let result_data = fs::read_to_string(task.destination)?;
+            assert_eq!(result_data, expected_data);
         }
-         */
 
-        assert!(true);
+        fs::remove_dir_all(base_path)?;
 
         Ok(())
+    }
+
+    fn generate_base_path() -> PathBuf {
+        let rand_path: u16 = random();
+        let base_path = env::temp_dir().join(format!("fossilizer-{}", rand_path));
+        println!("Base path = {:?}", base_path);
+        base_path
+    }
+
+    fn generate_download_task(
+        base_path: &PathBuf,
+        server: &mut mockito::ServerGuard,
+    ) -> (DownloadTask, mockito::Mock, std::string::String) {
+        let rand_path: u16 = random();
+
+        let data = format!("task {} data", rand_path);
+
+        let url = Url::parse(&server.url())
+            .unwrap()
+            .join(format!("/task-{}", rand_path).as_str())
+            .unwrap();
+
+        let destination = base_path.join(format!("tasks/task-{}.txt", rand_path));
+
+        let server_mock = server
+            .mock("GET", url.path())
+            .with_status(200)
+            .with_header("content-type", "text/plain")
+            .with_body(data.clone())
+            .create();
+
+        let task = DownloadTask { url, destination };
+
+        (task, server_mock, data)
     }
 }
