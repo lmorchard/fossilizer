@@ -36,3 +36,4 @@ url = { version = "2.4.0", features = ["serde"] }
 
 [dev-dependencies]
 mockito = "1.1.0"
+test-log = { version = "0.2.12" }

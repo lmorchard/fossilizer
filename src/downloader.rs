@@ -138,11 +138,12 @@ impl Downloader {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use test_log::test;
     use rand::prelude::*;
     use std::env;
     use tokio::time::{sleep, Duration};
 
-    #[tokio::test]
+    #[test(tokio::test)]
     async fn test_downloadtask_execute_downloads_url() -> Result<()> {
         let base_path = generate_base_path();
         let mut server = mockito::Server::new();
@@ -155,8 +156,8 @@ mod tests {
         Ok(())
     }
 
-    #[tokio::test]
-    async fn test_producer_consumer_tasks() -> Result<()> {
+    #[test(tokio::test)]
+    async fn test_downloadtasks_producer_consumer() -> Result<()> {
         let base_path = generate_base_path();
 
         let mut server = mockito::Server::new();
@@ -179,7 +180,7 @@ mod tests {
                 downloader
                     .queue(task)
                     .or(Err(anyhow!("downloader queue")))?;
-                random_sleep(10, 100).await;
+                random_sleep(50, 200).await;
             }
             downloader
                 .close()
