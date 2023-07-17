@@ -21,12 +21,11 @@ pub struct DownloadTask {
 
 impl DownloadTask {
     async fn execute(self: Self) {
+        println!("TASK START {:?}", self);
         let duration = {
             let mut rng = rand::thread_rng();
             Duration::from_millis(rng.gen_range(100..1000))
         };
-
-        println!("TASK START {:?}", self);
         sleep(duration).await;
         println!("TASK END {:?}", self);
     }
@@ -36,7 +35,7 @@ pub struct Downloader {
     pub concurrency: usize,
     tasks: Arc<Mutex<VecDeque<DownloadTask>>>,
     new_task_notify: Arc<Notify>,
-    final_task_notify: Arc<Notify>,
+    queue_closed: Arc<Notify>,
 }
 
 impl Downloader {
@@ -45,7 +44,7 @@ impl Downloader {
             concurrency,
             tasks: Arc::new(Mutex::new(VecDeque::new())),
             new_task_notify: Arc::new(Notify::new()),
-            final_task_notify: Arc::new(Notify::new()),
+            queue_closed: Arc::new(Notify::new()),
         }
     }
 
@@ -57,63 +56,64 @@ impl Downloader {
     }
 
     pub fn close(self: &Self) -> Result<(), Box<dyn Error>> {
-        self.final_task_notify.notify_one();
+        self.queue_closed.notify_one();
         Ok(())
     }
 
-    pub async fn run(self: &mut Self) -> () {
+    pub fn run(self: &Self) -> tokio::task::JoinHandle<()> {
         let concurrency = self.concurrency;
         let tasks = self.tasks.clone();
         let new_task_notify = self.new_task_notify.clone();
-        let final_task_notify = self.final_task_notify.clone();
+        let queue_closed = self.queue_closed.clone();
 
-        let mut should_exit = false;
-        let mut workers = JoinSet::new();
-        loop {
-            // Check whether it's time to bail out when all known work is done
-            {
-                let tasks = tasks.lock().unwrap();
-                if tasks.is_empty() && workers.is_empty() && should_exit {
-                    // bail out when we're done with all tasks
-                    // todo: wait for a shutdown signal, since we might get more tasks in the future
-                    println!("ALL DONE");
-                    break;
-                }
-            }
-
-            // Fire up workers for available tasks up to concurrency limit
+        tokio::spawn(async move {
+            let mut should_exit_when_empty = false;
+            let mut workers = JoinSet::new();
             loop {
-                let mut tasks = tasks.lock().unwrap();
-                if tasks.is_empty() || workers.len() >= concurrency {
-                    break;
+                // Check whether it's time to bail out when all known work is done
+                {
+                    let tasks = tasks.lock().unwrap();
+                    if tasks.is_empty() && workers.is_empty() && should_exit_when_empty {
+                        trace!("Exiting after last task");
+                        break;
+                    }
                 }
-                if let Some(task) = tasks.pop_front() {
-                    println!(
-                        "SPAWNING worker (tasks = {} workers = {})",
-                        tasks.len(),
-                        workers.len()
-                    );
-                    workers.spawn(task.execute());
-                }
-            }
 
-            // Wait for something important to happen...
-            tokio::select! {
-                _ = workers.join_next() => {
-                    // worker done, let's loop through and launch workers if possible
-                    println!("WORKER done!");
+                // Fire up workers for available tasks up to concurrency limit
+                loop {
+                    let mut tasks = tasks.lock().unwrap();
+                    if tasks.is_empty() || workers.len() >= concurrency {
+                        trace!(
+                            "Not spawning worker - tasks.is_empty = {}; workers.len() = {}",
+                            tasks.is_empty(),
+                            workers.len()
+                        );
+                        break;
+                    }
+                    if let Some(task) = tasks.pop_front() {
+                        trace!("Spawning worker for task - tasks.len() = {}; workers.len() = {} - {:?}", tasks.len(), workers.len(), task);
+                        workers.spawn(task.execute());
+                    }
                 }
-                _ = new_task_notify.notified() => {
-                    // new task, let's loop through and launch workers if possible
-                    println!("NEW task arrived!");
+
+                // Wait for something important to happen...
+                tokio::select! {
+                    _ = workers.join_next(), if workers.len() > 0 => {
+                        trace!("Worker done - workers.len() = {}", workers.len());
+                    }
+                    _ = new_task_notify.notified() => {
+                        trace!("New task queued");
+                    }
+                    _ = queue_closed.notified() => {
+                        trace!("Queue closed");
+                        should_exit_when_empty = true;
+                    }
                 }
-                _ = final_task_notify.notified() => {
-                    // new task, let's loop through and launch workers if possible
-                    println!("FINAL task arrived!");
-                    should_exit = true;
-                }
+
+                // Yield, so we're less of a hot loop here
+                tokio::task::yield_now().await;
             }
-        }
+        })
     }
 }
 
@@ -145,7 +145,7 @@ mod tests {
 
         let mock_server_url = server.url();
 
-        let resources_count = 16;
+        let resources_count = 64;
 
         let mut data_resources: Vec<String> = Vec::new();
         let mut mock_resources: Vec<mockito::Mock> = Vec::new();
@@ -171,13 +171,36 @@ mod tests {
             tasks.push(DownloadTask { url, destination });
         }
 
-        let mut downloader = Downloader::default();
-        for task in tasks {
-            downloader.queue(task.clone()).unwrap();
-        }
-        downloader.close()?;
+        {
+            let downloader = Downloader::default();
 
-        downloader.run().await;
+            let consumer = downloader.run();
+
+            let producer = tokio::spawn(async move {
+                for task in tasks {
+                    println!("PUSHING TASK {:?}", task);
+                    downloader.queue(task.clone()).unwrap();
+                    let duration = {
+                        let mut rng = rand::thread_rng();
+                        Duration::from_millis(rng.gen_range(100..150))
+                    };
+                    sleep(duration).await;
+                }
+                downloader.close().unwrap();
+            });
+
+            /*
+            let producer_downloader = downloader.clone();
+            let producer = tokio::spawn(async move {
+                for task in tasks {
+                    producer_downloader.as_ref().lock().await.queue(task.clone()).unwrap();
+                }
+                producer_downloader.as_ref().lock().await.close().unwrap();
+            });
+            */
+
+            tokio::join!(consumer, producer,);
+        }
 
         /*
         for mock in mock_resources {
