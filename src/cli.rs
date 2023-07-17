@@ -53,7 +53,7 @@ pub async fn execute() -> Result<(), Box<dyn Error>> {
 
     let config_path = match cli.config.as_deref() {
         Some(path) => path,
-        None => &Path::new("./data/config.toml"),
+        None => Path::new("./data/config.toml"),
     };
 
     app::init(config_path)?;

@@ -23,7 +23,7 @@ pub struct DownloadTask {
 }
 
 impl DownloadTask {
-    async fn execute(self: Self) -> Result<DownloadTask> {
+    async fn execute(self) -> Result<DownloadTask> {
         // todo: download with progress narration? https://gist.github.com/giuliano-oliveira/4d11d6b3bb003dba3a1b53f43d81b30d
         let client = reqwest::ClientBuilder::new().build().unwrap();
         let response = client.get(self.url.clone()).send().await?;
@@ -64,19 +64,19 @@ impl Downloader {
         }
     }
 
-    pub fn queue(self: &Self, task: DownloadTask) -> Result<(), Box<dyn Error>> {
+    pub fn queue(&self, task: DownloadTask) -> Result<(), Box<dyn Error>> {
         let mut tasks = self.tasks.lock().unwrap();
         tasks.push_back(task);
         self.new_task_notify.notify_one();
         Ok(())
     }
 
-    pub fn close(self: &Self) -> Result<(), Box<dyn Error>> {
+    pub fn close(&self) -> Result<(), Box<dyn Error>> {
         self.queue_closed.notify_one();
         Ok(())
     }
 
-    pub fn run(self: &Self) -> tokio::task::JoinHandle<anyhow::Result<()>> {
+    pub fn run(&self) -> tokio::task::JoinHandle<anyhow::Result<()>> {
         let concurrency = self.concurrency;
         let tasks = self.tasks.clone();
         let new_task_notify = self.new_task_notify.clone();
@@ -115,7 +115,7 @@ impl Downloader {
                 // Wait for something important to happen...
                 tokio::select! {
                     // todo: report progress via some channel
-                    _ = workers.join_next(), if workers.len() > 0 => {
+                    _ = workers.join_next(), if !workers.is_empty() => {
                         trace!("Worker done - workers.len() = {}", workers.len());
                     }
                     _ = new_task_notify.notified() => {
@@ -212,7 +212,7 @@ mod tests {
 
     fn generate_base_path() -> PathBuf {
         let rand_path: u16 = random();
-        let base_path = env::temp_dir().join(format!("fossilizer-{}", rand_path));
+        let base_path = env::temp_dir().join(format!("fossilizer-{rand_path}"));
         base_path
     }
 
@@ -222,14 +222,14 @@ mod tests {
     ) -> (DownloadTask, mockito::Mock, std::string::String) {
         let rand_path: u16 = random();
 
-        let data = format!("task {} data", rand_path);
+        let data = format!("task {rand_path} data");
 
         let url = Url::parse(&server.url())
             .unwrap()
-            .join(format!("/task-{}", rand_path).as_str())
+            .join(format!("/task-{rand_path}").as_str())
             .unwrap();
 
-        let destination = base_path.join(format!("tasks/task-{}.txt", rand_path));
+        let destination = base_path.join(format!("tasks/task-{rand_path}.txt"));
 
         let server_mock = server
             .mock("GET", url.path())

@@ -150,7 +150,7 @@ where
     info!("Extracting {:?}", output_path);
 
     let output_parent_path = output_path.parent().unwrap();
-    fs::create_dir_all(&output_parent_path)?;
+    fs::create_dir_all(output_parent_path)?;
 
     let mut output_file = fs::File::create(&output_path)?;
     copy(input_reader, &mut output_file)?;

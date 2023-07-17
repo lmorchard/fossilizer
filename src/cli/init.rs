@@ -57,7 +57,7 @@ fn unpack_customizable_resources() -> Result<(), Box<dyn Error>> {
 
     let config_outpath = data_path.join("config.toml");
     let mut config_outfile = open_outfile_with_parent_dir(&config_outpath)?;
-    config_outfile.write_all(&DEFAULT_CONFIG.as_bytes())?;
+    config_outfile.write_all(DEFAULT_CONFIG.as_bytes())?;
 
     copy_embedded_assets::<cli::build::WebAsset>(&config.web_assets_path())?;
     copy_embedded_assets::<templates::TemplateAsset>(&config.templates_path())?;
@@ -69,7 +69,7 @@ fn unpack_customizable_resources() -> Result<(), Box<dyn Error>> {
 pub fn copy_embedded_assets<Assets: RustEmbed>(
     assets_output_path: &PathBuf,
 ) -> Result<(), Box<dyn Error>> {
-    Ok(for filename in Assets::iter() {
+    for filename in Assets::iter() {
         let file = Assets::get(&filename).ok_or("no asset")?;
         let outpath = PathBuf::from(&assets_output_path).join(&filename.to_string());
 
@@ -77,7 +77,8 @@ pub fn copy_embedded_assets<Assets: RustEmbed>(
         outfile.write_all(file.data.as_ref())?;
 
         debug!("Wrote {} to {:?}", filename, outpath);
-    })
+    };
+    Ok(())
 }
 
 pub fn open_outfile_with_parent_dir(outpath: &PathBuf) -> Result<fs::File, Box<dyn Error>> {

@@ -23,7 +23,7 @@ pub struct Attachment {
 
 impl Attachment {
     pub fn local_media_path(
-        self: &Self,
+        &self,
         dest_path: &PathBuf,
         actor: &Actor,
     ) -> Result<PathBuf, Box<dyn Error>> {
@@ -32,14 +32,14 @@ impl Attachment {
         let attachment_path = attachment_url.path();
 
         Ok(PathBuf::new()
-            .join(&dest_path)
-            .join(&id_hash)
+            .join(dest_path)
+            .join(id_hash)
             .join(&attachment_path[1..]))
     }
 }
 
 pub trait Attachments {
-    fn attachments(self: &Self) -> Vec<&Attachment>;
+    fn attachments(&self) -> Vec<&Attachment>;
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -114,7 +114,7 @@ impl Actor {
 }
 
 impl Attachments for Actor {
-    fn attachments(self: &Self) -> Vec<&Attachment> {
+    fn attachments(&self) -> Vec<&Attachment> {
         let mut attachments = Vec::new();
         if let Some(icon) = &self.icon {
             attachments.push(icon);
@@ -201,7 +201,7 @@ pub struct Object {
 }
 
 impl Attachments for Object {
-    fn attachments(self: &Self) -> Vec<&Attachment> {
+    fn attachments(&self) -> Vec<&Attachment> {
         let mut attachments = Vec::new();
         for attachment in &self.attachment {
             attachments.push(attachment);
@@ -227,7 +227,7 @@ pub struct Tag {
 }
 
 impl Attachments for Tag {
-    fn attachments(self: &Self) -> Vec<&Attachment> {
+    fn attachments(&self) -> Vec<&Attachment> {
         let mut attachments = Vec::new();
         if let Some(icon) = &self.icon {
             attachments.push(icon);

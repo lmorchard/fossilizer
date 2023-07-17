@@ -111,15 +111,13 @@ fn copy_web_assets(build_path: &PathBuf) -> Result<(), Box<dyn Error>> {
     let web_assets_path = config.web_assets_path();
     if web_assets_path.is_dir() {
         let mut web_assets_contents = Vec::new();
-        for entry in web_assets_path.read_dir()? {
-            if let Ok(entry) = entry {
-                web_assets_contents.push(entry.path());
-            }
+        for entry in (web_assets_path.read_dir()?).flatten() {
+            web_assets_contents.push(entry.path());
         }
-        copy_files(web_assets_contents.as_slice(), &build_path)?;
+        copy_files(web_assets_contents.as_slice(), build_path)?;
     } else {
         info!("Copying embedded static web assets");
-        copy_embedded_assets::<WebAsset>(&build_path)?;
+        copy_embedded_assets::<WebAsset>(build_path)?;
     }
 
     Ok(())
@@ -209,9 +207,9 @@ fn generate_activities_pages(
     day_entries: &Vec<IndexDayContext>,
 ) -> Result<(), Box<dyn Error>> {
     info!("Generating {} per-day pages", day_entries.len());
-    day_entries.par_iter().for_each(|day_entry| {
-        generate_activity_page(&build_path, &tera, &actors, &day_entry).unwrap()
-    });
+    day_entries
+        .par_iter()
+        .for_each(|day_entry| generate_activity_page(build_path, tera, actors, day_entry).unwrap());
     Ok(())
 }
 
@@ -229,7 +227,7 @@ fn generate_activity_page(
     let day_path = &day_entry.current.day_path;
 
     let items: Vec<activitystreams::Activity> = db_activities
-        .get_activities_for_day(&day)?
+        .get_activities_for_day(day)?
         .iter()
         .map(|activity| {
             let actor_id: &String = activity.actor.id().unwrap();
@@ -260,8 +258,8 @@ fn generate_activity_page(
     context.insert("activities", &items);
 
     templates::render_to_file(
-        &tera,
-        &PathBuf::from(&build_path).join(&day_path),
+        tera,
+        &PathBuf::from(&build_path).join(day_path),
         "day.html",
         &context,
     )?;
@@ -283,7 +281,7 @@ fn generate_index_page(
         let parts = day_entry
             .current
             .day
-            .split("/")
+            .split('/')
             .take(3)
             .collect::<Vec<&str>>();
         if let [year, month, day] = parts[..] {
@@ -295,7 +293,7 @@ fn generate_index_page(
                 Vacant(entry) => entry.insert(HashMap::new()),
                 Occupied(entry) => entry.into_mut(),
             };
-            month_map.insert(day, &day_entry);
+            month_map.insert(day, day_entry);
         }
     }
 
@@ -308,7 +306,7 @@ fn generate_index_page(
     context.insert("day_entries", &day_entries);
     context.insert("calendar_outline", &calendar_outline);
 
-    templates::render_to_file(&tera, &index_path, "index.html", &context)?;
+    templates::render_to_file(tera, &index_path, "index.html", &context)?;
 
     Ok(())
 }

@@ -10,6 +10,6 @@ extern crate log;
 async fn main() {
     match cli::execute().await {
         Ok(_) => {}
-        Err(err) => println!("Error: {:?}", err),
+        Err(err) => println!("Error: {err:?}"),
     }
 }

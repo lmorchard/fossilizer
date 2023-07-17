@@ -32,7 +32,7 @@ impl<'a> Activities<'a> {
         // todo: use conn.transaction()?
         conn.execute("BEGIN TRANSACTION", ())?;
 
-        for (count, item) in collection.ordered_items().into_iter().enumerate() {
+        for (count, item) in collection.ordered_items().iter().enumerate() {
             if count > 0 && (count % IMPORT_TRANSACTION_PAGE_SIZE) == 0 {
                 info!("Imported {:?} items", count);
                 conn.execute("COMMIT TRANSACTION", ())?;
