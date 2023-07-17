@@ -177,20 +177,23 @@ mod tests {
         let consumer = downloader.run();
         let producer = tokio::spawn(async move {
             for task in tasks {
+                trace!("Enqueuing task {:?}", task);
                 downloader
                     .queue(task)
-                    .or(Err(anyhow!("downloader queue")))?;
+                    .or(Err(anyhow!("downloader queue failed")))?;
                 random_sleep(50, 200).await;
             }
             downloader
                 .close()
                 .or(Err(anyhow!("downloader close failed")))?;
+
+            trace!("Consumer done enqueuing tasks");
             anyhow::Ok(())
         });
 
         let result = tokio::join!(consumer, producer,);
-        result.0??;
-        result.1??;
+        trace!("Consumer result = {:?}", result.0??);
+        trace!("Producer result = {:?}", result.1??);
 
         for (task, mock, expected_data) in test_downloads {
             mock.assert();
