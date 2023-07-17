@@ -126,9 +126,6 @@ impl Downloader {
                         should_exit_when_empty = true;
                     }
                 }
-
-                // Yield, so we're less of a hot loop here
-                tokio::task::yield_now().await;
             }
             anyhow::Ok(())
         })
