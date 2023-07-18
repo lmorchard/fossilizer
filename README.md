@@ -4,7 +4,8 @@ This is maybe an attempt to build a static site generator for Mastodon export ta
 
 ## TODO
 
-- [ ] fetch outbox url for incremental imports
+- [x] fetch outbox url for incremental imports
+- [ ] use mastodon API for authorized fetch
 - [ ] include actor info in site header?
 - [ ] build documented types for template contexts
 - [ ] special index just for activities with media attachments?
