@@ -29,7 +29,6 @@ pub fn conn() -> Result<Connection, Box<dyn Error>> {
 
     let database_path = config.database_path();
     let database_parent_path = Path::new(&database_path).parent().ok_or("no parent path")?;
-    trace!("database path {:?}", database_path);
     fs::create_dir_all(database_parent_path).unwrap();
 
     let conn = Connection::open(&database_path)?;

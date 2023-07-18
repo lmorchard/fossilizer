@@ -1,7 +1,6 @@
 use anyhow::{anyhow, Result};
 use serde::{Deserialize, Serialize};
 use std::collections::VecDeque;
-use std::error::Error;
 use std::fs;
 use std::path::PathBuf;
 use std::sync::{Arc, Mutex};
@@ -64,14 +63,14 @@ impl Downloader {
         }
     }
 
-    pub fn queue(&self, task: DownloadTask) -> Result<(), Box<dyn Error>> {
+    pub fn queue(&self, task: DownloadTask) -> Result<()> {
         let mut tasks = self.tasks.lock().unwrap();
         tasks.push_back(task);
         self.new_task_notify.notify_one();
         Ok(())
     }
 
-    pub fn close(&self) -> Result<(), Box<dyn Error>> {
+    pub fn close(&self) -> Result<()> {
         self.queue_closed.notify_one();
         Ok(())
     }
@@ -135,9 +134,9 @@ impl Downloader {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use test_log::test;
     use rand::prelude::*;
     use std::env;
+    use test_log::test;
     use tokio::time::{sleep, Duration};
 
     #[test(tokio::test)]

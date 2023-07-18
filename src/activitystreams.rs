@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
-use std::error::Error;
 use std::path::PathBuf;
 use url::Url;
+use anyhow::Result;
 
 pub static PUBLIC_ID: &str = "https://www.w3.org/ns/activitystreams#Public";
 pub static CONTENT_TYPE: &str = "application/activity+json";
@@ -26,7 +26,7 @@ impl Attachment {
         &self,
         dest_path: &PathBuf,
         actor: &Actor,
-    ) -> Result<PathBuf, Box<dyn Error>> {
+    ) -> Result<PathBuf> {
         let id_hash = &actor.id_hash();
         let attachment_url = Url::parse(&actor.id)?.join(&self.url)?;
         let attachment_path = attachment_url.path();

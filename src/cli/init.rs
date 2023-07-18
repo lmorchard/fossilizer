@@ -77,7 +77,7 @@ pub fn copy_embedded_assets<Assets: RustEmbed>(
         outfile.write_all(file.data.as_ref())?;
 
         debug!("Wrote {} to {:?}", filename, outpath);
-    };
+    }
     Ok(())
 }
 
