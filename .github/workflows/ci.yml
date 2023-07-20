@@ -22,12 +22,6 @@ jobs:
       fail-fast: false
       matrix:
         platform:
-          # - os_name: FreeBSD-x86_64
-          #   os: ubuntu-20.04
-          #   target: x86_64-unknown-freebsd
-          #   bin: fossilizer
-          #   name: fossilizer-FreeBSD-x86_64.tar.gz
-          #   skip_tests: true
           - os_name: Linux-x86_64
             os: ubuntu-20.04
             target: x86_64-unknown-linux-musl
@@ -43,12 +37,44 @@ jobs:
             target: arm-unknown-linux-musleabi
             bin: fossilizer
             name: fossilizer-Linux-arm-musl.tar.gz
-          - os_name: Linux-i686
-            os: ubuntu-20.04
-            target: i686-unknown-linux-musl
+          - os_name: macOS-x86_64
+            os: macOS-latest
+            target: x86_64-apple-darwin
             bin: fossilizer
-            name: fossilizer-Linux-i686-musl.tar.gz
+            name: fossilizer-Darwin-x86_64.tar.gz
+          - os_name: macOS-aarch64
+            os: macOS-latest
+            target: aarch64-apple-darwin
+            bin: fossilizer
+            name: fossilizer-Darwin-aarch64.tar.gz
             skip_tests: true
+          - os_name: Windows-x86_64
+            os: windows-latest
+            target: x86_64-pc-windows-msvc
+            bin: fossilizer.exe
+            name: fossilizer-Windows-x86_64.zip          
+
+          # fixme: this target fails on building "ring"?
+          # - os_name: Linux-i686
+          #   os: ubuntu-20.04
+          #   target: i686-unknown-linux-musl
+          #   bin: fossilizer
+          #   name: fossilizer-Linux-i686-musl.tar.gz
+          #   skip_tests: true
+
+          # todo: support all these targets?
+          # - os_name: Windows-i686
+          #   os: windows-latest
+          #   target: i686-pc-windows-msvc
+          #   bin: fossilizer.exe
+          #   name: fossilizer-Windows-i686.zip
+          #   skip_tests: true
+          # - os_name: FreeBSD-x86_64
+          #   os: ubuntu-20.04
+          #   target: x86_64-unknown-freebsd
+          #   bin: fossilizer
+          #   name: fossilizer-FreeBSD-x86_64.tar.gz
+          #   skip_tests: true
           # - os_name: Linux-mips
           #   os: ubuntu-20.04
           #   target: mips-unknown-linux-musl
@@ -112,30 +138,9 @@ jobs:
           #   bin: fossilizer.exe
           #   name: fossilizer-Windows-aarch64.zip
           #   skip_tests: true
-          - os_name: Windows-i686
-            os: windows-latest
-            target: i686-pc-windows-msvc
-            bin: fossilizer.exe
-            name: fossilizer-Windows-i686.zip
-            skip_tests: true
-          - os_name: Windows-x86_64
-            os: windows-latest
-            target: x86_64-pc-windows-msvc
-            bin: fossilizer.exe
-            name: fossilizer-Windows-x86_64.zip
-          - os_name: macOS-x86_64
-            os: macOS-latest
-            target: x86_64-apple-darwin
-            bin: fossilizer
-            name: fossilizer-Darwin-x86_64.tar.gz
-          - os_name: macOS-aarch64
-            os: macOS-latest
-            target: aarch64-apple-darwin
-            bin: fossilizer
-            name: fossilizer-Darwin-aarch64.tar.gz
-            skip_tests: true
         toolchain:
           - stable
+          # todo: do we care about all toolchains?
           # - beta
           # - nightly
     steps:
