@@ -2,7 +2,7 @@
 
 ![CI status](https://github.com/lmorchard/fossilizer/actions/workflows/ci.yml/badge.svg)
 
-This is an attempt to build static site generator ingests Mastodon exports and produces a web site based on the content.
+This is an attempt to a build static site generator ingests Mastodon exports and produces a web site based on the content.
 
 ## Quick Start
 
@@ -42,6 +42,12 @@ These are rough instructions for a rough command-line tool. There is no GUI, yet
 - Try `fossilizer upgrade` to upgrade the SQLite database and other assets when you download a new version. This is not (yet) automatic.
 
 - `data/config.toml` can be used to set many as-yet undocumented configuration options.
+
+- `data/data.sqlite3` is a a persistent SQLite database that accumulates all imported data.
+
+- `data/media` is where media attachments are unpacked.
+
+- You can repeatedly import data and import from multiple Mastodon instances. Everything will be merged.
 
 - Try `fossilizer init --customize`, which unpacks the following for customization:
 
