@@ -2,7 +2,7 @@
 
 ![CI status](https://github.com/lmorchard/fossilizer/actions/workflows/ci.yml/badge.svg)
 
-This is an attempt to a build static site generator ingests Mastodon exports and produces a web site based on the content.
+This is an attempt to a build static site generator that ingests Mastodon exports and produces a web site based on the content as a personal archive or even as a way to publish a backup copy of your stuff.
 
 ## Quick Start
 
