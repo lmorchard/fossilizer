@@ -22,7 +22,6 @@ log = "0.4.19"
 megalodon = "0.8.7"
 rand = "0.8.5"
 rayon = "1.7.0"
-reqwest = { version = "0.11.18", features = ["blocking", "json", "gzip"] }
 rusqlite = { version = "0.29.0", features = ["bundled"] }
 rusqlite_migration = "1.0.2"
 rust-embed = "6.7.0"
@@ -35,6 +34,23 @@ tar = "0.4.38"
 tera = "1.19.0"
 tokio = { version = "1.29.1", features = ["full", "windows-sys"] }
 url = { version = "2.4.0", features = ["serde"] }
+
+[target.'cfg(darwin)'.dependencies]
+reqwest = { version = "0.11.18", default-features = false, features = ["gzip", "json", "rustls-tls"] }
+
+[target.'cfg(all(target_os = "windows", target_arch="x86_64"))'.dependencies]
+reqwest = { version = "0.11.18", default-features = false, features = ["gzip", "json", "rustls-tls"] }
+
+[target.'cfg(all(target_os = "windows", not(target_arch="x86_64")))'.dependencies]
+reqwest = { version = "0.11.18", default-features = false, features = ["gzip", "json", "default-tls"] }
+openssl = { version = "0.10.55", features = ["vendored"] }
+
+[target.'cfg(all(target_os = "linux", any(target_arch="x86_64", target_arch="arm", target_arch="armv7", target_arch="mipsel")))'.dependencies]
+reqwest = { version = "0.11.18", default-features = false, features = ["gzip", "json", "rustls-tls"] }
+
+[target.'cfg(all(not(all(target_os = "linux", any(target_arch="x86_64", target_arch="arm", target_arch="armv7", target_arch="mipsel"))), not(target_os = "windows"), not(target_os = "darwin")))'.dependencies]
+reqwest = { version = "0.11.18", default-features = false, features = ["gzip", "json", "default-tls"] }
+openssl = { version = "0.10.55", features = ["vendored"] }
 
 [dev-dependencies]
 mockito = "1.1.0"
