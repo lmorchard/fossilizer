@@ -6,6 +6,7 @@ use std::fs;
 use std::io::prelude::*;
 use std::path::PathBuf;
 use tera::Tera;
+use url::Url;
 
 use crate::config;
 
@@ -33,13 +34,23 @@ pub fn init() -> Result<Tera, Box<dyn Error>> {
     }
 
     tera.register_filter("sha256", filter_sha256);
+    tera.register_filter("urlpath", filter_urlpath);
 
     Ok(tera)
 }
 
+/// Produce the sha256 hash of a string
 pub fn filter_sha256(value: &Value, _: &HashMap<String, Value>) -> tera::Result<Value> {
     let s = try_get_value!("filter_sha256", "value", String, value);
     Ok(to_value(sha256::digest(s)).unwrap())
+}
+
+/// Strip a URL down to just its path
+pub fn filter_urlpath(value: &Value, _: &HashMap<String, Value>) -> tera::Result<Value> {
+    let s = try_get_value!("filter_sha256", "value", String, value);
+    // todo: this is pretty ugly:
+    let url = Url::parse("http://example.com").unwrap().join(s.as_str()).unwrap();
+    Ok(to_value(url.path()).unwrap())
 }
 
 pub fn templates_source() -> Vec<(String, String)> {

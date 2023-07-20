@@ -16,6 +16,7 @@ impl<'a> Actors<'a> {
     }
 
     pub fn import_actor<T: Serialize>(&self, actor: T) -> Result<()> {
+        // todo: throw an error if id is null?
         let json_text = serde_json::to_string_pretty(&actor)?;
         self.conn.execute(
             "INSERT OR REPLACE INTO actors (json) VALUES (?1)",
@@ -37,7 +38,8 @@ impl<'a> Actors<'a> {
 
     pub fn get_actors<T: for<'de> Deserialize<'de>>(&self) -> Result<Vec<T>> {
         let conn = &self.conn;
-        let mut stmt = conn.prepare("SELECT json FROM actors")?;
+        // todo: fix actor import that results in null id? (i.e. failed request, error imported as "actor")
+        let mut stmt = conn.prepare("SELECT json FROM actors WHERE id IS NOT NULL")?;
         let mut rows = stmt.query([])?;
         let mut out = Vec::new();
         while let Some(r) = rows.next()? {

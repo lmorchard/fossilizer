@@ -19,6 +19,8 @@
         {%- if object.content -%}
           {{ object.content | safe }}
         {%- endif -%}
+      {%- else -%}
+        ARG BARGL
       {%- endif -%}
     </div>
   </div>
@@ -27,9 +29,9 @@
       <ul class="list-group list-group-flush">
         <li class="list-group-item media-attachments">
           {%- for attachment in object.attachment -%}
-            <img class="media-attachment" src="{{ media_root | safe }}/{{ attachment.url | safe }}" width="48" height="48"
+            <img class="media-attachment" src="{{ media_root | safe }}/{{ attachment.url | urlpath | safe }}" width="48" height="48"
                 data-bs-toggle="modal" data-bs-target="#exampleModal"
-                data-fullsrc="{{ media_root | safe }}/{{ attachment.url | safe }}" title="{{ attachment.name }}" />
+                data-fullsrc="{{ media_root | safe }}/{{ attachment.url | urlpath | safe }}" title="{{ attachment.name }}" />
           {%- endfor -%}
         </li>
       </ul>

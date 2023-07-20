@@ -21,6 +21,7 @@ lazy_static! {
         M::up(include_str!("./db/migrations/202306262036-actors-up.sql")),
         M::up(include_str!("./db/migrations/202307021314-ispublic-up.sql")),
         M::up(include_str!("./db/migrations/202307021325-index-ispublic-up.sql")),
+        M::up(include_str!("./db/migrations/202307191416-ingest-mastodon-statuses-up.sql")),
     ]);
 }
 

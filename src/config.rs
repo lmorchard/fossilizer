@@ -24,6 +24,8 @@ pub struct AppConfig {
 
     #[serde(default = "default_data_path")]
     pub data_path: PathBuf,
+
+    pub mastodon_access_token: Option<String>,
 }
 pub fn default_build_path() -> PathBuf {
     "./build".into()

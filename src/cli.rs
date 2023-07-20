@@ -8,6 +8,7 @@ use fossilizer::app;
 
 pub mod build;
 pub mod fetch;
+pub mod fetch_mastodon;
 pub mod import;
 pub mod init;
 pub mod upgrade;
@@ -44,6 +45,8 @@ enum Commands {
     Import(import::ImportArgs),
     /// Fetch an ActivityPub outbox URL
     Fetch(fetch::Args),
+    /// Fetch from a Mastodon API endpoint
+    FetchMastodon(fetch_mastodon::Args),
     /// Build the static site
     Build(build::BuildArgs),
 }
@@ -63,6 +66,7 @@ pub async fn execute() -> Result<(), Box<dyn Error>> {
         Commands::Upgrade(args) => upgrade::command(args).await,
         Commands::Import(args) => import::command(args).await,
         Commands::Fetch(args) => fetch::command(args).await,
+        Commands::FetchMastodon(args) => fetch_mastodon::command(args).await,
         Commands::Build(args) => build::command(args).await,
     }
 }

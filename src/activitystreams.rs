@@ -1,7 +1,9 @@
+use anyhow::Result;
+use megalodon;
 use serde::{Deserialize, Serialize};
+use std::convert::From;
 use std::path::PathBuf;
 use url::Url;
-use anyhow::Result;
 
 pub static PUBLIC_ID: &str = "https://www.w3.org/ns/activitystreams#Public";
 pub static CONTENT_TYPE: &str = "application/activity+json";
@@ -17,16 +19,15 @@ pub struct Attachment {
     pub type_field: String,
     pub media_type: String,
     pub url: String,
-    pub name: Option<String>,
     pub blurhash: Option<String>,
+    pub width: Option<u32>,
+    pub height: Option<u32>,
+    pub name: Option<String>,
+    pub summary: Option<String>,
 }
 
 impl Attachment {
-    pub fn local_media_path(
-        &self,
-        dest_path: &PathBuf,
-        actor: &Actor,
-    ) -> Result<PathBuf> {
+    pub fn local_media_path(&self, dest_path: &PathBuf, actor: &Actor) -> Result<PathBuf> {
         let id_hash = &actor.id_hash();
         let attachment_url = Url::parse(&actor.id)?.join(&self.url)?;
         let attachment_path = attachment_url.path();
@@ -35,6 +36,28 @@ impl Attachment {
             .join(dest_path)
             .join(id_hash)
             .join(&attachment_path[1..]))
+    }
+}
+
+impl From<megalodon::entities::Attachment> for Attachment {
+    fn from(attachment: megalodon::entities::Attachment) -> Self {
+        // todo: make this access less awkward? 😅
+        let meta_original = attachment.meta.and_then(|meta| meta.original);
+        let meta_original = meta_original.as_ref();
+        let width = meta_original.and_then(|original| original.width);
+        let height = meta_original.and_then(|original| original.height);
+
+        Self {
+            // todo use Image based on attachment.type?
+            type_field: "Document".to_string(),
+            // todo media_type mime-type from attachment.type? https://docs.joinmastodon.org/entities/MediaAttachment/#type
+            url: attachment.url,
+            summary: attachment.description,
+            blurhash: attachment.blurhash,
+            width,
+            height,
+            ..Default::default()
+        }
     }
 }
 
@@ -101,7 +124,7 @@ pub struct Actor {
     pub name: String,
     pub summary: Option<String>,
     pub url: String,
-    pub published: String,
+    pub published: chrono::DateTime<chrono::offset::Utc>,
     pub icon: Option<Attachment>,
     pub image: Option<Attachment>,
     pub public_key: Option<PublicKey>,
@@ -169,7 +192,7 @@ pub struct Activity {
     pub id: String,
     #[serde(rename = "type")]
     pub type_field: String,
-    pub published: String,
+    pub published: chrono::DateTime<chrono::offset::Utc>,
     pub to: Vec<String>,
     pub cc: Vec<String>,
     pub actor: IdOrObject<Actor>,
@@ -183,6 +206,55 @@ impl Activity {
     }
 }
 
+impl From<megalodon::entities::Status> for Activity {
+    fn from(status: megalodon::entities::Status) -> Self {
+        // todo: better error handling here?
+        let uri = url::Url::parse(status.uri.as_str()).unwrap();
+
+        let mut to = Vec::new();
+        match status.visibility {
+            megalodon::entities::StatusVisibility::Public => {
+                to.push(PUBLIC_ID.to_string());
+            },
+            _ => {},
+        };
+
+        Self {
+            id: format!("{}/activity", status.uri),
+            type_field: "Create".to_string(),
+            published: status.created_at.clone(),
+            to,
+            // cc
+            actor: IdOrObject::Id({
+                // hack: this is some grungy butchery to derive an activitypub actor URL for mastodon
+                let mut uri = uri.clone();
+                uri.set_path(format!("/users/{}", status.account.acct).as_str());
+                uri.into()
+            }),
+            object: IdOrObject::Object(Object {
+                id: status.uri.clone(),
+                url: status.url.or_else(|| Some(status.uri.clone())).unwrap(),
+                // todo: account for polls, retoots, etc?
+                type_field: "Note".to_string(),
+                published: status.created_at.clone(),
+                content: Some(status.content),
+                summary: if status.spoiler_text.len() > 0 {
+                    Some(status.spoiler_text)
+                } else {
+                    None
+                },
+                attachment: status
+                    .media_attachments
+                    .iter()
+                    .map(|media_attachment| Attachment::from(media_attachment.clone()))
+                    .collect(),
+                ..Default::default()
+            }),
+            ..Default::default()
+        }
+    }
+}
+
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Object {
@@ -190,7 +262,7 @@ pub struct Object {
     #[serde(rename = "type")]
     pub type_field: String,
     pub url: String,
-    pub published: String,
+    pub published: chrono::DateTime<chrono::offset::Utc>,
     pub to: Vec<String>,
     pub cc: Vec<String>,
     pub summary: Option<String>,
@@ -241,6 +313,8 @@ mod tests {
     use super::*;
     use std::error::Error;
     use std::path::Path;
+    use std::str::FromStr;
+    use test_log::test;
 
     const JSON_OUTBOX: &str = include_str!("./resources/test/outbox.json");
     const JSON_ACTIVITY_WITH_EMOJI: &str =
@@ -248,6 +322,41 @@ mod tests {
     const JSON_ACTIVITY_WITH_ATTACHMENT: &str =
         include_str!("./resources/test/activity-with-attachment.json");
     const JSON_REMOTE_ACTOR: &str = include_str!("./resources/test/actor-remote.json");
+    const JSON_MASTODON_STATUS_WITH_ATTACHMENT: &str =
+        include_str!("./resources/test/mastodon-status-with-attachment.json");
+
+    #[test]
+    fn test_from_megalodon_status_to_activity() -> Result<()> {
+        let status: megalodon::entities::Status =
+            serde_json::from_str(JSON_MASTODON_STATUS_WITH_ATTACHMENT).unwrap();
+        let activity: Activity = status.clone().into();
+
+        trace!("STATUS {:?}", status);
+        trace!("ACTIVITY {:?}", activity);
+
+        assert_eq!(
+            activity.id,
+            "https://hackers.town/users/lmorchard/statuses/110726017288384411/activity"
+        );
+
+        assert_eq!(
+            activity.actor.id().unwrap(),
+            "https://hackers.town/users/lmorchard"
+        );
+
+        let object = activity.object.object().unwrap();
+        assert_eq!(
+            object.id,
+            "https://hackers.town/users/lmorchard/statuses/110726017288384411"
+        );
+
+        let expected_published: chrono::DateTime<chrono::offset::Utc> =
+            chrono::DateTime::from_str("2023-07-16T22:02:21.535Z").unwrap();
+        assert_eq!(activity.published, expected_published);
+        assert_eq!(object.published, expected_published);
+
+        Ok(())
+    }
 
     #[test]
     fn test_remote_actor_attachments() -> Result<(), Box<dyn Error>> {
