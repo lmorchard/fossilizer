@@ -21,8 +21,6 @@
     <div class="col">
       <ul class="text-left search-results justify-content-center activities" data-pagefind-body data-pagefind-meta="title:{{ day }}">
         
-        {{ activities | length }}
-        
         {% for activity in activities %}
             {% include "activity.html" %}
         {% endfor %}
