@@ -36,6 +36,8 @@ These are rough instructions for a rough command-line tool. There is no GUI, yet
 
 - Try `fossilizer` by itself for a list of subcommands, try `--help` as an option to get more details on any command.
 
+- Try `fossilizer upgrade` to upgrade the SQLite database and other assets when you download a new version. This is not (yet) automatic.
+
 - `data/config.toml` can be used to set many as-yet undocumented configuration options.
 
 - Try `fossilizer init --customize`, which unpacks the following for customization:
@@ -43,6 +45,8 @@ These are rough instructions for a rough command-line tool. There is no GUI, yet
   - a `data/web` directory with static web assets that will be copied into the `build` directory
 
   - a `data/templates` directory with [Tera](https://tera.netlify.app/docs/) templates used to produce the HTML output
+
+  - Note: this will *not* overwrite the database for an existing `data` directory, though it *will* overwrite any existing `templates` or `web` directories.
   
 ## TODO
 
