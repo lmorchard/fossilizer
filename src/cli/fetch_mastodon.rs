@@ -29,7 +29,9 @@ pub async fn command(args: &Args) -> Result<(), Box<dyn Error>> {
             Some(access_token),
             None,
         );
+
         let account = client.verify_account_credentials().await?.json();
+        // todo: update actor from mastodon data
 
         let statuses = client
             .get_account_statuses(

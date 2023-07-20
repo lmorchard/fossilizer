@@ -45,6 +45,7 @@ impl Export {
     pub fn open(&mut self) -> Result<(), Box<dyn Error>> {
         self.reset();
 
+        // todo: also handle .zip files alongside .tar.gz
         let tar_gz = File::open(self.filepath.as_path())?;
         let tar_uncompressed = GzDecoder::new(tar_gz);
         self.archive = Some(Archive::new(tar_uncompressed));
