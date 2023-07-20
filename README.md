@@ -7,8 +7,9 @@ This is an attempt to build static site generator ingests Mastodon exports and p
 These are rough instructions for a rough command-line tool. There is no GUI, yet.
 
 1. Request and download [an export from your Mastodon instance](https://docs.joinmastodon.org/user/moving/#export) (e.g. `archive-20230720182703-36f08a7ce74bbf59f141b496b2b7f457.tar.gz`)
-1. Download [a pre-built release of Fossilizer](https://github.com/lmorchard/fossilizer/releases)
-1. Download [a pre-built release of pagefind](https://github.com/CloudCannon/pagefind/releases)
+1. Download [a release of pagefind](https://github.com/CloudCannon/pagefind/releases) and [install it](https://pagefind.app/docs/installation/) or use [a precompiled binary](https://pagefind.app/docs/installation/#downloading-a-precompiled-binary)
+1. Download [a release of Fossilizer](https://github.com/lmorchard/fossilizer/releases) - there is no installation, just a standalone command.
+    - Note: on macOS, you'll need to make an exception to run `fossilizer` in Security & Privacy settings
 1. Make a working directory somewhere
 1. Initialize the `data` directory:
     ```
