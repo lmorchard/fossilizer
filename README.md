@@ -1,5 +1,7 @@
 # fossilizer
 
+![CI status](https://github.com/lmorchard/fossilizer/actions/workflows/ci.yml/badge.svg)
+
 This is an attempt to build static site generator ingests Mastodon exports and produces a web site based on the content.
 
 ## Quick Start
@@ -52,7 +54,6 @@ These are rough instructions for a rough command-line tool. There is no GUI, yet
 ## TODO
 
 - [ ] move all of these to-dos to issues
-- [x] fetch outbox url for incremental imports
 - [ ] use mastodon API for authorized fetch
 - [ ] include actor info in site header?
 - [ ] build documented types for template contexts
@@ -60,10 +61,9 @@ These are rough instructions for a rough command-line tool. There is no GUI, yet
 - [ ] navigation between media attachments in dialog, prev & next
 - [ ] improve error handling in general
 - [ ] GitHub pages publish action?
-- [ ] CI automation on github for tests
-- [ ] automated cross platform build on GitHub
 - [ ] build pagefind indices within single executable
 - [ ] try [tinysearch](https://github.com/tinysearch/tinysearch) to index individual activities and link to within-page anchors?
 - [ ] better CLI with progress bars and all that jazz
 - [ ] produce a better set of export samples as test data
 - [ ] also support .zip exports
+- [ ] wrap outbox fetch behind a feature, since it doesn't work with AUTHORIZED_FETCH?
