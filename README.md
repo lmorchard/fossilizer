@@ -2,7 +2,7 @@
 
 ![CI status](https://github.com/lmorchard/fossilizer/actions/workflows/ci.yml/badge.svg)
 
-This is an attempt to a build static site generator that ingests Mastodon exports and produces a web site based on the content as a personal archive or even as a way to publish a backup copy of your stuff.
+This is an attempt to build a static site generator that ingests Mastodon exports and produces a web site based on the content as a personal archive or even as a way to publish a backup copy of your stuff.
 
 ## Quick Start
 
@@ -56,20 +56,3 @@ These are rough instructions for a rough command-line tool. There is no GUI, yet
   - a `data/templates` directory with [Tera](https://tera.netlify.app/docs/) templates used to produce the HTML output
 
   - Note: this will *not* overwrite the database for an existing `data` directory, though it *will* overwrite any existing `templates` or `web` directories.
-  
-## TODO
-
-- [ ] move all of these to-dos to issues
-- [ ] use mastodon API for authorized fetch
-- [ ] include actor info in site header?
-- [ ] build documented types for template contexts
-- [ ] special index just for activities with media attachments?
-- [ ] navigation between media attachments in dialog, prev & next
-- [ ] improve error handling in general
-- [ ] GitHub pages publish action?
-- [ ] build pagefind indices within single executable
-- [ ] try [tinysearch](https://github.com/tinysearch/tinysearch) to index individual activities and link to within-page anchors?
-- [ ] better CLI with progress bars and all that jazz
-- [ ] produce a better set of export samples as test data
-- [ ] also support .zip exports
-- [ ] wrap outbox fetch behind a feature, since it doesn't work with AUTHORIZED_FETCH?
