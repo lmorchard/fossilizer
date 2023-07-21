@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["activitystreams","app","config","db","mastodon","templates"]};
