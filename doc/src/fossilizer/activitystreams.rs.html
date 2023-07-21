@@ -684,12 +684,12 @@
         <span class="self">Self </span>{
             id: <span class="macro">format!</span>(<span class="string">&quot;{}/activity&quot;</span>, status.uri),
             type_field: <span class="string">&quot;Create&quot;</span>.to_string(),
-            published: status.created_at.clone(),
+            published: status.created_at,
             to,
             <span class="comment">// cc
             </span>actor: IdOrObject::Id({
                 <span class="comment">// hack: this is some grungy butchery to derive an activitypub actor URL for mastodon
-                </span><span class="kw">let </span><span class="kw-2">mut </span>uri = uri.clone();
+                </span><span class="kw">let </span><span class="kw-2">mut </span>uri = uri;
                 uri.set_path(<span class="macro">format!</span>(<span class="string">&quot;/users/{}&quot;</span>, status.account.acct).as_str());
                 uri.into()
             }),
@@ -698,9 +698,9 @@
                 url: status.url.or_else(|| <span class="prelude-val">Some</span>(status.uri.clone())).unwrap(),
                 <span class="comment">// todo: account for polls, retoots, etc?
                 </span>type_field: <span class="string">&quot;Note&quot;</span>.to_string(),
-                published: status.created_at.clone(),
+                published: status.created_at,
                 content: <span class="prelude-val">Some</span>(status.content),
-                summary: <span class="kw">if </span>status.spoiler_text.len() &gt; <span class="number">0 </span>{
+                summary: <span class="kw">if </span>!status.spoiler_text.is_empty() {
                     <span class="prelude-val">Some</span>(status.spoiler_text)
                 } <span class="kw">else </span>{
                     <span class="prelude-val">None
