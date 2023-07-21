@@ -1,5 +1,5 @@
 # borrowed from https://raw.githubusercontent.com/houseabsolute/precious/master/.github/workflows/ci.yml
-name: Tests and release
+name: Test, Build, & Release
 
 on:
   push:

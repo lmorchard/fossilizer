@@ -1,0 +1,40 @@
+name: Build & Deploy Documentation
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+  discussions: write
+
+env:
+  CRATE_NAME: fossilizer
+  GITHUB_TOKEN: ${{ github.token }}
+  RUST_BACKTRACE: 1
+
+jobs:
+  build:
+    name: "Build & Deploy Docs"
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Cache cargo & target directories
+        uses: Swatinem/rust-cache@v2
+      - name: Configure Git
+        run: |
+          git config --global user.email "me@lmorchard.com"
+          git config --global user.name "Les Orchard"
+      - name: Build Docs
+        run: ./scripts/build-docs.sh
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        if: github.ref == 'refs/heads/main'
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs/book
