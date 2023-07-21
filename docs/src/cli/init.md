@@ -24,7 +24,7 @@ my-mastodon-site/
 
 - The `data/media` directory is where media attachments will be extracted
 
-- The `data/dada.sqlite3` file is a SQLite database into which things like
+- The `data/data.sqlite3` file is a SQLite database into which things like
   posts and user account data will be stored.
 
 After you've run this command, you can try [the `import` command](./build.md) to
