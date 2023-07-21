@@ -1,8 +1,6 @@
 use anyhow::Result;
 use rusqlite::{params, Connection};
-use serde::de::{self, Visitor};
-use serde::{Deserialize, Serialize, Serializer};
-use std::fmt;
+use serde::Serialize;
 use std::str::FromStr;
 use std::string::ToString;
 

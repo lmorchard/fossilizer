@@ -40,3 +40,7 @@ openssl = { version = "0.10.55", features = ["vendored"] }
 [dev-dependencies]
 mockito = "1.1.0"
 test-log = { version = "0.2.12" }
+
+[features]
+fetch_outbox = []
+fetch_mastodon = []

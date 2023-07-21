@@ -7,11 +7,15 @@ use std::path::{Path, PathBuf};
 use fossilizer::app;
 
 pub mod build;
-pub mod fetch;
-pub mod fetch_mastodon;
 pub mod import;
 pub mod init;
 pub mod upgrade;
+
+#[cfg(feature = "fetch_outbox")]
+pub mod fetch;
+
+#[cfg(feature = "fetch_mastodon")]
+pub mod fetch_mastodon;
 
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
@@ -43,12 +47,14 @@ enum Commands {
     Upgrade(upgrade::UpgradeArgs),
     /// Import Mastodon export tarballs
     Import(import::ImportArgs),
-    /// Fetch an ActivityPub outbox URL
-    Fetch(fetch::Args),
-    /// Fetch from a Mastodon API endpoint
-    FetchMastodon(fetch_mastodon::Args),
     /// Build the static site
     Build(build::BuildArgs),
+    /// Fetch an ActivityPub outbox URL
+    #[cfg(feature = "fetch_outbox")]
+    Fetch(fetch::Args),
+    /// Fetch from a Mastodon API endpoint
+    #[cfg(feature = "fetch_mastodon")]
+    FetchMastodon(fetch_mastodon::Args),
 }
 
 pub async fn execute() -> Result<(), Box<dyn Error>> {
@@ -65,8 +71,10 @@ pub async fn execute() -> Result<(), Box<dyn Error>> {
         Commands::Init(args) => init::command(args).await,
         Commands::Upgrade(args) => upgrade::command(args).await,
         Commands::Import(args) => import::command(args).await,
-        Commands::Fetch(args) => fetch::command(args).await,
-        Commands::FetchMastodon(args) => fetch_mastodon::command(args).await,
         Commands::Build(args) => build::command(args).await,
+        #[cfg(feature = "fetch_outbox")]
+        Commands::Fetch(args) => fetch::command(args).await,
+        #[cfg(feature = "fetch_mastodon")]
+        Commands::FetchMastodon(args) => fetch_mastodon::command(args).await,
     }
 }
