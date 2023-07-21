@@ -222,12 +222,12 @@ impl From<megalodon::entities::Status> for Activity {
         Self {
             id: format!("{}/activity", status.uri),
             type_field: "Create".to_string(),
-            published: status.created_at.clone(),
+            published: status.created_at,
             to,
             // cc
             actor: IdOrObject::Id({
                 // hack: this is some grungy butchery to derive an activitypub actor URL for mastodon
-                let mut uri = uri.clone();
+                let mut uri = uri;
                 uri.set_path(format!("/users/{}", status.account.acct).as_str());
                 uri.into()
             }),
@@ -236,9 +236,9 @@ impl From<megalodon::entities::Status> for Activity {
                 url: status.url.or_else(|| Some(status.uri.clone())).unwrap(),
                 // todo: account for polls, retoots, etc?
                 type_field: "Note".to_string(),
-                published: status.created_at.clone(),
+                published: status.created_at,
                 content: Some(status.content),
-                summary: if status.spoiler_text.len() > 0 {
+                summary: if !status.spoiler_text.is_empty() {
                     Some(status.spoiler_text)
                 } else {
                     None

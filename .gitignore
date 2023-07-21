@@ -4,3 +4,4 @@ Settings.toml
 *.sqlite3*
 /build
 /data
+/.vscode
