@@ -271,7 +271,7 @@ will be set up for you:</p>
 <p>The <code>data/media</code> directory is where media attachments will be extracted</p>
 </li>
 <li>
-<p>The <code>data/dada.sqlite3</code> file is a SQLite database into which things like
+<p>The <code>data/data.sqlite3</code> file is a SQLite database into which things like
 posts and user account data will be stored.</p>
 </li>
 </ul>
@@ -424,10 +424,10 @@ fossilzer upgrade
 <h2 id="odds--ends"><a class="header" href="#odds--ends">Odds &amp; Ends</a></h2>
 <ul>
 <li>
-<p>For some details on how SQLite is used here as an ad-hoc document database, check out this blog post on <a href="https://blog.lmorchard.com/2023/05/12/toots-in-sqlite/">Using SQLite as a document database for Mastodon exports</a></p>
+<p>For some details on how SQLite is used here as an ad-hoc document database, check out this blog post on <a href="https://blog.lmorchard.com/2023/05/12/toots-in-sqlite/">Using SQLite as a document database for Mastodon exports</a>. TL;DR: JSON is stored as the main column in each row, while <code>json_extract()</code> is used mainly to generate virtual columns for lookup indexes.</p>
 </li>
 <li>
-<p>When ingesting data, care is taken to attempt to store JSON as close to the original source as possible from APIs and input files. That way, parsing and data models can incrementally upgraded over time without having lost any information from imported sources.</p>
+<p>When ingesting data, care is taken to attempt to store JSON as close to the original source as possible from APIs and input files. That way, data parsing and models can be incrementally upgraded over time without having lost any information from imported sources.</p>
 </li>
 </ul>
 
