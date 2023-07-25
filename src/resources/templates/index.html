@@ -9,7 +9,7 @@
 {% block content %}
   <section class="container mt-3 m-auto justify-content-center">
     <div class="col index-calendar-outline">
-      {%- for year, months in calendar_outline -%}
+      {%- for year, months in calendar -%}
         <details class="year">
           <summary><h2>{{ year }} ({{ months | length }})</h2></summary>
           {%- for month, days in months -%}
@@ -17,9 +17,9 @@
               <summary><h3>{{ month }} ({{ days | length }})</h3></summary>
               <div class="col">
                 <ul class="index-list">
-                  {%- for day, entry in days -%} {%- set day_entry = entry.current -%}
+                  {%- for day, entry in days -%}
                     <li class="card day">
-                        <a href="./{{ day_entry.day_path | safe }}">{{ day_entry.day }} ({{ day_entry.activity_count }})</a>
+                      <a href="./{{ entry.current.path | safe }}">{{ entry.current.date }} ({{ entry.current.count }})</a>
                     </li>
                   {%- endfor -%}
                 </ul>

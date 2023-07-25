@@ -2,7 +2,6 @@ use crate::{activitystreams, config, db, templates};
 use anyhow::Result;
 use rayon::prelude::*;
 use rust_embed::RustEmbed;
-use std::collections::hash_map::Entry::{Occupied, Vacant};
 use std::collections::HashMap;
 use std::error::Error;
 use std::fs;
@@ -144,27 +143,27 @@ pub fn plan_activities_pages(
     build_path: &PathBuf,
     db_activities: &db::activities::Activities<'_>,
 ) -> Result<Vec<contexts::IndexDayContext>, Box<dyn Error>> {
-    let mut day_entries: Vec<contexts::IndexDayContext> = Vec::new();
+    let mut entries: Vec<contexts::IndexDayContext> = Vec::new();
     let all_days = db_activities.get_published_days()?;
-    for (day, activity_count) in all_days {
-        let day_path = PathBuf::from(build_path).join(&day).with_extension("html");
+    for (date, count) in all_days {
+        let day_path = PathBuf::from(build_path).join(&date).with_extension("html");
         let mut context = contexts::IndexDayContext {
             current: contexts::IndexDayEntry {
-                day: day.clone(),
-                day_path: day_path.clone().strip_prefix(build_path)?.to_path_buf(),
-                activity_count,
+                date: date.clone(),
+                path: day_path.clone().strip_prefix(build_path)?.to_path_buf(),
+                count,
             },
             previous: None,
             next: None,
         };
-        if let Some(mut previous) = day_entries.pop() {
+        if let Some(mut previous) = entries.pop() {
             previous.next = Some(context.current.clone());
             context.previous = Some(previous.current.clone());
-            day_entries.push(previous);
+            entries.push(previous);
         }
-        day_entries.push(context);
+        entries.push(context);
     }
-    Ok(day_entries)
+    Ok(entries)
 }
 
 pub fn generate_activities_pages(
@@ -190,8 +189,8 @@ pub fn generate_activity_page(
     let db_conn = db::conn()?;
     let db_activities = db::activities::Activities::new(&db_conn);
 
-    let day = &day_entry.current.day;
-    let day_path = &day_entry.current.day_path;
+    let day = &day_entry.current.date;
+    let day_path = &day_entry.current.path;
 
     let items: Vec<activitystreams::Activity> = db_activities
         .get_activities_for_day(day)?
@@ -219,10 +218,7 @@ pub fn generate_activity_page(
         contexts::DayTemplateContext {
             site_root: "../..".to_string(),
             activities: items,
-            day: day.clone(),
-            previous_day: day_entry.previous.clone(),
-            next_day: day_entry.next.clone(),
-            current_day: day_entry.current.clone(),
+            day: day_entry.clone(),
         },
     )?;
 
@@ -236,28 +232,6 @@ pub fn generate_index_page(
 ) -> Result<(), Box<dyn Error>> {
     info!("Generating site index page");
 
-    // Index daily entries into outline of years, months, days
-    let mut calendar_outline: contexts::CalendarOutline = HashMap::new();
-    for day_entry in day_entries {
-        let parts = day_entry
-            .current
-            .day
-            .split('/')
-            .take(3)
-            .collect::<Vec<&str>>();
-        if let [year, month, day] = parts[..] {
-            let year_map = match calendar_outline.entry(year.to_string()) {
-                Vacant(entry) => entry.insert(HashMap::new()),
-                Occupied(entry) => entry.into_mut(),
-            };
-            let month_map = match year_map.entry(month.to_string()) {
-                Vacant(entry) => entry.insert(HashMap::new()),
-                Occupied(entry) => entry.into_mut(),
-            };
-            month_map.insert(day.to_string(), day_entry.clone());
-        }
-    }
-
     let index_path = PathBuf::from(&build_path)
         .join("index")
         .with_extension("html");
@@ -268,8 +242,7 @@ pub fn generate_index_page(
         "index.html",
         contexts::IndexTemplateContext {
             site_root: ".".to_string(),
-            day_entries: day_entries.clone(),
-            calendar_outline,
+            calendar: day_entries.into(),
         },
     )?;
 

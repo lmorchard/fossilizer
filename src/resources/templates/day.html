@@ -1,35 +1,35 @@
 {% extends "layout.html" %}
 
 {% block head %}
-  <title>{{ day }}</title>
+  <title>{{ day.current.date }}</title>
   <link rel="top" href="{{ site_root ~ "/index.html" }}" title="Index" />
-  {% if previous_day %}
-    <link rel="prev" href="{{ site_root ~ "/" ~ previous_day.day_path }}" title="{{ previous_day.day }}" />
+  {% if day.previous %}
+    <link rel="prev" href="{{ site_root ~ "/" ~ day.previous.path }}" title="{{ day.previous.date }}" />
   {% endif %}
-  {% if next_day %}
-    <link rel="next" href="{{ site_root ~ "/" ~ next_day.day_path }}" title="{{ next_day.day }}" />
+  {% if day.next %}
+    <link rel="next" href="{{ site_root ~ "/" ~ day.next.path }}" title="{{ day.next.date }}" />
   {% endif %}
 
 {% endblock head %} 
 
 {% block pagetitle %}
-  {{ day }}
+  {{ day.current.date }}
 {% endblock pagetitle %} 
 
 {% block content %}
   <section class="container mt-3 m-auto justify-content-center">
     <div class="col">
-      <ul class="text-left search-results justify-content-center activities" data-pagefind-body data-pagefind-meta="title:{{ day }}">
+      <ul class="text-left search-results justify-content-center activities" data-pagefind-body data-pagefind-meta="title:{{ day.current.date }}">
         
         {% for activity in activities %}
             {% include "activity.html" %}
         {% endfor %}
 
-        {% if next_day %}
+        {% if day.next %}
           <li class="card">
             <div class="card-body">
               <div class="card-text">
-                <h3><a class="nav-activities lazy-load auto-click" href="{{ site_root ~ "/" ~ next_day.day_path }}" title="{{ next_day.day }}">➡️</a></h3>
+                <h3><a class="nav-activities lazy-load auto-click" href="{{ site_root ~ "/" ~ day.next.path }}" title="{{ day.next.date }}">➡️</a></h3>
               </div>
             </div>
           </li>
