@@ -77,10 +77,7 @@ impl<'a> Activities<'a> {
         Ok(())
     }
 
-    pub fn import_many<T: Serialize + WhichActivitySchema>(
-        &self,
-        activities: &Vec<T>,
-    ) -> Result<()> {
+    pub fn import_many<T: Serialize + WhichActivitySchema>(&self, activities: &[T]) -> Result<()> {
         let conn = self.conn;
 
         // todo: use conn.transaction()?
@@ -219,12 +216,12 @@ impl<'a> Activities<'a> {
         while let Some(r) = rows.next()? {
             let json_data: String = r.get(0)?;
             let schema_str: String = r.get(1)?;
-            
+
             match schema_str.parse::<ActivitySchema>()? {
                 ActivitySchema::Activity => {
                     let activity: Activity = serde_json::from_str::<Activity>(&json_data)?;
                     out.push(activity);
-                },
+                }
                 ActivitySchema::Status => {
                     let status: megalodon::entities::Status = serde_json::from_str(&json_data)?;
                     let activity: Activity = status.into();

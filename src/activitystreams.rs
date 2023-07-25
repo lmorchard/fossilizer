@@ -212,11 +212,8 @@ impl From<megalodon::entities::Status> for Activity {
         let uri = url::Url::parse(status.uri.as_str()).unwrap();
 
         let mut to = Vec::new();
-        match status.visibility {
-            megalodon::entities::StatusVisibility::Public => {
-                to.push(PUBLIC_ID.to_string());
-            },
-            _ => {},
+        if let megalodon::entities::StatusVisibility::Public = status.visibility {
+            to.push(PUBLIC_ID.to_string());
         };
 
         Self {

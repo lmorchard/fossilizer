@@ -9,6 +9,8 @@ const ENV_PREFIX: &str = "APP";
 
 lazy_static! {
     static ref CONTEXT: RwLock<AppContext> = RwLock::new(AppContext::default());
+    pub static ref DEFAULT_CONFIG: String =
+        include_str!("./resources/default_config.toml").to_string();
 }
 
 #[derive(Default, Clone)]

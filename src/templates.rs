@@ -1,4 +1,5 @@
 use rust_embed::RustEmbed;
+use serde::Serialize;
 use serde_json::value::{to_value, Value};
 use std::collections::HashMap;
 use std::error::Error;
@@ -9,6 +10,8 @@ use tera::Tera;
 use url::Url;
 
 use crate::config;
+
+pub mod contexts;
 
 #[derive(RustEmbed)]
 #[folder = "src/resources/templates"]
@@ -49,7 +52,10 @@ pub fn filter_sha256(value: &Value, _: &HashMap<String, Value>) -> tera::Result<
 pub fn filter_urlpath(value: &Value, _: &HashMap<String, Value>) -> tera::Result<Value> {
     let s = try_get_value!("filter_sha256", "value", String, value);
     // todo: this is pretty ugly:
-    let url = Url::parse("http://example.com").unwrap().join(s.as_str()).unwrap();
+    let url = Url::parse("http://example.com")
+        .unwrap()
+        .join(s.as_str())
+        .unwrap();
     Ok(to_value(url.path()).unwrap())
 }
 
@@ -70,11 +76,12 @@ pub fn render_to_file(
     tera: &Tera,
     file_path: &PathBuf,
     template_name: &str,
-    context: &tera::Context,
+    context: impl Serialize,
 ) -> Result<(), Box<dyn Error>> {
     let file_parent_path = file_path.parent().ok_or("no parent path")?;
     fs::create_dir_all(file_parent_path)?;
-    let output = tera.render(template_name, context)?;
+    let context = tera::Context::from_serialize(context)?;
+    let output = tera.render(template_name, &context)?;
     let mut file = fs::File::create(file_path)?;
     file.write_all(output.as_bytes())?;
     debug!("Wrote {} to {:?}", template_name, file_path);
