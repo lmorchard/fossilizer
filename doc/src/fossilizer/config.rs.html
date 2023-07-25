@@ -84,6 +84,8 @@
 <a href="#84" id="84">84</a>
 <a href="#85" id="85">85</a>
 <a href="#86" id="86">86</a>
+<a href="#87" id="87">87</a>
+<a href="#88" id="88">88</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>config::Config;
 <span class="kw">use </span>dotenv;
 <span class="kw">use </span>serde::{Deserialize, Serialize};
@@ -95,6 +97,8 @@
 
 <span class="macro">lazy_static! </span>{
     <span class="kw">static </span><span class="kw-2">ref </span>CONTEXT: RwLock&lt;AppContext&gt; = RwLock::new(AppContext::default());
+    <span class="kw">pub static </span><span class="kw-2">ref </span>DEFAULT_CONFIG: String =
+        <span class="macro">include_str!</span>(<span class="string">&quot;./resources/default_config.toml&quot;</span>).to_string();
 }
 
 <span class="attr">#[derive(Default, Clone)]

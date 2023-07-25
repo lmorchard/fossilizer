@@ -274,9 +274,6 @@
 <a href="#274" id="274">274</a>
 <a href="#275" id="275">275</a>
 <a href="#276" id="276">276</a>
-<a href="#277" id="277">277</a>
-<a href="#278" id="278">278</a>
-<a href="#279" id="279">279</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>anyhow::Result;
 <span class="kw">use </span>rusqlite::{params, Connection};
 <span class="kw">use </span>serde::Serialize;
@@ -356,10 +353,7 @@
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="kw">pub fn </span>import_many&lt;T: Serialize + WhichActivitySchema&gt;(
-        <span class="kw-2">&amp;</span><span class="self">self</span>,
-        activities: <span class="kw-2">&amp;</span>Vec&lt;T&gt;,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+    <span class="kw">pub fn </span>import_many&lt;T: Serialize + WhichActivitySchema&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, activities: <span class="kw-2">&amp;</span>[T]) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="kw">let </span>conn = <span class="self">self</span>.conn;
 
         <span class="comment">// todo: use conn.transaction()?
@@ -498,12 +492,12 @@
         <span class="kw">while let </span><span class="prelude-val">Some</span>(r) = rows.next()<span class="question-mark">? </span>{
             <span class="kw">let </span>json_data: String = r.get(<span class="number">0</span>)<span class="question-mark">?</span>;
             <span class="kw">let </span>schema_str: String = r.get(<span class="number">1</span>)<span class="question-mark">?</span>;
-            
+
             <span class="kw">match </span>schema_str.parse::&lt;ActivitySchema&gt;()<span class="question-mark">? </span>{
                 ActivitySchema::Activity =&gt; {
                     <span class="kw">let </span>activity: Activity = serde_json::from_str::&lt;Activity&gt;(<span class="kw-2">&amp;</span>json_data)<span class="question-mark">?</span>;
                     out.push(activity);
-                },
+                }
                 ActivitySchema::Status =&gt; {
                     <span class="kw">let </span>status: megalodon::entities::Status = serde_json::from_str(<span class="kw-2">&amp;</span>json_data)<span class="question-mark">?</span>;
                     <span class="kw">let </span>activity: Activity = status.into();

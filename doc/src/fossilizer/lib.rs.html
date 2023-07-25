@@ -16,6 +16,7 @@
 <a href="#16" id="16">16</a>
 <a href="#17" id="17">17</a>
 <a href="#18" id="18">18</a>
+<a href="#19" id="19">19</a>
 </pre></div><pre class="rust"><code><span class="attr">#[macro_use]
 </span><span class="kw">extern crate </span>lazy_static;
 
@@ -31,6 +32,7 @@
 <span class="kw">pub mod </span>db;
 <span class="kw">pub mod </span>mastodon;
 <span class="kw">pub mod </span>templates;
+<span class="kw">pub mod </span>site_generator;
 
 <span class="attr">#[cfg(any(feature = <span class="string">&quot;fetch_outbox&quot;</span>, feature = <span class="string">&quot;fetch_mastodon&quot;</span>))]
 </span><span class="kw">pub mod </span>downloader;

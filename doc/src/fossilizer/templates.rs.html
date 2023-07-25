@@ -111,7 +111,15 @@
 <a href="#111" id="111">111</a>
 <a href="#112" id="112">112</a>
 <a href="#113" id="113">113</a>
+<a href="#114" id="114">114</a>
+<a href="#115" id="115">115</a>
+<a href="#116" id="116">116</a>
+<a href="#117" id="117">117</a>
+<a href="#118" id="118">118</a>
+<a href="#119" id="119">119</a>
+<a href="#120" id="120">120</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>rust_embed::RustEmbed;
+<span class="kw">use </span>serde::Serialize;
 <span class="kw">use </span>serde_json::value::{to_value, Value};
 <span class="kw">use </span>std::collections::HashMap;
 <span class="kw">use </span>std::error::Error;
@@ -122,6 +130,8 @@
 <span class="kw">use </span>url::Url;
 
 <span class="kw">use </span><span class="kw">crate</span>::config;
+
+<span class="kw">pub mod </span>contexts;
 
 <span class="attr">#[derive(RustEmbed)]
 #[folder = <span class="string">&quot;src/resources/templates&quot;</span>]
@@ -162,7 +172,10 @@
 </span><span class="kw">pub fn </span>filter_urlpath(value: <span class="kw-2">&amp;</span>Value, <span class="kw">_</span>: <span class="kw-2">&amp;</span>HashMap&lt;String, Value&gt;) -&gt; tera::Result&lt;Value&gt; {
     <span class="kw">let </span>s = <span class="macro">try_get_value!</span>(<span class="string">&quot;filter_sha256&quot;</span>, <span class="string">&quot;value&quot;</span>, String, value);
     <span class="comment">// todo: this is pretty ugly:
-    </span><span class="kw">let </span>url = Url::parse(<span class="string">&quot;http://example.com&quot;</span>).unwrap().join(s.as_str()).unwrap();
+    </span><span class="kw">let </span>url = Url::parse(<span class="string">&quot;http://example.com&quot;</span>)
+        .unwrap()
+        .join(s.as_str())
+        .unwrap();
     <span class="prelude-val">Ok</span>(to_value(url.path()).unwrap())
 }
 
@@ -183,11 +196,12 @@
     tera: <span class="kw-2">&amp;</span>Tera,
     file_path: <span class="kw-2">&amp;</span>PathBuf,
     template_name: <span class="kw-2">&amp;</span>str,
-    context: <span class="kw-2">&amp;</span>tera::Context,
+    context: <span class="kw">impl </span>Serialize,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;(), Box&lt;<span class="kw">dyn </span>Error&gt;&gt; {
     <span class="kw">let </span>file_parent_path = file_path.parent().ok_or(<span class="string">&quot;no parent path&quot;</span>)<span class="question-mark">?</span>;
     fs::create_dir_all(file_parent_path)<span class="question-mark">?</span>;
-    <span class="kw">let </span>output = tera.render(template_name, context)<span class="question-mark">?</span>;
+    <span class="kw">let </span>context = tera::Context::from_serialize(context)<span class="question-mark">?</span>;
+    <span class="kw">let </span>output = tera.render(template_name, <span class="kw-2">&amp;</span>context)<span class="question-mark">?</span>;
     <span class="kw">let </span><span class="kw-2">mut </span>file = fs::File::create(file_path)<span class="question-mark">?</span>;
     file.write_all(output.as_bytes())<span class="question-mark">?</span>;
     <span class="macro">debug!</span>(<span class="string">&quot;Wrote {} to {:?}&quot;</span>, template_name, file_path);
