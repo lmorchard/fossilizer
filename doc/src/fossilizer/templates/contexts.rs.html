@@ -76,51 +76,91 @@
 <a href="#76" id="76">76</a>
 <a href="#77" id="77">77</a>
 <a href="#78" id="78">78</a>
-</pre></div><pre class="rust"><code><span class="kw">use </span>serde::{Deserialize, Serialize};
+<a href="#79" id="79">79</a>
+<a href="#80" id="80">80</a>
+<a href="#81" id="81">81</a>
+<a href="#82" id="82">82</a>
+<a href="#83" id="83">83</a>
+<a href="#84" id="84">84</a>
+<a href="#85" id="85">85</a>
+<a href="#86" id="86">86</a>
+<a href="#87" id="87">87</a>
+<a href="#88" id="88">88</a>
+<a href="#89" id="89">89</a>
+<a href="#90" id="90">90</a>
+<a href="#91" id="91">91</a>
+<a href="#92" id="92">92</a>
+<a href="#93" id="93">93</a>
+<a href="#94" id="94">94</a>
+<a href="#95" id="95">95</a>
+<a href="#96" id="96">96</a>
+<a href="#97" id="97">97</a>
+<a href="#98" id="98">98</a>
+<a href="#99" id="99">99</a>
+</pre></div><pre class="rust"><code><span class="doccomment">//! Structs associated with templates to define available variables.
+
+</span><span class="kw">use </span>serde::{Deserialize, Serialize};
 <span class="kw">use </span>std::collections::hash_map::Entry::{Occupied, Vacant};
 <span class="kw">use </span>std::collections::HashMap;
 <span class="kw">use </span>std::path::PathBuf;
 
 <span class="kw">use </span><span class="kw">crate</span>::activitystreams;
 
-<span class="attr">#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+<span class="doccomment">/// Base template context for the `index.html` template.
+</span><span class="attr">#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 </span><span class="kw">pub struct </span>IndexTemplateContext {
-    <span class="kw">pub </span>site_root: String,
-    <span class="kw">pub </span>calendar: CalendarContext,
+    <span class="doccomment">/// Relative path to the site root from the current page
+    </span><span class="kw">pub </span>site_root: String,
+    <span class="doccomment">/// Calendar of nested hashmaps, organizing [IndexDayContext]s by year, month, and day
+    </span><span class="kw">pub </span>calendar: CalendarContext,
 }
 
-<span class="attr">#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+<span class="doccomment">/// Base template context for the `day.html` template.
+</span><span class="attr">#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 </span><span class="kw">pub struct </span>DayTemplateContext {
-    <span class="kw">pub </span>site_root: String,
-    <span class="kw">pub </span>day: IndexDayContext,
-    <span class="kw">pub </span>activities: Vec&lt;activitystreams::Activity&gt;,
+    <span class="doccomment">/// Relative path to the site root from the current page
+    </span><span class="kw">pub </span>site_root: String,
+    <span class="doccomment">/// Context for the page&#39;s current day
+    </span><span class="kw">pub </span>day: IndexDayContext,
+    <span class="doccomment">/// The set of activities posted on the current day
+    </span><span class="kw">pub </span>activities: Vec&lt;activitystreams::Activity&gt;,
 }
 
-<span class="attr">#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+<span class="doccomment">/// Context for a day, including previous and next days for navigation purposes
+</span><span class="attr">#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 </span><span class="kw">pub struct </span>IndexDayContext {
     <span class="kw">pub </span>previous: <span class="prelude-ty">Option</span>&lt;IndexDayEntry&gt;,
     <span class="kw">pub </span>current: IndexDayEntry,
     <span class="kw">pub </span>next: <span class="prelude-ty">Option</span>&lt;IndexDayEntry&gt;,
 }
 
-<span class="attr">#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+<span class="doccomment">/// Details on a single day
+</span><span class="attr">#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 </span><span class="kw">pub struct </span>IndexDayEntry {
-    <span class="kw">pub </span>date: String,
-    <span class="kw">pub </span>path: PathBuf,
-    <span class="kw">pub </span>count: usize,
+    <span class="doccomment">/// The date in yyyy/mm/dd format
+    </span><span class="kw">pub </span>date: String,
+    <span class="doccomment">/// The file path to the day&#39;s HTML page
+    </span><span class="kw">pub </span>path: PathBuf,
+    <span class="doccomment">/// A count of activities posted on this day
+    </span><span class="kw">pub </span>count: usize,
 }
 
-<span class="attr">#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+<span class="doccomment">/// Calendar of [IndexDayContext] structs, organized by into nested [HashMap]s 
+/// indexed by year, month, and day.
+</span><span class="attr">#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 </span><span class="kw">pub struct </span>CalendarContext(HashMap&lt;String, HashMap&lt;String, HashMap&lt;String, IndexDayContext&gt;&gt;&gt;);
+
 <span class="kw">impl </span>CalendarContext {
     <span class="kw">pub fn </span>new() -&gt; <span class="self">Self </span>{
         CalendarContext(HashMap::new())
     }
 
-    <span class="kw">pub fn </span>insert(<span class="kw-2">&amp;mut </span><span class="self">self</span>, day_entry: <span class="kw-2">&amp;</span>IndexDayContext) {
+    <span class="doccomment">/// Insert an [IndexDayContext] into the [CalendarContext], using
+    /// year / month / day keys based on the date property
+    </span><span class="kw">pub fn </span>insert(<span class="kw-2">&amp;mut </span><span class="self">self</span>, day_context: <span class="kw-2">&amp;</span>IndexDayContext) {
         <span class="kw">let </span>calendar = <span class="kw-2">&amp;mut </span><span class="self">self</span>.<span class="number">0</span>;
 
-        <span class="kw">let </span>parts = day_entry
+        <span class="kw">let </span>parts = day_context
             .current
             .date
             .split(<span class="string">&#39;/&#39;</span>)
@@ -136,9 +176,10 @@
                 Vacant(entry) =&gt; entry.insert(HashMap::new()),
                 Occupied(entry) =&gt; entry.into_mut(),
             };
-            month_map.insert(day.to_string(), day_entry.clone());
+            month_map.insert(day.to_string(), day_context.clone());
         }
-    }
+        <span class="comment">// else: throw an error because the date format was bunk?
+    </span>}
 }
 <span class="kw">impl </span>Default <span class="kw">for </span>CalendarContext {
     <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
@@ -146,7 +187,8 @@
     }
 }
 <span class="kw">impl </span>From&lt;<span class="kw-2">&amp;</span>Vec&lt;IndexDayContext&gt;&gt; <span class="kw">for </span>CalendarContext {
-    <span class="kw">fn </span>from(value: <span class="kw-2">&amp;</span>Vec&lt;IndexDayContext&gt;) -&gt; <span class="self">Self </span>{
+    <span class="doccomment">/// Produce a [CalendarContext] from a [`Vec&lt;IndexDayContext&gt;`]
+    </span><span class="kw">fn </span>from(value: <span class="kw-2">&amp;</span>Vec&lt;IndexDayContext&gt;) -&gt; <span class="self">Self </span>{
         <span class="kw">let </span><span class="kw-2">mut </span>calendar = <span class="self">Self</span>::new();
         <span class="kw">for </span>entry <span class="kw">in </span>value {
             calendar.insert(entry);

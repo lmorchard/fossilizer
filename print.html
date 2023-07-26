@@ -84,7 +84,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded affix "><a href="index.html">README</a></li><li class="chapter-item expanded "><a href="quick-start.html"><strong aria-hidden="true">1.</strong> Quick Start</a></li><li class="chapter-item expanded "><a href="cli/index.html"><strong aria-hidden="true">2.</strong> Command Line Tool</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="cli/init.html"><strong aria-hidden="true">2.1.</strong> init</a></li><li class="chapter-item expanded "><a href="cli/import.html"><strong aria-hidden="true">2.2.</strong> import</a></li><li class="chapter-item expanded "><a href="cli/build.html"><strong aria-hidden="true">2.3.</strong> build</a></li><li class="chapter-item expanded "><a href="cli/upgrade.html"><strong aria-hidden="true">2.4.</strong> upgrade</a></li></ol></li><li class="chapter-item expanded "><a href="developers/index.html"><strong aria-hidden="true">3.</strong> For Developers</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="index.html">README</a></li><li class="chapter-item expanded "><a href="quick-start.html"><strong aria-hidden="true">1.</strong> Quick Start</a></li><li class="chapter-item expanded "><a href="cli/index.html"><strong aria-hidden="true">2.</strong> Command Line Tool</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="cli/init.html"><strong aria-hidden="true">2.1.</strong> init</a></li><li class="chapter-item expanded "><a href="cli/import.html"><strong aria-hidden="true">2.2.</strong> import</a></li><li class="chapter-item expanded "><a href="cli/build.html"><strong aria-hidden="true">2.3.</strong> build</a></li><li class="chapter-item expanded "><a href="cli/upgrade.html"><strong aria-hidden="true">2.4.</strong> upgrade</a></li></ol></li><li class="chapter-item expanded "><a href="customization.html"><strong aria-hidden="true">3.</strong> Customization</a></li><li class="chapter-item expanded "><a href="developers/index.html"><strong aria-hidden="true">4.</strong> Developers</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -415,6 +415,25 @@ necessary changes after downloading a new version of Fossilzer.</p>
 <pre><code class="language-bash">cd my-mastodon-site
 fossilzer upgrade
 </code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="customization"><a class="header" href="#customization">Customization</a></h1>
+<p>Try <code>fossilizer init --customize</code>, which unpacks the following for customization:</p>
+<ul>
+<li>
+<p>a <code>data/web</code> directory with static web assets that will be copied into the <code>build</code> directory</p>
+</li>
+<li>
+<p>a <code>data/templates</code> directory with <a href="https://tera.netlify.app/docs/">Tera templates</a> used to produce the HTML output</p>
+</li>
+<li>
+<p>Note: this will <em>not</em> overwrite the database for an existing <code>data</code> directory, though it <em>will</em> overwrite any existing <code>templates</code> or <code>web</code> directories.</p>
+</li>
+</ul>
+<p>Check out the templates to see how the pages are built. For a more in-depth reference on what variables are supplied when rendering templates, check out the crate documentation:</p>
+<ul>
+<li><a href="./doc/fossilizer/templates/contexts/struct.IndexTemplateContext.html"><code>index.html</code> template context</a></li>
+<li><a href="./doc/fossilizer/templates/contexts/struct.DayTemplateContext.html"><code>day.html</code> template context</a></li>
+<li><a href="./doc/fossilizer/templates/contexts/index.html">All template context structs</a></li>
+</ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="for-developers"><a class="header" href="#for-developers">For Developers</a></h1>
 <p>TODO: jot down design notions and useful information for folks aiming to help contribute to or customize this software.</p>
 <p><code>fossilizer</code> has not yet been published as a crate, but you can see the module docs here:</p>
