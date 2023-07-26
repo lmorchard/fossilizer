@@ -1,3 +1,9 @@
+## 0.1.2
+
+- rework template contexts into defined structs and add customization documentation
+
+- refactor some site generator code
+
 ## 0.1.1
 
 - Disable some work-in-progress features for the release build (i.e. fetch and fetch-mastodon)
