@@ -3,9 +3,10 @@ use clap::Args;
 use std::convert::From;
 use std::error::Error;
 use std::fs;
-use std::path::PathBuf;
+use std::fs::File;
+use std::path::{Component, PathBuf};
 
-use fossilizer::{activitystreams, config, db, mastodon};
+use fossilizer::{activitystreams, archives, config, db, mastodon};
 
 #[derive(Debug, Args)]
 pub struct ImportArgs {
@@ -31,16 +32,17 @@ pub async fn command(args: &ImportArgs) -> Result<(), Box<dyn Error>> {
 
     for filename in &args.filenames {
         let filename: PathBuf = filename.into();
+        // let file = File::open(filepath.as_path())?;
 
         info!("Importing {:?}", filename);
 
-        let visitor = PrintingArchiveVisitor::new();
+        let visitor = MastodonImporter::new();
 
         // todo: how to do this with the trait?!
         match filename.extension().unwrap().to_str().unwrap() {
-            "gz" => TarGzArchive::new(filename).scan(&visitor)?,
-            "tar" => TarArchive::new(filename).scan(&visitor)?,
-            "zip" => ZipArchive::new(filename).scan(&visitor)?,
+            "gz" => archives::scan_tar(filename, true, &visitor)?,
+            "tar" => archives::scan_tar(filename, false, &visitor)?,
+            "zip" => archives::scan_zip(filename, &visitor)?,
             _ => println!("NO SCANNER AVAILABLE"),
         }
 
@@ -71,101 +73,54 @@ pub async fn command(args: &ImportArgs) -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-use flate2::read::GzDecoder;
-use std::fs::File;
 use std::io::prelude::*;
-use tar::{Archive, Entry};
 
-pub trait ArchiveVisitor {
-    fn visit(&self, path: &PathBuf, read: &impl Read) -> Result<()>;
+pub struct MastodonImporter {
+
 }
 
-pub struct PrintingArchiveVisitor();
-impl PrintingArchiveVisitor {
+impl MastodonImporter {
     pub fn new() -> Self {
-        Self()
+        Self { }
     }
-}
-impl ArchiveVisitor for PrintingArchiveVisitor {
-    fn visit(&self, path: &PathBuf, read: &impl Read) -> Result<()> {
-        println!("ENTRY: {:?}", path);
+
+    fn handle_outbox(&self, read: &mut impl Read) -> Result<()> {
+        let bytes = read.bytes();
+        println!("OUTBOX: {:?}", bytes.count());
+        Ok(())
+    }
+
+    fn handle_media_attachment<R>(&self, dest_path: &PathBuf, read: &mut R) -> Result<()>
+    where
+        R: ?Sized,
+        R: Read,
+    {
+        let bytes = read.bytes();
+        println!("MEDIA: {:?} {:?}", dest_path, bytes.count());
         Ok(())
     }
 }
 
-pub trait ArchiveScanner {
-    fn scan(&self, visitor: &impl ArchiveVisitor) -> Result<()>;
-}
-
-pub struct TarGzArchive {
-    pub filepath: PathBuf,
-}
-impl TarGzArchive {
-    pub fn new(filepath: PathBuf) -> Self {
-        Self { filepath }
-    }
-}
-impl ArchiveScanner for TarGzArchive {
-    fn scan(&self, visitor: &impl ArchiveVisitor) -> Result<()> {
-        let tar_gz = File::open(self.filepath.as_path())?;
-        let tar_uncompressed = GzDecoder::new(tar_gz);
-        let mut archive = Archive::new(tar_uncompressed);
-        let entries = archive.entries()?;
-        for entry in entries {
-            let entry = entry?;
-            let entry_path: PathBuf = entry.path()?.into();
-            visitor.visit(&entry_path, &entry)?;
-        }
-        Ok(())
-    }
-}
-
-pub struct TarArchive {
-    pub filepath: PathBuf,
-}
-impl TarArchive {
-    pub fn new(filepath: PathBuf) -> Self {
-        Self { filepath }
-    }
-}
-impl ArchiveScanner for TarArchive {
-    fn scan(&self, visitor: &impl ArchiveVisitor) -> Result<()> {
-        let tar_uncompressed = File::open(self.filepath.as_path())?;
-        let mut archive = Archive::new(tar_uncompressed);
-        let entries = archive.entries()?;
-        for entry in entries {
-            let entry = entry?;
-            let entry_path: PathBuf = entry.path()?.into();
-            visitor.visit(&entry_path, &entry)?;
-        }
-        Ok(())
-    }
-}
-
-pub struct ZipArchive {
-    pub filepath: PathBuf,
-}
-impl ZipArchive {
-    pub fn new(filepath: PathBuf) -> Self {
-        Self { filepath }
-    }
-}
-impl ArchiveScanner for ZipArchive {
-    fn scan(&self, visitor: &impl ArchiveVisitor) -> Result<()> {
-        let file = File::open(self.filepath.as_path())?;
-        let mut archive = zip::ZipArchive::new(file).unwrap();
-
-        for i in 0..archive.len() {
-            let mut file = archive.by_index(i).unwrap();
-            let outpath = match file.enclosed_name() {
-                Some(path) => path.to_owned(),
-                None => continue,
-            };
-            if !(*file.name()).ends_with('/') {
-                visitor.visit(&outpath, &file)?;
+impl archives::ArchiveVisitor for MastodonImporter {
+    fn visit(&self, path: &PathBuf, read: &mut impl Read) -> Result<()> {
+        if path.ends_with("outbox.json") {
+            self.handle_outbox(read)?;
+        } else if path.to_str().unwrap().contains("media_attachments") {
+            // HACK: some exports seem to have leading directory paths before `media_attachments`, so strip that off
+            let normalized_path: PathBuf = path
+                .components()
+                .skip_while(|c| match c {
+                    Component::Normal(name) => name != &"media_attachments",
+                    _ => true,
+                })
+                .collect();
+            self.handle_media_attachment(&normalized_path, read)?;
+        } else if let Some(ext) = path.extension() {
+            // mainly for {avatar,header}.{jpg,png}, but there may be more?
+            if "png" == ext || "jpg" == ext {
+                self.handle_media_attachment(path, read)?;
             }
         }
-
         Ok(())
     }
 }
