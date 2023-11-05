@@ -8,6 +8,7 @@ use std::fs::File;
 use std::io::prelude::*;
 use std::path::{Component, PathBuf};
 use tar::Archive;
+use rusqlite::{params, Connection};
 
 use fossilizer::{activitystreams, archives, config, db, mastodon};
 
@@ -15,6 +16,9 @@ use fossilizer::{activitystreams, archives, config, db, mastodon};
 pub struct ImportArgs {
     /// List of Mastodon .tar.gz export filenames to be imported
     filenames: Vec<String>,
+    /// Skip importing media files
+    #[arg(long)]
+    skip_media: bool,
 }
 
 /*
@@ -30,41 +34,21 @@ rework plan:
 
 pub async fn command(args: &ImportArgs) -> Result<(), Box<dyn Error>> {
     let config = config::config()?;
-    
+    let skip_media = args.skip_media;
+
     let data_path = PathBuf::from(&config.data_path);
     fs::create_dir_all(&data_path)?;
 
     let media_path = config.media_path();
     fs::create_dir_all(&media_path)?;
-    
-    let importer = MastodonImporter::new(media_path);
+
+    let conn = db::conn()?;
+    let importer = MastodonImporter::new(conn, media_path, skip_media);
 
     for filename in &args.filenames {
         let filename: PathBuf = filename.into();
-
         info!("Importing {:?}", filename);
-
         importer.import(filename)?;
-
-        /*
-        let conn = db::conn()?;
-
-        let mut export = mastodon::Export::from(filename);
-
-        debug!("extracting media to {:?}", media_path);
-        export.unpack_media(&media_path)?;
-
-        let actor: serde_json::Value = export.actor()?;
-        let actors = db::actors::Actors::new(&conn);
-        actors.import_actor(actor)?;
-
-        let outbox: activitystreams::Outbox<serde_json::Value> = export.outbox()?;
-        info!("Found {:?} items", outbox.ordered_items.len());
-        let activities = db::activities::Activities::new(&conn);
-        activities.import_collection(&outbox)?;
-
-        debug!("Imported {:?}", filename);
-         */
     }
     info!("Done");
 
@@ -72,13 +56,17 @@ pub async fn command(args: &ImportArgs) -> Result<(), Box<dyn Error>> {
 }
 
 pub struct MastodonImporter {
+    conn: Connection,
     media_path: PathBuf,
+    skip_media: bool,
 }
 
 impl MastodonImporter {
-    pub fn new(media_path: PathBuf) -> Self {
+    pub fn new(conn: Connection, media_path: PathBuf, skip_media: bool) -> Self {
         Self {
-            media_path
+            conn,
+            media_path,
+            skip_media,
         }
     }
 
@@ -142,34 +130,40 @@ impl MastodonImporter {
             self.handle_outbox(read)?;
         } else if path.ends_with("actor.json") {
             self.handle_actor(read)?;
-        } else if path.to_str().unwrap().contains("media_attachments") {
-            // HACK: some exports seem to have leading directory paths before `media_attachments`, so strip that off
-            let normalized_path: PathBuf = path
-                .components()
-                .skip_while(|c| match c {
-                    Component::Normal(name) => name != &"media_attachments",
-                    _ => true,
-                })
-                .collect();
-            self.handle_media_attachment(&normalized_path, read)?;
-        } else if let Some(ext) = path.extension() {
-            // mainly for {avatar,header}.{jpg,png}, but there may be more?
-            if "png" == ext || "jpg" == ext {
-                self.handle_media_attachment(path, read)?;
+        } else if !self.skip_media {
+            if path.to_str().unwrap().contains("media_attachments") {
+                // HACK: some exports seem to have leading directory paths before `media_attachments`, so strip that off
+                let normalized_path: PathBuf = path
+                    .components()
+                    .skip_while(|c| match c {
+                        Component::Normal(name) => name != &"media_attachments",
+                        _ => true,
+                    })
+                    .collect();
+                self.handle_media_attachment(&normalized_path, read)?;
+            } else if let Some(ext) = path.extension() {
+                // mainly for {avatar,header}.{jpg,png}, but there may be more?
+                if "png" == ext || "jpg" == ext {
+                    self.handle_media_attachment(path, read)?;
+                }
             }
         }
         Ok(())
     }
 
     fn handle_outbox(&self, read: &mut impl Read) -> Result<()> {
-        let bytes = read.bytes();
-        println!("OUTBOX: {:?}", bytes.count());
+        let outbox: activitystreams::Outbox<serde_json::Value> = serde_json::from_reader(read)?;
+        info!("Found {:?} items", outbox.ordered_items.len());
+        let activities = db::activities::Activities::new(&self.conn);
+        activities.import_collection(&outbox)?;
         Ok(())
     }
 
     fn handle_actor(&self, read: &mut impl Read) -> Result<()> {
-        let bytes = read.bytes();
-        println!("ACTOR: {:?}", bytes.count());
+        println!("Found actor");
+        let actor: serde_json::Value = serde_json::from_reader(read)?;
+        let actors = db::actors::Actors::new(&self.conn);
+        actors.import_actor(actor)?;
         Ok(())
     }
 
