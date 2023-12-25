@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/mastodon.rs`."><title>mastodon.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-f3501f0f5ae15dfb.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="fossilizer" data-themes="" data-resource-suffix="" data-rustdoc-version="1.71.0 (8ede3aae2 2023-07-12)" data-search-js="search-4926e5fc22a5646a.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-0f8c037637f9eb3e.css" data-theme-dark-css="dark-1097f8e92a01e3cf.css" data-theme-ayu-css="ayu-614652228113ac93.css" ></div><script src="../../static.files/storage-62ce34ea385b278a.js"></script><script defer src="../../static.files/source-script-11255107d0a65077.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-f0540c1d82cde29b.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-0f8c037637f9eb3e.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-1097f8e92a01e3cf.css"><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../fossilizer/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/mastodon.rs`."><title>mastodon.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-fa3bb1812debf86c.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="fossilizer" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.1 (a28077b28 2023-12-04)" data-channel="1.74.1" data-search-js="search-8be46b629f5f14a8.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-c5bd66d33317d69f.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../fossilizer/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -207,250 +207,212 @@
 <a href="#207" id="207">207</a>
 <a href="#208" id="208">208</a>
 <a href="#209" id="209">209</a>
-<a href="#210" id="210">210</a>
-<a href="#211" id="211">211</a>
-<a href="#212" id="212">212</a>
-<a href="#213" id="213">213</a>
-<a href="#214" id="214">214</a>
-<a href="#215" id="215">215</a>
-<a href="#216" id="216">216</a>
-<a href="#217" id="217">217</a>
-<a href="#218" id="218">218</a>
-<a href="#219" id="219">219</a>
-<a href="#220" id="220">220</a>
-<a href="#221" id="221">221</a>
-<a href="#222" id="222">222</a>
-<a href="#223" id="223">223</a>
-<a href="#224" id="224">224</a>
-<a href="#225" id="225">225</a>
-<a href="#226" id="226">226</a>
-<a href="#227" id="227">227</a>
-<a href="#228" id="228">228</a>
-</pre></div><pre class="rust"><code><span class="kw">use </span>anyhow::Result;
-<span class="kw">use </span>flate2::read::GzDecoder;
-<span class="kw">use </span>serde::{Deserialize, Serialize};
+</pre></div><pre class="rust"><code><span class="kw">use </span>flate2::read::GzDecoder;
 <span class="kw">use </span>std::convert::From;
-<span class="kw">use </span>std::error::Error;
 <span class="kw">use </span>std::fs;
 <span class="kw">use </span>std::fs::File;
 <span class="kw">use </span>std::io::{copy, Read};
-<span class="kw">use </span>std::path::{Path, PathBuf};
-<span class="kw">use </span>tar::{Archive, Entry};
+<span class="kw">use </span>tar::Archive;
 
-<span class="kw">use </span><span class="kw">crate</span>::activitystreams::{Actor, Outbox};
+<span class="kw">use </span><span class="kw">crate</span>::activitystreams::Actor;
+<span class="kw">use crate</span>::{activitystreams, db};
+<span class="kw">use </span>anyhow::{anyhow, <span class="prelude-ty">Result</span>};
+<span class="kw">use </span>rand::distributions::Alphanumeric;
+<span class="kw">use </span>rand::{thread_rng, Rng};
+<span class="kw">use </span>rusqlite::Connection;
+<span class="kw">use </span>std::path::{Component, PathBuf};
+<span class="kw">use </span>walkdir::WalkDir;
 
-<span class="kw">pub struct </span>Export {
-    <span class="kw">pub </span>filepath: PathBuf,
-    <span class="kw">pub </span>archive: <span class="prelude-ty">Option</span>&lt;Archive&lt;GzDecoder&lt;File&gt;&gt;&gt;,
+<span class="kw">pub struct </span>Importer {
+    conn: Connection,
+    media_path: PathBuf,
+    skip_media: bool,
+    current_media_subpath: String,
 }
 
-<span class="kw">impl </span>From&lt;<span class="kw-2">&amp;</span>String&gt; <span class="kw">for </span>Export {
-    <span class="kw">fn </span>from(filepath: <span class="kw-2">&amp;</span>String) -&gt; <span class="self">Self </span>{
-        <span class="self">Self</span>::new(PathBuf::from(filepath))
-    }
-}
-
-<span class="kw">impl </span>From&lt;PathBuf&gt; <span class="kw">for </span>Export {
-    <span class="kw">fn </span>from(filepath: PathBuf) -&gt; <span class="self">Self </span>{
-        <span class="self">Self</span>::new(filepath)
-    }
-}
-
-<span class="kw">impl </span>Export {
-    <span class="kw">pub fn </span>new(filepath: PathBuf) -&gt; <span class="self">Self </span>{
+<span class="kw">impl </span>Importer {
+    <span class="kw">pub fn </span>new(conn: Connection, media_path: PathBuf, skip_media: bool) -&gt; <span class="self">Self </span>{
+        <span class="comment">// Start with a temporary path, until we have found the actor JSON to derive a real path
+        </span><span class="kw">let </span>current_media_subpath: String = <span class="macro">format!</span>(
+            <span class="string">&quot;tmp-{}&quot;</span>,
+            thread_rng()
+                .sample_iter(<span class="kw-2">&amp;</span>Alphanumeric)
+                .take(<span class="number">30</span>)
+                .map(char::from)
+                .collect::&lt;String&gt;()
+        );
         <span class="self">Self </span>{
-            filepath,
-            archive: <span class="prelude-val">None</span>,
+            conn,
+            media_path,
+            skip_media,
+            current_media_subpath,
         }
     }
 
-    <span class="kw">pub fn </span>reset(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
-        <span class="comment">// todo: need to close an existing archive &amp; file first?
-        </span><span class="self">self</span>.archive = <span class="prelude-val">None</span>;
-    }
+    <span class="kw">pub fn </span>import(<span class="kw-2">&amp;mut </span><span class="self">self</span>, filepath: PathBuf) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+        <span class="kw">let </span>filepath = filepath.as_path();
+        <span class="kw">let </span>file = File::open(filepath)<span class="question-mark">?</span>;
 
-    <span class="comment">// todo: define explicit error type
-    </span><span class="kw">pub fn </span>open(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;(), Box&lt;<span class="kw">dyn </span>Error&gt;&gt; {
-        <span class="self">self</span>.reset();
-
-        <span class="comment">// todo: also handle .zip files alongside .tar.gz
-        </span><span class="kw">let </span>tar_gz = File::open(<span class="self">self</span>.filepath.as_path())<span class="question-mark">?</span>;
-        <span class="kw">let </span>tar_uncompressed = GzDecoder::new(tar_gz);
-        <span class="self">self</span>.archive = <span class="prelude-val">Some</span>(Archive::new(tar_uncompressed));
+        <span class="comment">// todo: do something with filemagic here to auto-detect archive format based on file contents?
+        </span><span class="kw">let </span>extension = filepath
+            .extension()
+            .ok_or(<span class="macro">anyhow!</span>(<span class="string">&quot;no file extension&quot;</span>))<span class="question-mark">?
+            </span>.to_str()
+            .ok_or(<span class="macro">anyhow!</span>(<span class="string">&quot;no file extension&quot;</span>))<span class="question-mark">?</span>;
+        <span class="kw">match </span>extension {
+            <span class="string">&quot;gz&quot; </span>=&gt; <span class="self">self</span>.import_tar(file, <span class="bool-val">true</span>)<span class="question-mark">?</span>,
+            <span class="string">&quot;tar&quot; </span>=&gt; <span class="self">self</span>.import_tar(file, <span class="bool-val">false</span>)<span class="question-mark">?</span>,
+            <span class="string">&quot;zip&quot; </span>=&gt; <span class="self">self</span>.import_zip(file)<span class="question-mark">?</span>,
+            <span class="kw">_ </span>=&gt; <span class="macro">println!</span>(<span class="string">&quot;NO SCANNER AVAILABLE&quot;</span>),
+        };
 
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="comment">// todo: re-reading the archive is wasteful, maybe just read all the non-attachment entries at once?
-    /*
-       -r--r--r-- wheel/wheel  9839493 2023-01-15 04:19 outbox.json
-       -r--r--r-- wheel/wheel   324889 2023-01-15 04:19 likes.json
-       -r--r--r-- wheel/wheel     1271 2023-01-15 04:19 bookmarks.json
-       -r--r--r-- wheel/wheel   256635 2023-01-15 04:19 avatar.png
-       -r--r--r-- wheel/wheel   100238 2023-01-15 04:19 header.jpg
-       -r--r--r-- wheel/wheel     3705 2023-01-15 04:19 actor.json
-    */
-    </span><span class="kw">pub fn </span>find_entry&lt;P: AsRef&lt;Path&gt;&gt;(
-        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
-        entry_path: P,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;Entry&lt;<span class="lifetime">&#39;_</span>, GzDecoder&lt;File&gt;&gt;, Box&lt;<span class="kw">dyn </span>Error&gt;&gt; {
-        <span class="self">self</span>.open()<span class="question-mark">?</span>;
-        <span class="kw">let </span>entry_path: <span class="kw-2">&amp;</span>Path = entry_path.as_ref();
-        <span class="kw">let </span>archive = <span class="self">self</span>.archive.as_mut().ok_or(<span class="string">&quot;no archive&quot;</span>)<span class="question-mark">?</span>;
+    <span class="kw">pub fn </span>import_tar(<span class="kw-2">&amp;mut </span><span class="self">self</span>, file: File, use_gzip: bool) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+        <span class="comment">// hack: this optional decompression seems funky, but it works
+        </span><span class="kw">let </span>file: Box&lt;<span class="kw">dyn </span>Read&gt; = <span class="kw">if </span>use_gzip {
+            Box::new(GzDecoder::new(file))
+        } <span class="kw">else </span>{
+            Box::new(file)
+        };
+        <span class="kw">let </span><span class="kw-2">mut </span>archive = Archive::new(file);
         <span class="kw">let </span>entries = archive.entries()<span class="question-mark">?</span>;
-        <span class="kw">for </span>entry <span class="kw">in </span>entries {
-            <span class="kw">let </span>entry = entry<span class="question-mark">?</span>;
-            <span class="kw">if </span>entry_path == entry.path()<span class="question-mark">? </span>{
-                <span class="kw">return </span><span class="prelude-val">Ok</span>(entry);
-            }
-        }
-        <span class="prelude-val">Err</span>(<span class="string">&quot;not found&quot;</span>.into())
-    }
-
-    <span class="comment">// todo: define more specific error type
-    </span><span class="kw">pub fn </span>outbox&lt;T: <span class="kw">for</span>&lt;<span class="lifetime">&#39;de</span>&gt; Deserialize&lt;<span class="lifetime">&#39;de</span>&gt; + Serialize&gt;(
-        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;Outbox&lt;T&gt;, Box&lt;<span class="kw">dyn </span>Error&gt;&gt; {
-        <span class="kw">let </span>entry = <span class="self">self</span>.find_entry(<span class="string">&quot;outbox.json&quot;</span>)<span class="question-mark">?</span>;
-        <span class="kw">let </span>outbox: Outbox&lt;T&gt; = serde_json::from_reader(entry)<span class="question-mark">?</span>;
-        <span class="prelude-val">Ok</span>(outbox)
-    }
-
-    <span class="kw">pub fn </span>actor&lt;T: <span class="kw">for</span>&lt;<span class="lifetime">&#39;de</span>&gt; Deserialize&lt;<span class="lifetime">&#39;de</span>&gt; + Serialize&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;T, Box&lt;<span class="kw">dyn </span>Error&gt;&gt; {
-        <span class="kw">let </span>entry = <span class="self">self</span>.find_entry(<span class="string">&quot;actor.json&quot;</span>)<span class="question-mark">?</span>;
-        <span class="kw">let </span>actor: T = serde_json::from_reader(entry)<span class="question-mark">?</span>;
-        <span class="prelude-val">Ok</span>(actor)
-    }
-
-    <span class="kw">pub fn </span>unpack_media&lt;P&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, dest_path: P) -&gt; <span class="prelude-ty">Result</span>&lt;(), Box&lt;<span class="kw">dyn </span>Error&gt;&gt;
-    <span class="kw">where
-        </span>P: AsRef&lt;Path&gt;,
-    {
-        <span class="kw">use </span>std::path::Component;
-        <span class="kw">let </span>actor: Actor = <span class="self">self</span>.actor()<span class="question-mark">?</span>;
-
-        <span class="comment">// Include a hash of the actor&#39;s ID in media path so that exports from
-        // multiple instances end up with media in separate directories
-        </span><span class="kw">let </span>dest_path = PathBuf::new().join(dest_path).join(<span class="kw-2">&amp;</span>actor.id_hash());
-
-        <span class="comment">// todo: do this extraction alongside other non-media files?
-        </span><span class="self">self</span>.open()<span class="question-mark">?</span>;
-        <span class="kw">let </span>archive = <span class="self">self</span>.archive.as_mut().ok_or(<span class="string">&quot;no archive&quot;</span>)<span class="question-mark">?</span>;
-        <span class="kw">let </span>entries = archive.entries()<span class="question-mark">?</span>;
-
         <span class="kw">for </span>entry <span class="kw">in </span>entries {
             <span class="kw">let </span><span class="kw-2">mut </span>entry = entry<span class="question-mark">?</span>;
-            <span class="kw">let </span>entry_path = entry.path().unwrap().into_owned();
-            <span class="kw">let </span>entry_path_extension = entry_path.extension();
+            <span class="kw">let </span>entry_path: PathBuf = entry.path()<span class="question-mark">?</span>.into();
+            <span class="self">self</span>.handle_entry(<span class="kw-2">&amp;</span>entry_path, <span class="kw-2">&amp;mut </span>entry)<span class="question-mark">?</span>;
+        }
+        <span class="prelude-val">Ok</span>(())
+    }
 
-            <span class="kw">if </span>entry_path.to_str().unwrap().contains(<span class="string">&quot;media_attachments&quot;</span>) {
+    <span class="kw">pub fn </span>import_zip(<span class="kw-2">&amp;mut </span><span class="self">self</span>, file: File) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+        <span class="kw">let </span><span class="kw-2">mut </span>archive = zip::ZipArchive::new(file).unwrap();
+
+        <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..archive.len() {
+            <span class="kw">let </span><span class="kw-2">mut </span>file = archive.by_index(i).unwrap();
+            <span class="kw">let </span>outpath = <span class="kw">match </span>file.enclosed_name() {
+                <span class="prelude-val">Some</span>(path) =&gt; path.to_owned(),
+                <span class="prelude-val">None </span>=&gt; <span class="kw">continue</span>,
+            };
+            <span class="comment">// is this really the best way to detect that an entry isn&#39;t a directory?
+            </span><span class="kw">if </span>!(<span class="kw-2">*</span>file.name()).ends_with(<span class="string">&#39;/&#39;</span>) {
+                <span class="self">self</span>.handle_entry(<span class="kw-2">&amp;</span>outpath, <span class="kw-2">&amp;mut </span>file)<span class="question-mark">?</span>;
+            }
+        }
+
+        <span class="prelude-val">Ok</span>(())
+    }
+
+    <span class="kw">fn </span>handle_entry(<span class="kw-2">&amp;mut </span><span class="self">self</span>, path: <span class="kw-2">&amp;</span>PathBuf, read: <span class="kw-2">&amp;mut </span><span class="kw">impl </span>Read) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+        <span class="kw">if </span>path.ends_with(<span class="string">&quot;outbox.json&quot;</span>) {
+            <span class="self">self</span>.handle_outbox(read)<span class="question-mark">?</span>;
+        } <span class="kw">else if </span>path.ends_with(<span class="string">&quot;actor.json&quot;</span>) {
+            <span class="self">self</span>.handle_actor(read)<span class="question-mark">?</span>;
+        } <span class="kw">else if </span>!<span class="self">self</span>.skip_media {
+            <span class="kw">if </span>path.to_str().unwrap().contains(<span class="string">&quot;media_attachments&quot;</span>) {
                 <span class="comment">// HACK: some exports seem to have leading directory paths before `media_attachments`, so strip that off
-                </span><span class="kw">let </span>normalized_path: PathBuf = entry_path
+                </span><span class="kw">let </span>normalized_path: PathBuf = path
                     .components()
                     .skip_while(|c| <span class="kw">match </span>c {
                         Component::Normal(name) =&gt; name != <span class="kw-2">&amp;</span><span class="string">&quot;media_attachments&quot;</span>,
                         <span class="kw">_ </span>=&gt; <span class="bool-val">true</span>,
                     })
                     .collect();
-                extract_tar_entry(<span class="kw-2">&amp;</span>dest_path, <span class="kw-2">&amp;</span>normalized_path, <span class="kw-2">&amp;mut </span>entry)<span class="question-mark">?</span>;
-            } <span class="kw">else if let </span><span class="prelude-val">Some</span>(ext) = entry_path_extension {
+                <span class="self">self</span>.handle_media_attachment(<span class="kw-2">&amp;</span>normalized_path, read)<span class="question-mark">?</span>;
+            } <span class="kw">else if let </span><span class="prelude-val">Some</span>(ext) = path.extension() {
                 <span class="comment">// mainly for {avatar,header}.{jpg,png}, but there may be more?
                 </span><span class="kw">if </span><span class="string">&quot;png&quot; </span>== ext || <span class="string">&quot;jpg&quot; </span>== ext {
-                    extract_tar_entry(<span class="kw-2">&amp;</span>dest_path, <span class="kw-2">&amp;</span>entry_path, <span class="kw-2">&amp;mut </span>entry)<span class="question-mark">?</span>;
+                    <span class="self">self</span>.handle_media_attachment(path, read)<span class="question-mark">?</span>;
                 }
             }
         }
-
-        <span class="prelude-val">Ok</span>(())
-    }
-}
-
-<span class="kw">fn </span>extract_tar_entry&lt;P, R&gt;(
-    dest_path: P,
-    within_dest_path: P,
-    input_reader: <span class="kw-2">&amp;mut </span>R,
-) -&gt; <span class="prelude-ty">Result</span>&lt;(), Box&lt;<span class="kw">dyn </span>Error&gt;&gt;
-<span class="kw">where
-    </span>P: AsRef&lt;Path&gt;,
-    R: <span class="question-mark">?</span>Sized,
-    R: Read,
-{
-    <span class="kw">let </span>output_path = PathBuf::new().join(dest_path).join(within_dest_path);
-    <span class="macro">info!</span>(<span class="string">&quot;Extracting {:?}&quot;</span>, output_path);
-
-    <span class="kw">let </span>output_parent_path = output_path.parent().unwrap();
-    fs::create_dir_all(output_parent_path)<span class="question-mark">?</span>;
-
-    <span class="kw">let </span><span class="kw-2">mut </span>output_file = fs::File::create(<span class="kw-2">&amp;</span>output_path)<span class="question-mark">?</span>;
-    copy(input_reader, <span class="kw-2">&amp;mut </span>output_file)<span class="question-mark">?</span>;
-
-    <span class="prelude-val">Ok</span>(())
-}
-
-<span class="attr">#[cfg(test)]
-</span><span class="kw">mod </span>tests {
-    <span class="kw">use super</span>::<span class="kw-2">*</span>;
-    <span class="kw">use </span>std::path::Path;
-
-    <span class="kw">const </span>TEST_RESOURCES_PATH: <span class="kw-2">&amp;</span>str = <span class="string">&quot;src/resources/test&quot;</span>;
-
-    <span class="macro">lazy_static! </span>{
-        <span class="kw">static </span><span class="kw-2">ref </span>MASTODON_EXPORT_PATH: PathBuf = Path::new(<span class="macro">env!</span>(<span class="string">&quot;CARGO_MANIFEST_DIR&quot;</span>))
-            .join(TEST_RESOURCES_PATH)
-            .join(<span class="string">&quot;mastodon-export.tar.gz&quot;</span>);
-    }
-
-    <span class="attr">#[test]
-    </span><span class="kw">fn </span>it_can_load_outbox() -&gt; <span class="prelude-ty">Result</span>&lt;(), Box&lt;<span class="kw">dyn </span>Error&gt;&gt; {
-        <span class="kw">let </span><span class="kw-2">mut </span>export = Export::from(MASTODON_EXPORT_PATH.clone());
-        <span class="kw">let </span>outbox: Outbox&lt;<span class="kw">crate</span>::activitystreams::Activity&gt; = export.outbox()<span class="question-mark">?</span>;
-        <span class="macro">assert!</span>(!outbox.ordered_items.is_empty());
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="attr">#[test]
-    </span><span class="kw">fn </span>it_can_load_outbox_as_values() -&gt; <span class="prelude-ty">Result</span>&lt;(), Box&lt;<span class="kw">dyn </span>Error&gt;&gt; {
-        <span class="kw">let </span><span class="kw-2">mut </span>export = Export::from(MASTODON_EXPORT_PATH.clone());
-        <span class="kw">let </span>outbox: Outbox&lt;serde_json::Value&gt; = export.outbox()<span class="question-mark">?</span>;
-        <span class="macro">assert!</span>(!outbox.ordered_items.is_empty());
+    <span class="kw">fn </span>handle_media_attachment&lt;R&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, entry_path: <span class="kw-2">&amp;</span>PathBuf, entry_read: <span class="kw-2">&amp;mut </span>R) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt;
+    <span class="kw">where
+        </span>R: <span class="question-mark">?</span>Sized,
+        R: Read,
+    {
+        <span class="kw">let </span>media_path = <span class="self">self</span>.media_path.as_path();
+
+        <span class="kw">let </span>output_path = PathBuf::new()
+            .join(media_path)
+            .join(<span class="kw-2">&amp;</span><span class="self">self</span>.current_media_subpath)
+            .join(entry_path);
+
+        <span class="macro">info!</span>(<span class="string">&quot;Extracting {:?}&quot;</span>, output_path);
+
+        <span class="kw">let </span>output_parent_path = output_path.parent().unwrap();
+        fs::create_dir_all(output_parent_path)<span class="question-mark">?</span>;
+
+        <span class="kw">let </span><span class="kw-2">mut </span>output_file = fs::File::create(<span class="kw-2">&amp;</span>output_path)<span class="question-mark">?</span>;
+        copy(entry_read, <span class="kw-2">&amp;mut </span>output_file)<span class="question-mark">?</span>;
+
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="attr">#[test]
-    </span><span class="kw">fn </span>it_can_load_actor_as_value() -&gt; <span class="prelude-ty">Result</span>&lt;(), Box&lt;<span class="kw">dyn </span>Error&gt;&gt; {
-        <span class="kw">let </span><span class="kw-2">mut </span>export = Export::from(MASTODON_EXPORT_PATH.clone());
-        <span class="kw">let </span>actor: serde_json::Value = export.actor()<span class="question-mark">?</span>;
-        <span class="kw">let </span>json_text = serde_json::to_string_pretty(<span class="kw-2">&amp;</span>actor)<span class="question-mark">?</span>;
-        <span class="macro">assert!</span>(json_text.contains(<span class="string">&quot;@context&quot;</span>));
+    <span class="kw">fn </span>handle_outbox(<span class="kw-2">&amp;</span><span class="self">self</span>, read: <span class="kw-2">&amp;mut </span><span class="kw">impl </span>Read) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+        <span class="kw">let </span>outbox: activitystreams::Outbox&lt;serde_json::Value&gt; = serde_json::from_reader(read)<span class="question-mark">?</span>;
+        <span class="macro">info!</span>(<span class="string">&quot;Found {:?} items&quot;</span>, outbox.ordered_items.len());
+        <span class="kw">let </span>activities = db::activities::Activities::new(<span class="kw-2">&amp;</span><span class="self">self</span>.conn);
+        activities.import_collection(<span class="kw-2">&amp;</span>outbox)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="attr">#[test]
-    </span><span class="kw">fn </span>it_can_load_actor_as_local_model() -&gt; <span class="prelude-ty">Result</span>&lt;(), Box&lt;<span class="kw">dyn </span>Error&gt;&gt; {
-        <span class="kw">let </span><span class="kw-2">mut </span>export = Export::from(MASTODON_EXPORT_PATH.clone());
-        <span class="kw">let </span>actor: <span class="kw">crate</span>::activitystreams::Actor = export.actor()<span class="question-mark">?</span>;
-        <span class="macro">assert_eq!</span>(actor.id, <span class="string">&quot;https://mastodon.social/users/lmorchard&quot;</span>,);
-        <span class="macro">assert_eq!</span>(actor.url, <span class="string">&quot;https://mastodon.social/@lmorchard&quot;</span>,);
-        <span class="prelude-val">Ok</span>(())
-    }
+    <span class="kw">fn </span>handle_actor(<span class="kw-2">&amp;mut </span><span class="self">self</span>, read: <span class="kw-2">&amp;mut </span><span class="kw">impl </span>Read) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+        <span class="macro">println!</span>(<span class="string">&quot;Found actor&quot;</span>);
 
-    <span class="attr">#[test]
-    </span><span class="kw">fn </span>it_can_load_adtor_as_external_model() -&gt; <span class="prelude-ty">Result</span>&lt;(), Box&lt;<span class="kw">dyn </span>Error&gt;&gt; {
-        <span class="kw">let </span><span class="kw-2">mut </span>export = Export::from(MASTODON_EXPORT_PATH.clone());
-        <span class="kw">let </span>actor: activitystreams::actor::ActorBox = export.actor()<span class="question-mark">?</span>;
-        <span class="kw">let </span>actor: activitystreams::actor::Person = actor.into_concrete()<span class="question-mark">?</span>;
-        <span class="macro">assert_eq!</span>(
-            actor.as_ref().get_id().ok_or(<span class="string">&quot;no id&quot;</span>)<span class="question-mark">?</span>.as_str(),
-            <span class="string">&quot;https://mastodon.social/users/lmorchard&quot;</span>,
+        <span class="comment">// Grab the Actor as a Value to import it with max fidelity
+        </span><span class="kw">let </span>actor: serde_json::Value = serde_json::from_reader(read)<span class="question-mark">?</span>;
+        <span class="kw">let </span>actors = db::actors::Actors::new(<span class="kw-2">&amp;</span><span class="self">self</span>.conn);
+        actors.import_actor(<span class="kw-2">&amp;</span>actor)<span class="question-mark">?</span>;
+
+        <span class="comment">// Convert the actor to our local type and figure out the new media subpath
+        </span><span class="kw">let </span>local_actor: Actor = actor.into();
+        <span class="kw">let </span>previous_media_subpath = String::from(<span class="kw-2">&amp;</span><span class="self">self</span>.current_media_subpath);
+        <span class="self">self</span>.current_media_subpath = local_actor.id_hash();
+
+        <span class="comment">// Move everything we have so far to the per-actor media path
+        </span><span class="macro">info!</span>(
+            <span class="string">&quot;Moving temporary files from {:?} to {:?}&quot;</span>,
+            previous_media_subpath, <span class="self">self</span>.current_media_subpath
         );
-        <span class="macro">assert_eq!</span>(
-            actor
-                .as_ref()
-                .get_url_xsd_any_uri()
-                .ok_or(<span class="string">&quot;no url&quot;</span>)<span class="question-mark">?
-                </span>.as_str(),
-            <span class="string">&quot;https://mastodon.social/@lmorchard&quot;</span>,
-        );
+
+        <span class="kw">let </span>temp_media_path = PathBuf::new()
+            .join(<span class="kw-2">&amp;</span><span class="self">self</span>.media_path)
+            .join(previous_media_subpath);
+
+        <span class="kw">let </span>new_media_path = PathBuf::new()
+            .join(<span class="kw-2">&amp;</span><span class="self">self</span>.media_path)
+            .join(<span class="kw-2">&amp;</span><span class="self">self</span>.current_media_subpath);
+
+        <span class="kw">for </span>entry <span class="kw">in </span>WalkDir::new(<span class="kw-2">&amp;</span>temp_media_path)
+            .into_iter()
+            .filter_map(|e| e.ok())
+        {
+            <span class="kw">if </span>!entry.file_type().is_file() {
+                <span class="kw">continue</span>;
+            }
+
+            <span class="kw">let </span>old_path = entry.path();
+            <span class="kw">let </span>new_path = <span class="kw-2">&amp;</span>new_media_path.join(old_path.strip_prefix(<span class="kw-2">&amp;</span>temp_media_path)<span class="question-mark">?</span>);
+
+            <span class="kw">let </span>new_parent_path = new_path.parent().unwrap();
+            fs::create_dir_all(new_parent_path)<span class="question-mark">?</span>;
+
+            <span class="macro">trace!</span>(
+                <span class="string">&quot;Moving temporary file from {:?} to {:?}&quot;</span>,
+                old_path,
+                new_path
+            );
+            fs::rename(old_path, new_path)<span class="question-mark">?</span>;
+        }
+
+        <span class="comment">// Clean up the temporary media path
+        </span>fs::remove_dir_all(<span class="kw-2">&amp;</span>temp_media_path)<span class="question-mark">?</span>;
+
         <span class="prelude-val">Ok</span>(())
     }
 }

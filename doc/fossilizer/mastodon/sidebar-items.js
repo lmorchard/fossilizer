@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["Export"]};
+window.SIDEBAR_ITEMS = {"struct":["Importer"]};
