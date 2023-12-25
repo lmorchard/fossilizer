@@ -149,6 +149,12 @@ impl Attachments for Actor {
     }
 }
 
+impl From<serde_json::Value> for Actor {
+    fn from(value: serde_json::Value) -> Self {
+        serde_json::from_value(value).unwrap()
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct PublicKey {}

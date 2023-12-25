@@ -1,228 +1,208 @@
-use anyhow::Result;
 use flate2::read::GzDecoder;
-use serde::{Deserialize, Serialize};
 use std::convert::From;
-use std::error::Error;
 use std::fs;
 use std::fs::File;
 use std::io::{copy, Read};
-use std::path::{Path, PathBuf};
-use tar::{Archive, Entry};
+use tar::Archive;
 
-use crate::activitystreams::{Actor, Outbox};
+use crate::activitystreams::Actor;
+use crate::{activitystreams, db};
+use anyhow::{anyhow, Result};
+use rand::distributions::Alphanumeric;
+use rand::{thread_rng, Rng};
+use rusqlite::Connection;
+use std::path::{Component, PathBuf};
+use walkdir::WalkDir;
 
-pub struct Export {
-    pub filepath: PathBuf,
-    pub archive: Option<Archive<GzDecoder<File>>>,
+pub struct Importer {
+    conn: Connection,
+    media_path: PathBuf,
+    skip_media: bool,
+    current_media_subpath: String,
 }
 
-impl From<&String> for Export {
-    fn from(filepath: &String) -> Self {
-        Self::new(PathBuf::from(filepath))
-    }
-}
-
-impl From<PathBuf> for Export {
-    fn from(filepath: PathBuf) -> Self {
-        Self::new(filepath)
-    }
-}
-
-impl Export {
-    pub fn new(filepath: PathBuf) -> Self {
+impl Importer {
+    pub fn new(conn: Connection, media_path: PathBuf, skip_media: bool) -> Self {
+        let current_media_subpath: String = format!(
+            "tmp-{}",
+            thread_rng()
+                .sample_iter(&Alphanumeric)
+                .take(30)
+                .map(char::from)
+                .collect::<String>()
+        );
         Self {
-            filepath,
-            archive: None,
+            conn,
+            media_path,
+            skip_media,
+            current_media_subpath,
         }
     }
 
-    pub fn reset(&mut self) {
-        // todo: need to close an existing archive & file first?
-        self.archive = None;
-    }
+    pub fn import(&mut self, filepath: PathBuf) -> Result<()> {
+        let filepath = filepath.as_path();
+        let file = File::open(filepath)?;
 
-    // todo: define explicit error type
-    pub fn open(&mut self) -> Result<(), Box<dyn Error>> {
-        self.reset();
-
-        // todo: also handle .zip files alongside .tar.gz
-        let tar_gz = File::open(self.filepath.as_path())?;
-        let tar_uncompressed = GzDecoder::new(tar_gz);
-        self.archive = Some(Archive::new(tar_uncompressed));
+        // todo: do something with filemagic here to auto-detect archive format based on file contents?
+        let extension = filepath
+            .extension()
+            .ok_or(anyhow!("no file extension"))?
+            .to_str()
+            .ok_or(anyhow!("no file extension"))?;
+        match extension {
+            "gz" => self.import_tar(file, true)?,
+            "tar" => self.import_tar(file, false)?,
+            "zip" => self.import_zip(file)?,
+            _ => println!("NO SCANNER AVAILABLE"),
+        };
 
         Ok(())
     }
 
-    // todo: re-reading the archive is wasteful, maybe just read all the non-attachment entries at once?
-    /*
-       -r--r--r-- wheel/wheel  9839493 2023-01-15 04:19 outbox.json
-       -r--r--r-- wheel/wheel   324889 2023-01-15 04:19 likes.json
-       -r--r--r-- wheel/wheel     1271 2023-01-15 04:19 bookmarks.json
-       -r--r--r-- wheel/wheel   256635 2023-01-15 04:19 avatar.png
-       -r--r--r-- wheel/wheel   100238 2023-01-15 04:19 header.jpg
-       -r--r--r-- wheel/wheel     3705 2023-01-15 04:19 actor.json
-    */
-    pub fn find_entry<P: AsRef<Path>>(
-        &mut self,
-        entry_path: P,
-    ) -> Result<Entry<'_, GzDecoder<File>>, Box<dyn Error>> {
-        self.open()?;
-        let entry_path: &Path = entry_path.as_ref();
-        let archive = self.archive.as_mut().ok_or("no archive")?;
+    pub fn import_tar(&mut self, file: File, use_gzip: bool) -> Result<()> {
+        // hack: this optional decompression seems funky, but it works
+        let file: Box<dyn Read> = if use_gzip {
+            Box::new(GzDecoder::new(file))
+        } else {
+            Box::new(file)
+        };
+        let mut archive = Archive::new(file);
         let entries = archive.entries()?;
-        for entry in entries {
-            let entry = entry?;
-            if entry_path == entry.path()? {
-                return Ok(entry);
-            }
-        }
-        Err("not found".into())
-    }
-
-    // todo: define more specific error type
-    pub fn outbox<T: for<'de> Deserialize<'de> + Serialize>(
-        &mut self,
-    ) -> Result<Outbox<T>, Box<dyn Error>> {
-        let entry = self.find_entry("outbox.json")?;
-        let outbox: Outbox<T> = serde_json::from_reader(entry)?;
-        Ok(outbox)
-    }
-
-    pub fn actor<T: for<'de> Deserialize<'de> + Serialize>(&mut self) -> Result<T, Box<dyn Error>> {
-        let entry = self.find_entry("actor.json")?;
-        let actor: T = serde_json::from_reader(entry)?;
-        Ok(actor)
-    }
-
-    pub fn unpack_media<P>(&mut self, dest_path: P) -> Result<(), Box<dyn Error>>
-    where
-        P: AsRef<Path>,
-    {
-        use std::path::Component;
-        let actor: Actor = self.actor()?;
-
-        // Include a hash of the actor's ID in media path so that exports from
-        // multiple instances end up with media in separate directories
-        let dest_path = PathBuf::new().join(dest_path).join(&actor.id_hash());
-
-        // todo: do this extraction alongside other non-media files?
-        self.open()?;
-        let archive = self.archive.as_mut().ok_or("no archive")?;
-        let entries = archive.entries()?;
-
         for entry in entries {
             let mut entry = entry?;
-            let entry_path = entry.path().unwrap().into_owned();
-            let entry_path_extension = entry_path.extension();
+            let entry_path: PathBuf = entry.path()?.into();
+            self.handle_entry(&entry_path, &mut entry)?;
+        }
+        Ok(())
+    }
 
-            if entry_path.to_str().unwrap().contains("media_attachments") {
+    pub fn import_zip(&mut self, file: File) -> Result<()> {
+        let mut archive = zip::ZipArchive::new(file).unwrap();
+
+        for i in 0..archive.len() {
+            let mut file = archive.by_index(i).unwrap();
+            let outpath = match file.enclosed_name() {
+                Some(path) => path.to_owned(),
+                None => continue,
+            };
+            // is this really the best way to detect that an entry isn't a directory?
+            if !(*file.name()).ends_with('/') {
+                self.handle_entry(&outpath, &mut file)?;
+            }
+        }
+
+        Ok(())
+    }
+
+    fn handle_entry(&mut self, path: &PathBuf, read: &mut impl Read) -> Result<()> {
+        if path.ends_with("outbox.json") {
+            self.handle_outbox(read)?;
+        } else if path.ends_with("actor.json") {
+            self.handle_actor(read)?;
+        } else if !self.skip_media {
+            if path.to_str().unwrap().contains("media_attachments") {
                 // HACK: some exports seem to have leading directory paths before `media_attachments`, so strip that off
-                let normalized_path: PathBuf = entry_path
+                let normalized_path: PathBuf = path
                     .components()
                     .skip_while(|c| match c {
                         Component::Normal(name) => name != &"media_attachments",
                         _ => true,
                     })
                     .collect();
-                extract_tar_entry(&dest_path, &normalized_path, &mut entry)?;
-            } else if let Some(ext) = entry_path_extension {
+                self.handle_media_attachment(&normalized_path, read)?;
+            } else if let Some(ext) = path.extension() {
                 // mainly for {avatar,header}.{jpg,png}, but there may be more?
                 if "png" == ext || "jpg" == ext {
-                    extract_tar_entry(&dest_path, &entry_path, &mut entry)?;
+                    self.handle_media_attachment(path, read)?;
                 }
             }
         }
-
-        Ok(())
-    }
-}
-
-fn extract_tar_entry<P, R>(
-    dest_path: P,
-    within_dest_path: P,
-    input_reader: &mut R,
-) -> Result<(), Box<dyn Error>>
-where
-    P: AsRef<Path>,
-    R: ?Sized,
-    R: Read,
-{
-    let output_path = PathBuf::new().join(dest_path).join(within_dest_path);
-    info!("Extracting {:?}", output_path);
-
-    let output_parent_path = output_path.parent().unwrap();
-    fs::create_dir_all(output_parent_path)?;
-
-    let mut output_file = fs::File::create(&output_path)?;
-    copy(input_reader, &mut output_file)?;
-
-    Ok(())
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use std::path::Path;
-
-    const TEST_RESOURCES_PATH: &str = "src/resources/test";
-
-    lazy_static! {
-        static ref MASTODON_EXPORT_PATH: PathBuf = Path::new(env!("CARGO_MANIFEST_DIR"))
-            .join(TEST_RESOURCES_PATH)
-            .join("mastodon-export.tar.gz");
-    }
-
-    #[test]
-    fn it_can_load_outbox() -> Result<(), Box<dyn Error>> {
-        let mut export = Export::from(MASTODON_EXPORT_PATH.clone());
-        let outbox: Outbox<crate::activitystreams::Activity> = export.outbox()?;
-        assert!(!outbox.ordered_items.is_empty());
         Ok(())
     }
 
-    #[test]
-    fn it_can_load_outbox_as_values() -> Result<(), Box<dyn Error>> {
-        let mut export = Export::from(MASTODON_EXPORT_PATH.clone());
-        let outbox: Outbox<serde_json::Value> = export.outbox()?;
-        assert!(!outbox.ordered_items.is_empty());
+    fn handle_outbox(&self, read: &mut impl Read) -> Result<()> {
+        let outbox: activitystreams::Outbox<serde_json::Value> = serde_json::from_reader(read)?;
+        info!("Found {:?} items", outbox.ordered_items.len());
+        let activities = db::activities::Activities::new(&self.conn);
+        activities.import_collection(&outbox)?;
         Ok(())
     }
 
-    #[test]
-    fn it_can_load_actor_as_value() -> Result<(), Box<dyn Error>> {
-        let mut export = Export::from(MASTODON_EXPORT_PATH.clone());
-        let actor: serde_json::Value = export.actor()?;
-        let json_text = serde_json::to_string_pretty(&actor)?;
-        assert!(json_text.contains("@context"));
-        Ok(())
-    }
+    fn handle_actor(&mut self, read: &mut impl Read) -> Result<()> {
+        println!("Found actor");
 
-    #[test]
-    fn it_can_load_actor_as_local_model() -> Result<(), Box<dyn Error>> {
-        let mut export = Export::from(MASTODON_EXPORT_PATH.clone());
-        let actor: crate::activitystreams::Actor = export.actor()?;
-        assert_eq!(actor.id, "https://mastodon.social/users/lmorchard",);
-        assert_eq!(actor.url, "https://mastodon.social/@lmorchard",);
-        Ok(())
-    }
+        // Grab the Actor as a Value to import it with max fidelity
+        let actor: serde_json::Value = serde_json::from_reader(read)?;
+        let actors = db::actors::Actors::new(&self.conn);
+        actors.import_actor(&actor)?;
 
-    #[test]
-    fn it_can_load_adtor_as_external_model() -> Result<(), Box<dyn Error>> {
-        let mut export = Export::from(MASTODON_EXPORT_PATH.clone());
-        let actor: activitystreams::actor::ActorBox = export.actor()?;
-        let actor: activitystreams::actor::Person = actor.into_concrete()?;
-        assert_eq!(
-            actor.as_ref().get_id().ok_or("no id")?.as_str(),
-            "https://mastodon.social/users/lmorchard",
+        // Convert the actor to our local type and figure out the new media subpath
+        let local_actor: Actor = actor.into();
+        let previous_media_subpath = String::from(&self.current_media_subpath);
+        self.current_media_subpath = local_actor.id_hash();
+
+        // Move everything we have so far to the per-actor media path
+        info!(
+            "Moving temporary files from {:?} to {:?}",
+            previous_media_subpath, self.current_media_subpath
         );
-        assert_eq!(
-            actor
-                .as_ref()
-                .get_url_xsd_any_uri()
-                .ok_or("no url")?
-                .as_str(),
-            "https://mastodon.social/@lmorchard",
-        );
+
+        let temp_media_path = PathBuf::new()
+            .join(&self.media_path)
+            .join(previous_media_subpath);
+
+        let new_media_path = PathBuf::new()
+            .join(&self.media_path)
+            .join(&self.current_media_subpath);
+
+        for entry in WalkDir::new(&temp_media_path)
+            .into_iter()
+            .filter_map(|e| e.ok())
+        {
+            if !entry.file_type().is_file() {
+                continue;
+            }
+
+            let old_path = entry.path();
+            let new_path = &new_media_path.join(old_path.strip_prefix(&temp_media_path)?);
+
+            let new_parent_path = new_path.parent().unwrap();
+            fs::create_dir_all(new_parent_path)?;
+
+            trace!(
+                "Moving temporary file from {:?} to {:?}",
+                old_path,
+                new_path
+            );
+            fs::rename(old_path, new_path)?;
+        }
+
+        // Clean up the temporary media path
+        fs::remove_dir_all(&temp_media_path)?;
+
+        Ok(())
+    }
+
+    fn handle_media_attachment<R>(&self, entry_path: &PathBuf, entry_read: &mut R) -> Result<()>
+    where
+        R: ?Sized,
+        R: Read,
+    {
+        let media_path = self.media_path.as_path();
+
+        let output_path = PathBuf::new()
+            .join(media_path)
+            .join(&self.current_media_subpath)
+            .join(entry_path);
+
+        info!("Extracting {:?}", output_path);
+
+        let output_parent_path = output_path.parent().unwrap();
+        fs::create_dir_all(output_parent_path)?;
+
+        let mut output_file = fs::File::create(&output_path)?;
+        copy(entry_read, &mut output_file)?;
+
         Ok(())
     }
 }
