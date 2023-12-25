@@ -238,8 +238,6 @@
 <a href="#238" id="238">238</a>
 <a href="#239" id="239">239</a>
 <a href="#240" id="240">240</a>
-<a href="#241" id="241">241</a>
-<a href="#242" id="242">242</a>
 </pre></div><pre class="rust"><code><span class="kw">use crate</span>::{activitystreams, config, db, templates};
 <span class="kw">use </span>anyhow::Result;
 <span class="kw">use </span>rayon::prelude::<span class="kw-2">*</span>;
@@ -248,10 +246,8 @@
 <span class="kw">use </span>std::error::Error;
 <span class="kw">use </span>std::fs;
 <span class="kw">use </span>std::path::{Path, PathBuf};
-
 <span class="kw">use </span>std::io::prelude::<span class="kw-2">*</span>;
 <span class="kw">use </span>tera::Tera;
-
 <span class="kw">use </span><span class="kw">crate</span>::config::DEFAULT_CONFIG;
 <span class="kw">use </span><span class="kw">crate</span>::templates::contexts;
 

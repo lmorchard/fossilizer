@@ -362,7 +362,7 @@
     }
 
     <span class="kw">fn </span>handle_actor(<span class="kw-2">&amp;mut </span><span class="self">self</span>, read: <span class="kw-2">&amp;mut </span><span class="kw">impl </span>Read) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-        <span class="macro">println!</span>(<span class="string">&quot;Found actor&quot;</span>);
+        <span class="macro">info!</span>(<span class="string">&quot;Found actor&quot;</span>);
 
         <span class="comment">// Grab the Actor as a Value to import it with max fidelity
         </span><span class="kw">let </span>actor: serde_json::Value = serde_json::from_reader(read)<span class="question-mark">?</span>;
