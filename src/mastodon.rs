@@ -23,6 +23,7 @@ pub struct Importer {
 
 impl Importer {
     pub fn new(conn: Connection, media_path: PathBuf, skip_media: bool) -> Self {
+        // Start with a temporary path, until we have found the actor JSON to derive a real path
         let current_media_subpath: String = format!(
             "tmp-{}",
             thread_rng()
@@ -120,6 +121,29 @@ impl Importer {
         Ok(())
     }
 
+    fn handle_media_attachment<R>(&self, entry_path: &PathBuf, entry_read: &mut R) -> Result<()>
+    where
+        R: ?Sized,
+        R: Read,
+    {
+        let media_path = self.media_path.as_path();
+
+        let output_path = PathBuf::new()
+            .join(media_path)
+            .join(&self.current_media_subpath)
+            .join(entry_path);
+
+        info!("Extracting {:?}", output_path);
+
+        let output_parent_path = output_path.parent().unwrap();
+        fs::create_dir_all(output_parent_path)?;
+
+        let mut output_file = fs::File::create(&output_path)?;
+        copy(entry_read, &mut output_file)?;
+
+        Ok(())
+    }
+
     fn handle_outbox(&self, read: &mut impl Read) -> Result<()> {
         let outbox: activitystreams::Outbox<serde_json::Value> = serde_json::from_reader(read)?;
         info!("Found {:?} items", outbox.ordered_items.len());
@@ -179,29 +203,6 @@ impl Importer {
 
         // Clean up the temporary media path
         fs::remove_dir_all(&temp_media_path)?;
-
-        Ok(())
-    }
-
-    fn handle_media_attachment<R>(&self, entry_path: &PathBuf, entry_read: &mut R) -> Result<()>
-    where
-        R: ?Sized,
-        R: Read,
-    {
-        let media_path = self.media_path.as_path();
-
-        let output_path = PathBuf::new()
-            .join(media_path)
-            .join(&self.current_media_subpath)
-            .join(entry_path);
-
-        info!("Extracting {:?}", output_path);
-
-        let output_parent_path = output_path.parent().unwrap();
-        fs::create_dir_all(output_parent_path)?;
-
-        let mut output_file = fs::File::create(&output_path)?;
-        copy(entry_read, &mut output_file)?;
 
         Ok(())
     }
