@@ -6,10 +6,8 @@ use std::collections::HashMap;
 use std::error::Error;
 use std::fs;
 use std::path::{Path, PathBuf};
-
 use std::io::prelude::*;
 use tera::Tera;
-
 use crate::config::DEFAULT_CONFIG;
 use crate::templates::contexts;
 

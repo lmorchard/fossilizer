@@ -20,16 +20,16 @@ pub async fn command(args: &ImportArgs) -> Result<(), Box<dyn Error>> {
     let config = config::config()?;
     let skip_media = args.skip_media;
 
-    let data_path = PathBuf::from(&config.data_path);
-    fs::create_dir_all(&data_path)?;
-
-    let media_path = config.media_path();
-    fs::create_dir_all(&media_path)?;
-
-    let conn = db::conn()?;
-    let mut importer = mastodon::Importer::new(conn, media_path, skip_media);
-
     for filename in &args.filenames {
+        let data_path = PathBuf::from(&config.data_path);
+        fs::create_dir_all(&data_path)?;
+
+        let media_path = config.media_path();
+        fs::create_dir_all(&media_path)?;
+        
+        let conn = db::conn()?;
+
+        let mut importer = mastodon::Importer::new(conn, media_path, skip_media);
         let filename: PathBuf = filename.into();
         info!("Importing {:?}", filename);
         importer.import(filename)?;

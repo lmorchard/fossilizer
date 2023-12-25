@@ -153,7 +153,7 @@ impl Importer {
     }
 
     fn handle_actor(&mut self, read: &mut impl Read) -> Result<()> {
-        println!("Found actor");
+        info!("Found actor");
 
         // Grab the Actor as a Value to import it with max fidelity
         let actor: serde_json::Value = serde_json::from_reader(read)?;
