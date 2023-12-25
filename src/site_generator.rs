@@ -104,14 +104,6 @@ pub fn copy_web_assets(build_path: &PathBuf) -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-pub fn copy_media_files<P>(media_path: &[P], build_path: &P) -> Result<(), Box<dyn Error>>
-where
-    P: AsRef<Path> + std::fmt::Debug,
-{
-    copy_files(media_path, build_path)?;
-    Ok(())
-}
-
 pub fn copy_files<P>(media_path: &[P], build_path: &P) -> Result<(), Box<dyn Error>>
 where
     P: AsRef<Path> + std::fmt::Debug,

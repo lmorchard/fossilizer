@@ -11,9 +11,6 @@ pub struct BuildArgs {
     /// Delete build directory before proceeding
     #[arg(short = 'k', long)]
     clean: bool,
-    /// Skip copying over media files
-    #[arg(long)]
-    skip_media: bool,
     /// Skip building index page
     #[arg(long)]
     skip_index: bool,
@@ -28,7 +25,6 @@ pub struct BuildArgs {
 pub async fn command(args: &BuildArgs) -> Result<(), Box<dyn Error>> {
     let config = config::config()?;
     let clean = args.clean;
-    let skip_media = args.skip_media;
     let skip_index = args.skip_index;
     let skip_activities = args.skip_activities;
     let skip_assets = args.skip_assets;
@@ -40,10 +36,6 @@ pub async fn command(args: &BuildArgs) -> Result<(), Box<dyn Error>> {
             let config = config::config().unwrap();
             if !skip_assets {
                 site_generator::copy_web_assets(&config.build_path).unwrap();
-            }
-            if !skip_media {
-                site_generator::copy_media_files(&[config.media_path()], &config.build_path)
-                    .unwrap();
             }
             Ok(())
         }),

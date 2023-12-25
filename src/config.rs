@@ -33,12 +33,12 @@ pub fn default_build_path() -> PathBuf {
     "./build".into()
 }
 pub fn default_data_path() -> PathBuf {
-    "./data".into()
+    "./build/data".into()
 }
 impl AppConfig {
     // todo: allow each of these to be individually overriden
     pub fn media_path(&self) -> PathBuf {
-        self.data_path.join("media")
+        self.build_path.join("media")
     }
     pub fn database_path(&self) -> PathBuf {
         self.data_path.join("data.sqlite3")
