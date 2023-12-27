@@ -2,7 +2,6 @@
 
 {% block head %}
   <title>{{ day.current.date }}</title>
-  <link rel="top" href="{{ site_root ~ "/index.html" }}" title="Index" />
   {% if day.previous %}
     <link rel="prev" href="{{ site_root ~ "/" ~ day.previous.path }}" title="{{ day.previous.date }}" />
   {% endif %}
