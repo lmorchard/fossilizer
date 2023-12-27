@@ -1,3 +1,5 @@
+import "./lib/archive-date-nav-selector.js";
+
 const KEY_HOME_INSTANCE_DOMAIN = "home-instance-domain";
 const LAZY_LOAD_THRESHOLD = 0.1;
 

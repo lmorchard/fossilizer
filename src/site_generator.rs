@@ -238,3 +238,24 @@ pub fn generate_index_page(
 
     Ok(())
 }
+
+pub fn generate_index_json(
+    build_path: &PathBuf,
+    day_entries: &Vec<contexts::IndexDayContext>,
+) -> Result<(), Box<dyn Error>> {
+    info!("Generating site index JSON");
+
+    let file_path = PathBuf::from(&build_path)
+        .join("index")
+        .with_extension("json");
+
+    let output = serde_json::to_string_pretty(&day_entries)?;
+
+    let file_parent_path = file_path.parent().ok_or("no parent path")?;
+    fs::create_dir_all(file_parent_path)?;
+    
+    let mut file = fs::File::create(file_path)?;
+    file.write_all(output.as_bytes())?;
+
+    Ok(())
+}
