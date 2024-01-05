@@ -153,7 +153,7 @@ impl Importer {
     }
 
     fn handle_actor(&mut self, read: &mut impl Read) -> Result<()> {
-        info!("Found actor");
+        debug!("Found actor");
 
         // Grab the Actor as a Value to import it with max fidelity
         let actor: serde_json::Value = serde_json::from_reader(read)?;
@@ -165,44 +165,46 @@ impl Importer {
         let previous_media_subpath = String::from(&self.current_media_subpath);
         self.current_media_subpath = local_actor.id_hash();
 
-        // Move everything we have so far to the per-actor media path
-        info!(
-            "Moving temporary files from {:?} to {:?}",
-            previous_media_subpath, self.current_media_subpath
-        );
-
         let temp_media_path = PathBuf::new()
             .join(&self.media_path)
-            .join(previous_media_subpath);
+            .join(&previous_media_subpath);
 
-        let new_media_path = PathBuf::new()
-            .join(&self.media_path)
-            .join(&self.current_media_subpath);
+        // Move everything we have so far to the per-actor media path, if we have anything
+        if temp_media_path.is_dir() {
+            info!(
+                "Moving temporary files from {:?} to {:?}",
+                previous_media_subpath, self.current_media_subpath
+            );
 
-        for entry in WalkDir::new(&temp_media_path)
-            .into_iter()
-            .filter_map(|e| e.ok())
-        {
-            if !entry.file_type().is_file() {
-                continue;
+            let new_media_path = PathBuf::new()
+                .join(&self.media_path)
+                .join(&self.current_media_subpath);
+
+            for entry in WalkDir::new(&temp_media_path)
+                .into_iter()
+                .filter_map(|e| e.ok())
+            {
+                if !entry.file_type().is_file() {
+                    continue;
+                }
+
+                let old_path = entry.path();
+                let new_path = &new_media_path.join(old_path.strip_prefix(&temp_media_path)?);
+
+                let new_parent_path = new_path.parent().unwrap();
+                fs::create_dir_all(new_parent_path)?;
+
+                trace!(
+                    "Moving temporary file from {:?} to {:?}",
+                    old_path,
+                    new_path
+                );
+                fs::rename(old_path, new_path)?;
             }
 
-            let old_path = entry.path();
-            let new_path = &new_media_path.join(old_path.strip_prefix(&temp_media_path)?);
-
-            let new_parent_path = new_path.parent().unwrap();
-            fs::create_dir_all(new_parent_path)?;
-
-            trace!(
-                "Moving temporary file from {:?} to {:?}",
-                old_path,
-                new_path
-            );
-            fs::rename(old_path, new_path)?;
+            // Clean up the temporary media path
+            fs::remove_dir_all(&temp_media_path)?;
         }
-
-        // Clean up the temporary media path
-        fs::remove_dir_all(&temp_media_path)?;
 
         Ok(())
     }
