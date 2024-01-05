@@ -207,6 +207,8 @@
 <a href="#207" id="207">207</a>
 <a href="#208" id="208">208</a>
 <a href="#209" id="209">209</a>
+<a href="#210" id="210">210</a>
+<a href="#211" id="211">211</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>flate2::read::GzDecoder;
 <span class="kw">use </span>std::convert::From;
 <span class="kw">use </span>std::fs;
@@ -362,7 +364,7 @@
     }
 
     <span class="kw">fn </span>handle_actor(<span class="kw-2">&amp;mut </span><span class="self">self</span>, read: <span class="kw-2">&amp;mut </span><span class="kw">impl </span>Read) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-        <span class="macro">info!</span>(<span class="string">&quot;Found actor&quot;</span>);
+        <span class="macro">debug!</span>(<span class="string">&quot;Found actor&quot;</span>);
 
         <span class="comment">// Grab the Actor as a Value to import it with max fidelity
         </span><span class="kw">let </span>actor: serde_json::Value = serde_json::from_reader(read)<span class="question-mark">?</span>;
@@ -374,44 +376,46 @@
         <span class="kw">let </span>previous_media_subpath = String::from(<span class="kw-2">&amp;</span><span class="self">self</span>.current_media_subpath);
         <span class="self">self</span>.current_media_subpath = local_actor.id_hash();
 
-        <span class="comment">// Move everything we have so far to the per-actor media path
-        </span><span class="macro">info!</span>(
-            <span class="string">&quot;Moving temporary files from {:?} to {:?}&quot;</span>,
-            previous_media_subpath, <span class="self">self</span>.current_media_subpath
-        );
-
         <span class="kw">let </span>temp_media_path = PathBuf::new()
             .join(<span class="kw-2">&amp;</span><span class="self">self</span>.media_path)
-            .join(previous_media_subpath);
+            .join(<span class="kw-2">&amp;</span>previous_media_subpath);
 
-        <span class="kw">let </span>new_media_path = PathBuf::new()
-            .join(<span class="kw-2">&amp;</span><span class="self">self</span>.media_path)
-            .join(<span class="kw-2">&amp;</span><span class="self">self</span>.current_media_subpath);
+        <span class="comment">// Move everything we have so far to the per-actor media path, if we have anything
+        </span><span class="kw">if </span>temp_media_path.is_dir() {
+            <span class="macro">info!</span>(
+                <span class="string">&quot;Moving temporary files from {:?} to {:?}&quot;</span>,
+                previous_media_subpath, <span class="self">self</span>.current_media_subpath
+            );
 
-        <span class="kw">for </span>entry <span class="kw">in </span>WalkDir::new(<span class="kw-2">&amp;</span>temp_media_path)
-            .into_iter()
-            .filter_map(|e| e.ok())
-        {
-            <span class="kw">if </span>!entry.file_type().is_file() {
-                <span class="kw">continue</span>;
+            <span class="kw">let </span>new_media_path = PathBuf::new()
+                .join(<span class="kw-2">&amp;</span><span class="self">self</span>.media_path)
+                .join(<span class="kw-2">&amp;</span><span class="self">self</span>.current_media_subpath);
+
+            <span class="kw">for </span>entry <span class="kw">in </span>WalkDir::new(<span class="kw-2">&amp;</span>temp_media_path)
+                .into_iter()
+                .filter_map(|e| e.ok())
+            {
+                <span class="kw">if </span>!entry.file_type().is_file() {
+                    <span class="kw">continue</span>;
+                }
+
+                <span class="kw">let </span>old_path = entry.path();
+                <span class="kw">let </span>new_path = <span class="kw-2">&amp;</span>new_media_path.join(old_path.strip_prefix(<span class="kw-2">&amp;</span>temp_media_path)<span class="question-mark">?</span>);
+
+                <span class="kw">let </span>new_parent_path = new_path.parent().unwrap();
+                fs::create_dir_all(new_parent_path)<span class="question-mark">?</span>;
+
+                <span class="macro">trace!</span>(
+                    <span class="string">&quot;Moving temporary file from {:?} to {:?}&quot;</span>,
+                    old_path,
+                    new_path
+                );
+                fs::rename(old_path, new_path)<span class="question-mark">?</span>;
             }
 
-            <span class="kw">let </span>old_path = entry.path();
-            <span class="kw">let </span>new_path = <span class="kw-2">&amp;</span>new_media_path.join(old_path.strip_prefix(<span class="kw-2">&amp;</span>temp_media_path)<span class="question-mark">?</span>);
-
-            <span class="kw">let </span>new_parent_path = new_path.parent().unwrap();
-            fs::create_dir_all(new_parent_path)<span class="question-mark">?</span>;
-
-            <span class="macro">trace!</span>(
-                <span class="string">&quot;Moving temporary file from {:?} to {:?}&quot;</span>,
-                old_path,
-                new_path
-            );
-            fs::rename(old_path, new_path)<span class="question-mark">?</span>;
+            <span class="comment">// Clean up the temporary media path
+            </span>fs::remove_dir_all(<span class="kw-2">&amp;</span>temp_media_path)<span class="question-mark">?</span>;
         }
-
-        <span class="comment">// Clean up the temporary media path
-        </span>fs::remove_dir_all(<span class="kw-2">&amp;</span>temp_media_path)<span class="question-mark">?</span>;
 
         <span class="prelude-val">Ok</span>(())
     }
