@@ -20,14 +20,25 @@ pub struct BuildArgs {
     /// Skip copying over web assets
     #[arg(long)]
     skip_assets: bool,
+    /// Theme to use in building the static site
+    #[arg(long)]
+    theme: Option<String>,
 }
 
 pub async fn command(args: &BuildArgs) -> Result<(), Box<dyn Error>> {
-    let config = config::config()?;
     let clean = args.clean;
     let skip_index = args.skip_index;
     let skip_activities = args.skip_activities;
     let skip_assets = args.skip_assets;
+
+    config::update(|config| {
+        if args.theme.is_some() {
+            config.theme = args.theme.as_ref().unwrap().clone();
+        }
+    })?;
+
+    let config = config::config()?;
+    debug!("Using theme {:?}", config.theme);
 
     site_generator::setup_build_path(&config.build_path, &clean)?;
 

@@ -12,6 +12,7 @@ pub mod app;
 pub mod config;
 pub mod db;
 pub mod mastodon;
+pub mod themes;
 pub mod site_generator;
 pub mod templates;
 

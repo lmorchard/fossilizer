@@ -1,4 +1,3 @@
-use rust_embed::RustEmbed;
 use serde::Serialize;
 use serde_json::value::{to_value, Value};
 use std::collections::HashMap;
@@ -10,12 +9,9 @@ use tera::Tera;
 use url::Url;
 
 use crate::config;
+use crate::themes::templates_source;
 
 pub mod contexts;
-
-#[derive(RustEmbed)]
-#[folder = "src/resources/templates"]
-pub struct TemplateAsset;
 
 pub fn init() -> Result<Tera, Box<dyn Error>> {
     let config = config::config()?;
@@ -33,7 +29,7 @@ pub fn init() -> Result<Tera, Box<dyn Error>> {
     } else {
         debug!("Using embedded templates");
         tera = Tera::default();
-        tera.add_raw_templates(templates_source())?;
+        tera.add_raw_templates(templates_source(&config.theme))?;
     }
 
     tera.register_filter("sha256", filter_sha256);
@@ -57,19 +53,6 @@ pub fn filter_urlpath(value: &Value, _: &HashMap<String, Value>) -> tera::Result
         .join(s.as_str())
         .unwrap();
     Ok(to_value(url.path()).unwrap())
-}
-
-pub fn templates_source() -> Vec<(String, String)> {
-    // TODO: accept configured switch over to user-supplied templates
-    TemplateAsset::iter()
-        .map(|filename| {
-            let file = TemplateAsset::get(&filename).unwrap();
-            (
-                filename.to_string(),
-                std::str::from_utf8(file.data.as_ref()).unwrap().to_owned(),
-            )
-        })
-        .collect::<Vec<(String, String)>>()
 }
 
 pub fn render_to_file(
