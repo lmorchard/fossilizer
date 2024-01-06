@@ -27,13 +27,19 @@ pub struct AppConfig {
     #[serde(default = "default_data_path")]
     pub data_path: PathBuf,
 
+    #[serde(default = "default_theme")]
+    pub theme: String,
+
     pub mastodon_access_token: Option<String>,
 }
 pub fn default_build_path() -> PathBuf {
-    "./build".into()
+    PathBuf::from(".").join("build")
 }
 pub fn default_data_path() -> PathBuf {
-    "./build/data".into()
+    PathBuf::from(".").join("data")
+}
+pub fn default_theme() -> String {
+    "default".into()
 }
 impl AppConfig {
     // todo: allow each of these to be individually overriden
@@ -43,11 +49,17 @@ impl AppConfig {
     pub fn database_path(&self) -> PathBuf {
         self.data_path.join("data.sqlite3")
     }
+    pub fn config_path(&self) -> PathBuf {
+        self.data_path.join("config.toml")
+    }
+    pub fn themes_path(&self) -> PathBuf {
+        self.data_path.join("themes")
+    }
     pub fn templates_path(&self) -> PathBuf {
-        self.data_path.join("templates")
+        self.themes_path().join(&self.theme).join("templates")
     }
     pub fn web_assets_path(&self) -> PathBuf {
-        self.data_path.join("web")
+        self.themes_path().join(&self.theme).join("web")
     }
 }
 
@@ -71,6 +83,15 @@ pub fn init(config_path: &Path) -> Result<(), Box<dyn Error>> {
 
 pub fn config() -> Result<AppConfig, Box<dyn Error>> {
     Ok(CONTEXT.read()?.config.clone())
+}
+
+pub fn update<U>(updater: U) -> Result<(), Box<dyn Error>>
+where
+    U: FnOnce(&mut AppConfig) -> (),
+{
+    let mut context = CONTEXT.write()?;
+    updater(&mut context.config);
+    Ok(())
 }
 
 pub fn get<'de, T: Deserialize<'de>>(key: &str) -> Result<T, Box<dyn Error>> {

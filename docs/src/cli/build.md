@@ -6,7 +6,7 @@ content and media attachments. It's used like so:
 ```bash
 cd my-mastodon-site
 fossilzer build
-pagefind --verbose --keep-index-url --source build --bundle-dir pagefind
+pagefind --keep-index-url --site build
 ```
 
 Note: Until or unless [Pagefind can be integrated into Fossilzer](https://github.com/lmorchard/fossilizer/issues/7), it needs to be run as a separate command to provide search indexes and code modules for the site. 
@@ -43,17 +43,20 @@ You can customize both the templates and the static web assets used in this buil
 
 ## Options
 
+### --theme <THEME>
+Use the theme named `<THEME>` for rendering the site. This will look for a directory named `themes/<THEME>` in the `data` directory.
+
 ### --clean
 Delete build directory before proceeding
 
-### --skip-media      
-Skip copying over media files
+### --skip-index
+Skip building index page in HTML
 
-### --skip-index       
-Skip building index page
+### --skip-index-json
+Skip building index page in JSON
 
 ### --skip-activities  
 Skip building pages for activities
 
-### --skip-assets      
+### --skip-assets
 Skip copying over web assets

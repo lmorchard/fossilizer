@@ -21,7 +21,7 @@ These are rough instructions for a rough command-line tool. There is no GUI, yet
     ```
 1. Build pagefind assets for search:
     ```
-    pagefind --verbose --keep-index-url --site build --output-subdir pagefind 
+    pagefind --keep-index-url --site build
     ```
 1. Serve the `build` directory up from a web server of your choice - e.g. [`cargo server`](https://github.com/raphamorim/cargo-server):
     ```
