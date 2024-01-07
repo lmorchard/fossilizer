@@ -39,14 +39,14 @@
     --pagefind-ui-primary: #eeeeee;
     --pagefind-ui-text: #eeeeee;
     --pagefind-ui-background: rgba(21, 32, 40, 0.95);
-    --pagefind-ui-border: #152028;
-    --pagefind-ui-tag: #152028;
+    --pagefind-ui-border: #999;
+    --pagefind-ui-tag: #999;
   }
 }
 
 body {
-  margin: 0;
-  padding: 1em;
+  padding: 0;
+  margin: 4em 1em 1em 1em;
 
   font-family: var(--theme-font-family);
   font-size: var(--theme-font-size);
@@ -69,14 +69,22 @@ theme-selector button .icon {
 
 archive-nav {
   position: fixed;
+  top: 0;
   z-index: 1000;
+  padding: 1em;
+  width: 100vw;
   display: flex;
   flex-direction: row;
+  align-items: flex-start;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.75);
 }
 
 archive-nav archive-nav-date-selector {}
 
-archive-nav archive-nav-search {}
+archive-nav archive-nav-search {
+  display: block;
+}
 
 archive-main {}
 
@@ -119,6 +127,10 @@ archive-activity .header {
   position: relative;
   height: var(--avatar-size);
   padding-left: calc(var(--avatar-size) + 1em);
+}
+
+archive-activity .header .anchor {
+  display: none;
 }
 
 archive-activity .header .avatar {

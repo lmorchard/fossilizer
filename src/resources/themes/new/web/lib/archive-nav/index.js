@@ -16,7 +16,7 @@ class ArchiveNavSearch extends HTMLElement {
     super();
   }
   connectedCallback() {
-    const linkTop = document.head.querySelector("link[rel=top]");
+    const linkTop = document.head.querySelector("link[rel=base]");
     const topUrl = new URL(linkTop.getAttribute("href"), window.location);
     const id = `archive-nav-search-${Date.now()}-${Math.ceil(1000 * Math.random())}`;
     this.setAttribute("id", id);
@@ -24,7 +24,7 @@ class ArchiveNavSearch extends HTMLElement {
     if (PagefindUI) {
       new PagefindUI({
         element: `#${this.id}`,
-        showImages: false,
+        showImages: true,
         showSubResults: true,
         highlightParam: "highlight",
         pageSize: 5,

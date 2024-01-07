@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 
 {% block head %}
-  <title>{{ day.current.date }}</title>
+  <title>{{ day.current.date | safe }}</title>
   {% if day.previous %}
     <link rel="prev" href="{{ site_root ~ "/" ~ day.previous.path }}" title="{{ day.previous.date }}" />
   {% endif %}
@@ -11,17 +11,11 @@
 {% endblock head %} 
 
 {% block pagetitle %}
-  {{ day.current.date }}
+  {{ day.current.date | safe }}
 {% endblock pagetitle %} 
 
 {% block content %}
   <archive-activity-list id="main-list" data-pagefind-body data-pagefind-meta="title:{{ day.current.date }}">
-    <!--
-    <archive-activity-list-controls>
-      <button class="toggle-grid">Grid layout</button>
-      <button class="toggle-time-since">Time since</button>
-    </archive-activity-list-controls>
-    -->
     <archive-activity-list-contents>
       {% for activity in activities %}
         {% include "activity.html" %}

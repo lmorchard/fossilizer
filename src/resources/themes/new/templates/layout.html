@@ -9,6 +9,7 @@
       <title>{% block title %}{% endblock title %}</title>
     {% endblock head %}
 
+    <link rel="base" href="{{ site_root }}" title="Base" />
     <link rel="top" href="{{ site_root ~ "/index.html" }}" title="Index" />
 
     <link href="{{ site_root | safe }}/pagefind/pagefind-ui.css" rel="stylesheet">
@@ -18,8 +19,8 @@
     <script src="{{ site_root | safe }}/index.js" type="module"></script>
   </head>
   <body class="fossilizer">
+
     <archive-nav>
-      <archive-nav-search></archive-nav-search>
       <archive-nav-date-selector></archive-nav-date-selector>
       <archive-activity-list-controls for="main-list">
         <button class="toggle-grid">Grid layout</button>
@@ -31,11 +32,14 @@
           <span class="icon dark">🌚</span>
         </button>
       </theme-selector>
+      <archive-nav-search></archive-nav-search>
     </archive-nav>
+
     <archive-main>
       <lazy-load-observer>
         {% block content %} {% endblock content %}
       </lazy-load-observer>
     </archive-main>
+
   </body>
 </html>
