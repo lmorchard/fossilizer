@@ -44,6 +44,10 @@
   }
 }
 
+html { 
+  scroll-padding-top: 10em;
+}
+
 body {
   padding: 0;
   margin: 4em 1em 1em 1em;
