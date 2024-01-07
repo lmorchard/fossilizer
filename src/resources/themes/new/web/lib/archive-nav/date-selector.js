@@ -39,12 +39,14 @@ class ArchiveNavDateSelector extends HTMLElement {
     }
     innerHTML.push(`</select>`);
 
+    /*
     if (previous) {
       innerHTML.unshift(`<a href="${new URL(previous.path, this.topUrl)}" class="previous">Previous</a>`);
     }
     if (next) {
       innerHTML.push(`<a href="${new URL(next.path, this.topUrl)}" class="next">Next</a>`);
     }
+    */
 
     this.innerHTML = innerHTML.join("\n");
   }

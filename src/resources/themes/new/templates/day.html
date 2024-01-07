@@ -15,22 +15,30 @@
 {% endblock pagetitle %} 
 
 {% block content %}
-  <archive-activity-list-controls for="activities">
-    <button class="toggle-grid">Grid</button>
-  </archive-activity-list-controls>
-
-  <archive-activity-list id="activities" data-pagefind-body data-pagefind-meta="title:{{ day.current.date }}">
-    {% for activity in activities %}
+  <archive-activity-list id="main-list" data-pagefind-body data-pagefind-meta="title:{{ day.current.date }}">
+    <!--
+    <archive-activity-list-controls>
+      <button class="toggle-grid">Grid layout</button>
+      <button class="toggle-time-since">Time since</button>
+    </archive-activity-list-controls>
+    -->
+    <archive-activity-list-contents>
+      {% for activity in activities %}
         {% include "activity.html" %}
-    {% endfor %}
+      {% endfor %}
+    </archive-activity-list-contents>
+    {% if day.next %}
+      <archive-activity-list-next-page>
+        <a class="lazy-load auto-click"
+            href="{{ site_root ~ "/" ~ day.next.path }}"
+            title="{{ day.next.date }}">
+          {{ day.next.date }}
+        </a>
+      </archive-activity-list-next-page>
+    {% endif %}    
   </archive-activity-list>
 
-  {% if day.next %}
-    <div class="card-text">
-      <h3><a class="nav-activities lazy-load auto-click" href="{{ site_root ~ "/" ~ day.next.path }}" title="{{ day.next.date }}">➡️</a></h3>
-    </div>
-  {% endif %}
-
+  {#
   <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-media-attachment">
       <div class="modal-content mh-vh-100">
@@ -46,4 +54,5 @@
       </div>
     </div>
   </div>
+  #}
 {% endblock content %}

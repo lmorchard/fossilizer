@@ -6,15 +6,15 @@
   <div class="header">
     <a class="avatar" href="{{ actor.url | safe }}" target="_blank"><img src="{{ media_root | safe}}/{{ actor.icon.url | safe }}" width="48" height="48" data-pagefind-meta="image[src]" /></a>
     <h5 id="activity-author-{{ activity.id | safe }}" class="title" data-pagefind-filter="actorName">{{ actor.name }}</h5>
-    <h6 class="subtitle">@<a href="{{ actor.url | safe }}" target="_blank" data-pagefind-filter="actorUrl">{{ actor.url }}</a></h6>
+    <div class="subtitle">@<a href="{{ actor.url | safe }}" target="_blank" data-pagefind-filter="actorUrl">{{ actor.url }}</a></div>
   </div>
   <div class="body">
     <div class="text">
       {%- if "Announce" == activity.type -%}
-        ♻️ <a href="{{ object }}" class="retoot">{{ object }}</a>
+        <a href="{{ object }}" class="boost">{{ object }}</a>
       {%- elif "Create" == activity.type and "Note" == object.type -%}
         {%- if object.summary -%}
-          <h6><span class="spoiler-text">{{ object.summary }}</span></h6>
+          <div class="summary">{{ object.summary }}</div>
         {%- endif -%}
         {%- if object.content -%}
           {{ object.content | safe }}
@@ -27,9 +27,13 @@
       <ul class="media-attachments">
         {%- for attachment in object.attachment -%}
           <li class="media-attachment">
-              <img src="{{ media_root | safe }}/{{ attachment.url | urlpath | safe }}" width="48" height="48"
+              <img
+                  class="lazy-load"
+                  width="48" height="48"
                   data-bs-toggle="modal" data-bs-target="#exampleModal"
-                  data-fullsrc="{{ media_root | safe }}/{{ attachment.url | urlpath | safe }}" title="{{ attachment.name }}" />
+                  data-src="{{ media_root | safe }}/{{ attachment.url | urlpath | safe }}"
+                  data-fullsrc="{{ media_root | safe }}/{{ attachment.url | urlpath | safe }}"
+                  title="{{ attachment.name }}" />
           </li>
         {%- endfor -%}
       </ul>

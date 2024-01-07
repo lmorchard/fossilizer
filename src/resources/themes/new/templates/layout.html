@@ -19,8 +19,12 @@
   </head>
   <body class="fossilizer">
     <archive-nav>
-      <archive-nav-date-selector></archive-nav-date-selector>
       <archive-nav-search></archive-nav-search>
+      <archive-nav-date-selector></archive-nav-date-selector>
+      <archive-activity-list-controls for="main-list">
+        <button class="toggle-grid">Grid layout</button>
+        <button class="toggle-time-since">Time since</button>
+      </archive-activity-list-controls>  
       <theme-selector>
         <button>
           <span class="icon light">🌞</span>
@@ -29,7 +33,9 @@
       </theme-selector>
     </archive-nav>
     <archive-main>
-      {% block content %} {% endblock content %}
+      <lazy-load-observer>
+        {% block content %} {% endblock content %}
+      </lazy-load-observer>
     </archive-main>
   </body>
 </html>
