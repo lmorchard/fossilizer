@@ -1,0 +1,46 @@
+{%- set actor = activity.actor -%}
+{%- set actor_hash = actor.id | sha256 %}
+{%- set media_root = site_root ~ "/media/" ~ actor_hash -%}
+{%- set object = activity.object -%}
+<archive-activity id="{{ activity.id | safe }}" data-pagefind-filter="activityType:{{ activity.type }}">
+  <div class="header">
+    <a class="avatar" href="{{ actor.url | safe }}" target="_blank"><img src="{{ media_root | safe}}/{{ actor.icon.url | safe }}" width="48" height="48" data-pagefind-meta="image[src]" /></a>
+    <h5 id="activity-author-{{ activity.id | safe }}" class="title" data-pagefind-filter="actorName">{{ actor.name }}</h5>
+    <h6 class="subtitle">@<a href="{{ actor.url | safe }}" target="_blank" data-pagefind-filter="actorUrl">{{ actor.url }}</a></h6>
+  </div>
+  <div class="body">
+    <div class="text">
+      {%- if "Announce" == activity.type -%}
+        ♻️ <a href="{{ object }}" class="retoot">{{ object }}</a>
+      {%- elif "Create" == activity.type and "Note" == object.type -%}
+        {%- if object.summary -%}
+          <h6><span class="spoiler-text">{{ object.summary }}</span></h6>
+        {%- endif -%}
+        {%- if object.content -%}
+          {{ object.content | safe }}
+        {%- endif -%}
+      {%- else -%}
+        (unknown activity type)
+      {%- endif -%}
+    </div>
+    {%- if "Create" == activity.type and "Note" == object.type and object.attachment -%}
+      <ul class="media-attachments">
+        {%- for attachment in object.attachment -%}
+          <li class="media-attachment">
+              <img src="{{ media_root | safe }}/{{ attachment.url | urlpath | safe }}" width="48" height="48"
+                  data-bs-toggle="modal" data-bs-target="#exampleModal"
+                  data-fullsrc="{{ media_root | safe }}/{{ attachment.url | urlpath | safe }}" title="{{ attachment.name }}" />
+          </li>
+        {%- endfor -%}
+      </ul>
+    {%- endif -%}
+  </div>
+  {%- if "Create" == activity.type and "Note" == object.type -%}
+    <div class="footer">
+      <a class="published" href="{{ object.url }}" target="_blank"><archive-activity-time datetime="{{ activity.published }}" title="{{ activity.published }}">{{ activity.published }}</archive-activity-time></a>
+      {# todo: get this "open in home instance" button working
+      <button title="Open in home instance" class="goto-home-instance btn btn-outline-primary" data-uri="{{ object.url | safe }}">🚀</button>
+      #}
+    </div>
+  {%- endif -%}
+</archive-activity>

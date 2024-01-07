@@ -1,0 +1,37 @@
+import "./date-selector.js";
+
+class ArchiveNav extends HTMLElement {
+  constructor() {
+    super();
+  }
+
+  connectedCallback() {
+  }
+}
+
+customElements.define("archive-nav", ArchiveNav);
+
+class ArchiveNavSearch extends HTMLElement {
+  constructor() {
+    super();
+  }
+  connectedCallback() {
+    const linkTop = document.head.querySelector("link[rel=top]");
+    const topUrl = new URL(linkTop.getAttribute("href"), window.location);
+    const id = `archive-nav-search-${Date.now()}-${Math.ceil(1000 * Math.random())}`;
+    this.setAttribute("id", id);
+
+    if (PagefindUI) {
+      new PagefindUI({
+        element: `#${this.id}`,
+        showImages: false,
+        showSubResults: true,
+        highlightParam: "highlight",
+        pageSize: 5,
+        baseUrl: topUrl
+      });
+    }
+  }
+}
+
+customElements.define("archive-nav-search", ArchiveNavSearch);
