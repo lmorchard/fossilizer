@@ -15,7 +15,7 @@
 {% endblock pagetitle %} 
 
 {% block content %}
-  <archive-activity-list id="main-list" data-pagefind-body data-pagefind-meta="title:{{ day.current.date }}">
+  <archive-activity-list id="main-list">
     <archive-activity-list-contents>
       {% for activity in activities %}
         {% include "activity.html" %}

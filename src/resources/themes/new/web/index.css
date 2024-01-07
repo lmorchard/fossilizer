@@ -148,12 +148,26 @@ archive-activity .header .avatar img {
 archive-activity .header .title {
   margin: 0 0 0.25em 0;
   font-size: 1em;
+  font-weight: bold;
 }
 
 archive-activity .header .subtitle {
   padding: 0;
   margin: 0;
   font-size: 0.9em;
+}
+
+archive-activity .anchor {
+  position: absolute;
+  top: 2em;
+  right: 2em;
+  margin: 0;
+  padding: 0;
+  font-weight: normal;
+  font-size: 0.85em;
+}
+
+archive-activity .anchor archive-activity-time {
 }
 
 archive-activity .body .text .boost {
@@ -174,16 +188,6 @@ archive-activity .body .text .summary {
 
 archive-activity .body .text .summary:before {
   content: "⚠️ ";
-}
-
-archive-activity .footer .published {
-  position: absolute;
-  top: 2em;
-  right: 2em;
-  font-size: 0.85em;
-}
-
-archive-activity .footer .published archive-activity-time {
 }
 
 archive-activity:last-of-type {

@@ -24,7 +24,6 @@ class ArchiveNavSearch extends HTMLElement {
     if (PagefindUI) {
       new PagefindUI({
         element: `#${this.id}`,
-        showImages: true,
         showSubResults: true,
         highlightParam: "highlight",
         pageSize: 5,
