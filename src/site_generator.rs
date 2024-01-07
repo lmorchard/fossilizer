@@ -105,8 +105,8 @@ where
         media_path,
         build_path,
         &fs_extra::dir::CopyOptions {
-            overwrite: false,
-            skip_exist: true,
+            overwrite: true,
+            skip_exist: false,
             buffer_size: 64000,
             copy_inside: true,
             content_only: false,
