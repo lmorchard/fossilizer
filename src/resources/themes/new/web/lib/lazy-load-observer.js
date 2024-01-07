@@ -5,7 +5,7 @@ class LazyLoadObserver extends HTMLElement {
   constructor() {
     super();
 
-    // TODO: use an attribute for these?
+    // TODO: use an attribute for these
     this.threshold = LAZY_LOAD_THRESHOLD;
     this.lazyLoadClassName = LAZY_LOAD_CLASS_NAME;
 
@@ -15,7 +15,7 @@ class LazyLoadObserver extends HTMLElement {
     );
 
     this.mutationObserver = new MutationObserver(
-      records => this.handleMutations(records)
+      (records) => this.handleMutations(records)
     );
   }
 

@@ -3,7 +3,7 @@ import "./lib/lazy-load-observer.js";
 import "./lib/archive-nav/index.js";
 import "./lib/archive-main.js";
 import "./lib/archive-activity-list.js";
-import "./lib/archive-activity-time.js";
+import "./lib/formatted-time.js";
 
 async function handleClick(ev) {
   const { classList } = ev.target;

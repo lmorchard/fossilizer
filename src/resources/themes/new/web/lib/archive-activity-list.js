@@ -1,5 +1,3 @@
-import { updateArchiveActivityTimeElements } from "./archive-activity-time.js";
-
 class ArchiveActivityList extends HTMLElement { }
 
 customElements.define("archive-activity-list", ArchiveActivityList);
@@ -24,8 +22,7 @@ class ArchiveActivityListControls extends HTMLElement {
   }
 
   toggleTimeSince() {
-    this.getList().classList.toggle("time-since");
-    updateArchiveActivityTimeElements();
+    document.querySelector("formatted-time-context").toggleRelativeTime();
   }
 }
 

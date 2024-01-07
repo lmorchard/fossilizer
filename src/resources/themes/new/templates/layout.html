@@ -37,7 +37,9 @@
 
     <archive-main>
       <lazy-load-observer>
-        {% block content %} {% endblock content %}
+        <formatted-time-context>
+          {% block content %} {% endblock content %}
+        </formatted-time-context>
       </lazy-load-observer>
     </archive-main>
 
