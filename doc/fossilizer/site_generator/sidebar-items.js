@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["copy_embedded_assets","copy_files","copy_web_assets","generate_activities_pages","generate_activity_page","generate_index_page","open_outfile_with_parent_dir","plan_activities_pages","setup_build_path","setup_data_path","unpack_customizable_resources"],"struct":["WebAsset"]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["ActivitySchema"],"struct":["Activities"],"trait":["WhichActivitySchema"]};

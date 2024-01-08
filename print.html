@@ -1,0 +1,496 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js light">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Fossilizer</title>
+        <meta name="robots" content="noindex" />
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var html = document.querySelector('html');
+            var sidebar = null;
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="index.html">README</a></li><li class="chapter-item expanded "><a href="quick-start.html"><strong aria-hidden="true">1.</strong> Quick Start</a></li><li class="chapter-item expanded "><a href="cli/index.html"><strong aria-hidden="true">2.</strong> Command Line Tool</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="cli/init.html"><strong aria-hidden="true">2.1.</strong> init</a></li><li class="chapter-item expanded "><a href="cli/import.html"><strong aria-hidden="true">2.2.</strong> import</a></li><li class="chapter-item expanded "><a href="cli/build.html"><strong aria-hidden="true">2.3.</strong> build</a></li><li class="chapter-item expanded "><a href="cli/upgrade.html"><strong aria-hidden="true">2.4.</strong> upgrade</a></li></ol></li><li class="chapter-item expanded "><a href="customization.html"><strong aria-hidden="true">3.</strong> Customization</a></li><li class="chapter-item expanded "><a href="developers/index.html"><strong aria-hidden="true">4.</strong> Developers</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Fossilizer</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="fossilizer"><a class="header" href="#fossilizer">fossilizer</a></h1>
+<p><a href="https://lmorchard.github.io/fossilizer/" title="Go to project documentation"><img src="https://img.shields.io/badge/view-Documentation-blue" alt="view - Documentation" /></a>
+<a href="https://github.com/lmorchard/fossilizer/actions"><img src="https://github.com/lmorchard/fossilizer/actions/workflows/ci.yml/badge.svg" alt="CI status" /></a></p>
+<p>This is an attempt to build a static site generator that ingests Mastodon exports and produces a web site based on the content as a personal archive or even as a way to publish a backup copy of your stuff.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="quick-start"><a class="header" href="#quick-start">Quick Start</a></h1>
+<p>These are rough instructions for a rough command-line tool. There is no GUI, yet.</p>
+<ol>
+<li>Request and download <a href="https://docs.joinmastodon.org/user/moving/#export">an export from your Mastodon instance</a> (e.g. <code>archive-20230720182703-36f08a7ce74bbf59f141b496b2b7f457.tar.gz</code>)</li>
+<li>Download <a href="https://github.com/CloudCannon/pagefind/releases">a release of pagefind</a> and <a href="https://pagefind.app/docs/installation/">install it</a> or use <a href="https://pagefind.app/docs/installation/#downloading-a-precompiled-binary">a precompiled binary</a></li>
+<li>Download <a href="https://github.com/lmorchard/fossilizer/releases">a release of Fossilizer</a> - there is no installation, just a standalone command.
+<ul>
+<li>Note: on macOS, you'll need to make an exception to run <code>fossilizer</code> in Security &amp; Privacy settings</li>
+</ul>
+</li>
+<li>Make a working directory somewhere</li>
+<li>Initialize the <code>data</code> directory:
+<pre><code>fossilizer init
+</code></pre>
+</li>
+<li>Ingest your Mastodon export and extract media attachments:
+<pre><code>fossilizer import archive-20230720182703-36f08a7ce74bbf59f141b496b2b7f457.tar.gz
+</code></pre>
+</li>
+<li>Build your static website in the <code>build</code> directory:
+<pre><code>fossilizer build
+</code></pre>
+</li>
+<li>Build pagefind assets for search:
+<pre><code>pagefind --verbose --keep-index-url --site build --output-subdir pagefind 
+</code></pre>
+</li>
+<li>Serve the <code>build</code> directory up from a web server of your choice - e.g. <a href="https://github.com/raphamorim/cargo-server"><code>cargo server</code></a>:
+<pre><code>cargo server --path build -p 8081
+</code></pre>
+</li>
+<li>Enjoy a static web site of your Mastodon toots.</li>
+</ol>
+<h2 id="tips"><a class="header" href="#tips">Tips</a></h2>
+<ul>
+<li>
+<p>Try <code>fossilizer</code> by itself for a list of subcommands, try <code>--help</code> as an option to get more details on any command.</p>
+</li>
+<li>
+<p>Try <code>fossilizer upgrade</code> to upgrade the SQLite database and other assets when you download a new version. This is not (yet) automatic.</p>
+</li>
+<li>
+<p><code>data/config.toml</code> can be used to set many as-yet undocumented configuration options.</p>
+</li>
+<li>
+<p><code>data/data.sqlite3</code> is a a persistent SQLite database that accumulates all imported data.</p>
+</li>
+<li>
+<p><code>data/media</code> is where media attachments are unpacked.</p>
+</li>
+<li>
+<p>You can repeatedly import data and import from multiple Mastodon instances. Everything will be merged.</p>
+</li>
+<li>
+<p>Try <code>fossilizer init --customize</code>, which unpacks the following for customization:</p>
+<ul>
+<li>
+<p>a <code>data/web</code> directory with static web assets that will be copied into the <code>build</code> directory</p>
+</li>
+<li>
+<p>a <code>data/templates</code> directory with <a href="https://tera.netlify.app/docs/">Tera</a> templates used to produce the HTML output</p>
+</li>
+<li>
+<p>Note: this will <em>not</em> overwrite the database for an existing <code>data</code> directory, though it <em>will</em> overwrite any existing <code>templates</code> or <code>web</code> directories.</p>
+</li>
+</ul>
+</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="command-line-tool"><a class="header" href="#command-line-tool">Command Line Tool</a></h1>
+<p>The <code>fossilizer</code> command-line tool can be used to do all the things.</p>
+<p>The following sections describe the different commands available:</p>
+<ul>
+<li><a href="cli/./init.html"><code>fossilizer init</code></a></li>
+<li><a href="cli/./import.html"><code>fossilizer import &lt;export&gt;</code></a></li>
+<li><a href="cli/./build.html"><code>fossilizer build</code></a></li>
+<li><a href="cli/./upgrade.html"><code>fossilizer upgrade</code></a></li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="the-init-command"><a class="header" href="#the-init-command">The <code>init</code> command</a></h1>
+<p>The <code>init</code> command prepares the current directory with data and configuration
+files needed by Fossilzer. It's used like so:</p>
+<pre><code class="language-bash">mkdir my-mastodon-site
+cd my-mastodon-site
+fossilizer init
+</code></pre>
+<p>When using the <code>init</code> command for the first time, some files and directories
+will be set up for you:</p>
+<pre><code class="language-bash">my-mastodon-site/
+└── build
+└── data
+    └── media
+    └── data.sqlite3
+</code></pre>
+<ul>
+<li>
+<p>The <code>build</code> directory is where your static site will be generated</p>
+</li>
+<li>
+<p>The <code>data/media</code> directory is where media attachments will be extracted</p>
+</li>
+<li>
+<p>The <code>data/data.sqlite3</code> file is a SQLite database into which things like
+posts and user account data will be stored.</p>
+</li>
+</ul>
+<p>After you've run this command, you can try <a href="cli/./build.html">the <code>import</code> command</a> to
+ingest data from one or more Mastodon exports.</p>
+<h2 id="options"><a class="header" href="#options">Options</a></h2>
+<h3 id="--clean"><a class="header" href="#--clean"><code>--clean</code></a></h3>
+<p>The <code>--clean</code> flag will delete existing <code>build</code> and <code>data</code> directories before
+setting things up. Be careful with this, because it will wipe out any existing
+data!</p>
+<pre><code class="language-bash">fossilizer init --clean
+</code></pre>
+<h3 id="--customize"><a class="header" href="#--customize"><code>--customize</code></a></h3>
+<p>By default, Fossilzer will use templates and assets embedded in the executable
+to generate a static web site. However, if you'd like to customize how your
+site is generated, you can extract these into external files to edit:</p>
+<pre><code class="language-bash">fossilizer init --customize
+</code></pre>
+<p>This will result in a file structure something like this:</p>
+<pre><code class="language-bash">my-mastodon-site/
+└── build
+└── data
+    └── media
+    ├── config.toml
+    ├── data.sqlite3
+    ├── templates
+    │   ├── activity.html
+    │   ├── day.html
+    │   ├── index.html
+    │   └── layout.html
+    └── web
+        ├── index.css
+        ├── index.js
+        └── vendor
+            ├── bootstrap.bundle.min.js
+            └── bootstrap.min.css
+</code></pre>
+<ul>
+<li>
+<p>The <code>config.toml</code> file can be used to supply configuration settings</p>
+</li>
+<li>
+<p>The <code>data/templates</code> directory holds <a href="https://tera.netlify.app/">Tera</a> templates
+used to generate HTML pages.</p>
+</li>
+<li>
+<p>The <code>data/web</code> directory holds web assets which will be copied into the root
+directory of your static site when it's generated.</p>
+</li>
+</ul>
+<p>TODO: Need to document configuration settings and templates. For now, just play around with the templates <a href="https://github.com/lmorchard/fossilizer/blob/main/src/cli/build.rs">used by <code>cli/build.rs</code></a> and see what happens! 😅 Configuration settings can be found in the <a href="https://github.com/lmorchard/fossilizer/blob/main/src/config.rs"><code>config.rs</code> module</a></p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="the-import-command"><a class="header" href="#the-import-command">The <code>import</code> command</a></h1>
+<p>The <code>import</code> command is used to ingest the content from a Mastodon export into
+the SQLite database and extract media attachments. It's used like so:</p>
+<pre><code class="language-bash">cd my-mastodon-site
+fossilizer import ../archive-20230720182703-36f08a7ce74bbf59f141b496b2b7f457.tar.gz
+</code></pre>
+<p>Depending on the size of your export, this command should take a few seconds or
+minutes to extract all the posts and attachments.</p>
+<p>Along with inserting database records, you'll find files like the following
+added to your data directory, including all the media attachments associated
+with the export under a directory based on the SHA-256 hash of the account
+address:</p>
+<pre><code class="language-bash">my-mastodon-site/
+└── data
+    ├── data.sqlite3
+    ├── media
+    │   └── acc0bb231a7a2757c7e5c63aa68ce3cdbcfd32a43eb67a6bdedffe173c721184
+    │       ├── avatar.png
+    │       ├── header.jpg
+    │       └── media_attachments
+    │           └── files
+    │               ├── 002
+    │               │   ├── ...
+    │               ├── 105
+    │               │   ├── ...
+    │               ├── 106
+    │               │   ├── ...
+</code></pre>
+<p>You can run this command repeatedly, either with fresh exports from one
+Mastodon instance or with exports from many instances. All the data will be
+merged into the database from previous imports.</p>
+<p>After you've run this command, you can try <a href="cli/./build.html">the <code>build</code> command</a> to
+generate a static web site.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="the-build-command"><a class="header" href="#the-build-command">The <code>build</code> command</a></h1>
+<p>The <code>build</code> command is used to generate a static web site from imported
+content and media attachments. It's used like so:</p>
+<pre><code class="language-bash">cd my-mastodon-site
+fossilzer build
+pagefind --verbose --keep-index-url --source build --bundle-dir pagefind
+</code></pre>
+<p>Note: Until or unless <a href="https://github.com/lmorchard/fossilizer/issues/7">Pagefind can be integrated into Fossilzer</a>, it needs to be run as a separate command to provide search indexes and code modules for the site. </p>
+<p>After using the <code>build</code> command, you should end up with a <code>build</code> directory
+with a structure somewhat like this:</p>
+<pre><code class="language-bash">my-mastodon-site/
+├── build
+│   ├── 2020
+│   ├── 2021
+│   ├── 2022
+│   ├── 2023
+│   ├── index.css
+│   ├── index.html
+│   ├── index.js
+│   ├── media
+│   ├── pagefind
+│   └── vendor
+</code></pre>
+<ul>
+<li>
+<p>Activities are organized into a <code>{year}/{month}/{day}.html</code> file structure</p>
+</li>
+<li>
+<p>An <code>index.html</code> page is generated for the site overall, linking to the pages for each day</p>
+</li>
+<li>
+<p>The <code>media</code> directory is copied directly from <code>data/media</code></p>
+</li>
+<li>
+<p>The <code>pagefind</code> directory is generated by Pagefind for client-side search</p>
+</li>
+<li>
+<p>Other files and directories like <code>index.js</code>, <code>index.css</code>, <code>vendor</code> are static assets copied into the build</p>
+</li>
+</ul>
+<p>You can customize both the templates and the static web assets used in this build. Check out <a href="cli/./init.html#--customize">the <code>init --customize</code> option</a> for more information.</p>
+<h2 id="options-1"><a class="header" href="#options-1">Options</a></h2>
+<h3 id="--clean-1"><a class="header" href="#--clean-1">--clean</a></h3>
+<p>Delete build directory before proceeding</p>
+<h3 id="--skip-media"><a class="header" href="#--skip-media">--skip-media</a></h3>
+<p>Skip copying over media files</p>
+<h3 id="--skip-index"><a class="header" href="#--skip-index">--skip-index</a></h3>
+<p>Skip building index page</p>
+<h3 id="--skip-activities"><a class="header" href="#--skip-activities">--skip-activities</a></h3>
+<p>Skip building pages for activities</p>
+<h3 id="--skip-assets"><a class="header" href="#--skip-assets">--skip-assets</a></h3>
+<p>Skip copying over web assets</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="the-upgrade-command"><a class="header" href="#the-upgrade-command">The <code>upgrade</code> command</a></h1>
+<p>The <code>upgrade</code> command is used to upgrade the database and perform any other
+necessary changes after downloading a new version of Fossilzer.</p>
+<p>Run this command whenever you upgrade Fossilzer.</p>
+<pre><code class="language-bash">cd my-mastodon-site
+fossilzer upgrade
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="customization"><a class="header" href="#customization">Customization</a></h1>
+<p>Try <code>fossilizer init --customize</code>, which unpacks the following for customization:</p>
+<ul>
+<li>
+<p>a <code>data/web</code> directory with static web assets that will be copied into the <code>build</code> directory</p>
+</li>
+<li>
+<p>a <code>data/templates</code> directory with <a href="https://tera.netlify.app/docs/">Tera templates</a> used to produce the HTML output</p>
+</li>
+<li>
+<p>Note: this will <em>not</em> overwrite the database for an existing <code>data</code> directory, though it <em>will</em> overwrite any existing <code>templates</code> or <code>web</code> directories.</p>
+</li>
+</ul>
+<p>Check out the templates to see how the pages are built. For a more in-depth reference on what variables are supplied when rendering templates, check out the crate documentation:</p>
+<ul>
+<li><a href="./doc/fossilizer/templates/contexts/struct.IndexTemplateContext.html"><code>index.html</code> template context</a></li>
+<li><a href="./doc/fossilizer/templates/contexts/struct.DayTemplateContext.html"><code>day.html</code> template context</a></li>
+<li><a href="./doc/fossilizer/templates/contexts/index.html">All template context structs</a></li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="for-developers"><a class="header" href="#for-developers">For Developers</a></h1>
+<p>TODO: jot down design notions and useful information for folks aiming to help contribute to or customize this software.</p>
+<p><code>fossilizer</code> has not yet been published as a crate, but you can see the module docs here:</p>
+<ul>
+<li><a href="developers/../doc/fossilizer/index.html">Crate fossilizer</a></li>
+</ul>
+<h2 id="odds--ends"><a class="header" href="#odds--ends">Odds &amp; Ends</a></h2>
+<ul>
+<li>
+<p>For some details on how SQLite is used here as an ad-hoc document database, check out this blog post on <a href="https://blog.lmorchard.com/2023/05/12/toots-in-sqlite/">Using SQLite as a document database for Mastodon exports</a>. TL;DR: JSON is stored as the main column in each row, while <code>json_extract()</code> is used mainly to generate virtual columns for lookup indexes.</p>
+</li>
+<li>
+<p>When ingesting data, care is taken to attempt to store JSON as close to the original source as possible from APIs and input files. That way, data parsing and models can be incrementally upgraded over time without having lost any information from imported sources.</p>
+</li>
+</ul>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+        <script>
+        window.addEventListener('load', function() {
+            window.setTimeout(window.print, 100);
+        });
+        </script>
+
+    </div>
+    </body>
+</html>

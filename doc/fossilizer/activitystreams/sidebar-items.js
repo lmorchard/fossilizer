@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["IdOrObject"],"static":["CONTENT_TYPE","PUBLIC_ID"],"struct":["Activity","Actor","Attachment","Object","OrderedCollection","OrderedCollectionPage","Outbox","PublicKey","Tag"],"trait":["Attachments","OrderedItems"]};
