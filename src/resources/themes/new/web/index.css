@@ -17,6 +17,7 @@
 @media (prefers-color-scheme: light) {
   :root {
     --theme-bg-color: #eee;
+    --theme-highlighted-bg-color: #dfdfdf;
     --theme-text-color: #111;
     --theme-border-color: #333;
     --theme-link-color: #383;
@@ -32,6 +33,7 @@
 @media (prefers-color-scheme: dark) {
   :root {
     --theme-bg-color: #222;
+    --theme-highlighted-bg-color: #332f33;
     --theme-text-color: #eee;
     --theme-border-color: #444;
     --theme-link-color: #a9f;
@@ -44,13 +46,13 @@
   }
 }
 
-html { 
-  scroll-padding-top: 10em;
+html {
+  scroll-padding-top: 8em;  
 }
 
 body {
   padding: 0;
-  margin: 4em 1em 1em 1em;
+  margin: 6em 1em 1em 1em;
 
   font-family: var(--theme-font-family);
   font-size: var(--theme-font-size);
@@ -81,7 +83,7 @@ archive-nav {
   flex-direction: row;
   align-items: flex-start;
   justify-content: center;
-  background-color: rgba(0, 0, 0, 0.75);
+  background-color: var(--theme-bg-color);
 }
 
 archive-nav archive-nav-date-selector {}
@@ -127,6 +129,10 @@ archive-activity {
   border-bottom: 1px solid var(--theme-border-color);
 }
 
+archive-activity.highlighted {
+  background-color: var(--theme-highlighted-bg-color);
+}
+
 archive-activity .header {
   position: relative;
   height: var(--avatar-size);
@@ -135,8 +141,11 @@ archive-activity .header {
 
 archive-activity .header .published {
   position: absolute;
-  top: 2em;
-  right: 2em;
+  padding: 0;
+  margin: 0;
+  top: 0em;
+  right: 0em;
+  font-weight: normal;
   font-size: 0.85em;
 }
 

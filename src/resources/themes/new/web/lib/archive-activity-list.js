@@ -28,7 +28,14 @@ class ArchiveActivityListControls extends HTMLElement {
 
 customElements.define("archive-activity-list-controls", ArchiveActivityListControls);
 
-class ArchiveActivity extends HTMLElement { }
+class ArchiveActivity extends HTMLElement {
+  connectedCallback() {
+    const hash = window.location.hash;
+    if (hash === `#anchor-${this.id}`) {
+      this.classList.add("highlighted");
+    }
+  }
+}
 
 customElements.define("archive-activity", ArchiveActivity);
 
