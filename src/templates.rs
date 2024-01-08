@@ -29,7 +29,9 @@ pub fn init() -> Result<Tera, Box<dyn Error>> {
     } else {
         debug!("Using embedded templates");
         tera = Tera::default();
-        tera.add_raw_templates(templates_source(&config.theme))?;
+        let templates = templates_source(&config.theme);
+        debug!("TEMPLATES {:?} {:?}", templates, &config);
+        tera.add_raw_templates(templates)?;
     }
 
     tera.register_filter("sha256", filter_sha256);
@@ -74,7 +76,7 @@ pub fn render_to_file(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::error::Error;
+    use std::{error::Error, path::Path};
 
     use crate::activitystreams::{Activity, Actor, IdOrObject};
 
@@ -85,6 +87,7 @@ mod tests {
 
     #[test]
     fn test_activity_template_with_attachment() -> Result<(), Box<dyn Error>> {
+        config::init(&Path::new("./resources/default_config.toml"))?;
         let tera = init()?;
 
         let mut activity: Activity = serde_json::from_str(JSON_ACTIVITY_WITH_ATTACHMENT)?;
