@@ -128,6 +128,13 @@ class MediaLightbox extends HTMLElement {
       "button.previous": () => this.showPrevious(),
       "button.next": () => this.showNext(),
     }).forEach(([sel, fn]) => this.querySelector(sel).addEventListener("click", fn));
+
+    this.keyListener = (ev) => this.handleKeyDown(ev);
+    document.addEventListener("keyup", this.keyListener);
+  }
+
+  disconnectedCallback() {
+    document.removeEventListener("keyup", this.keyListener);
   }
 
   show(src, description, previous, next) {
@@ -146,19 +153,15 @@ class MediaLightbox extends HTMLElement {
     this.querySelector("button.next").classList[!!next ? "add" : "remove"]("visible");
 
     this.classList.add("visible");
-
-    this.keyListener = (ev) => this.handleKeyDown(ev);
-    document.addEventListener("keydown", this.keyListener);
   }
 
   dismiss() {
     this.classList.remove("visible");
-    if (this.keyListener) {
-      document.removeEventListener("keydown", this.keyListener);
-    }
   }
 
   handleKeyDown(ev) {
+    if (!this.classList.contains("visible")) return;
+
     switch (ev.key) {
       case "Escape":
         return this.dismiss();
