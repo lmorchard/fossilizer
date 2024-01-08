@@ -49,11 +49,4 @@
       </media-lightbox-list>
     {%- endif -%}
   </div>
-  {%- if "Create" == activity.type and "Note" == object.type -%}
-    <div class="footer">
-      {# todo: get this "open in home instance" button working
-      <button title="Open in home instance" class="goto-home-instance btn btn-outline-primary" data-uri="{{ object.url | safe }}">🚀</button>
-      #}
-    </div>
-  {%- endif -%}
 </archive-activity>
