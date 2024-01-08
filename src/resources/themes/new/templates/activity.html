@@ -36,8 +36,8 @@
         {%- for attachment in object.attachment -%}
           <media-lightbox-item>
             <a href="{{ media_root | safe }}/{{ attachment.url | urlpath | safe }}" title="{{ attachment.name }}" target="_blank">
-              {%- if "video/mp4" == attachment.mediaType -%}
-                <video controls title="{{ attachment.name }}">
+              {%- if attachment.mediaType is starting_with("video/") -%}
+                <video controls title="{{ attachment.name }}" loop>
                   <source src="{{ media_root | safe }}/{{ attachment.url | urlpath | safe }}" type="video/mp4" />
                 </video>
               {%- else -%}
