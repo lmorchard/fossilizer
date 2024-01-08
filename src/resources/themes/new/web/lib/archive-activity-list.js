@@ -9,7 +9,7 @@ customElements.define("archive-activity-list-contents", ArchiveActivityListConte
 class ArchiveActivityListControls extends HTMLElement {
   connectedCallback() {
     this.querySelector("button.toggle-grid").addEventListener("click", () => this.toggleGridLayout());
-    this.querySelector("button.toggle-time-since").addEventListener("click", () => this.toggleTimeSince());
+    this.querySelector("button.toggle-relative-time").addEventListener("click", () => this.toggleRelativeTime());
   }
 
   getList() {
@@ -21,7 +21,7 @@ class ArchiveActivityListControls extends HTMLElement {
     this.getList().classList.toggle("grid");
   }
 
-  toggleTimeSince() {
+  toggleRelativeTime() {
     document.querySelector("formatted-time-context").toggleRelativeTime();
   }
 }

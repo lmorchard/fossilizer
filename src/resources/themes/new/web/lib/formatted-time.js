@@ -2,7 +2,7 @@
 import { format } from "//unpkg.com/timeago.js@4.0.2/esm/index.js";
 
 // TODO: control this via attribute in formatted-time-context
-const ARCHIVE_ACTIVITY_TIME_UPDATE_PERIOD = 1000;
+const ARCHIVE_ACTIVITY_TIME_UPDATE_PERIOD = 10000;
 
 class FormattedTimeContext extends HTMLElement {
   connectedCallback() {

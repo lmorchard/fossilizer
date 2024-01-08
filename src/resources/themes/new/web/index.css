@@ -1,7 +1,11 @@
 :root {
   --avatar-size: 48px;
   --avatar-border-radius: 8px;
-
+  
+  --media-lightbox-item-img-width: 128px;
+  --media-lightbox-item-video-width: 100%;
+  --media-lightbox-item-max-height: 1024px;
+  
   --pagefind-ui-scale: .8;
   --pagefind-ui-border-width: 2px;
   --pagefind-ui-border-radius: 8px;
@@ -126,6 +130,7 @@ archive-activity {
   width: 38em;
   padding: 2em;
   position: relative;
+  overflow: auto;
   border-bottom: 1px solid var(--theme-border-color);
 }
 
@@ -193,6 +198,30 @@ archive-activity .body .text .summary {
 
 archive-activity .body .text .summary:before {
   content: "⚠️ ";
+}
+
+archive-activity media-lightbox-list {
+  display: flex;
+  margin: 1em 0 0 0;
+  width: 100%;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-items: flex-end;
+  justify-content: flex-start;
+}
+
+archive-activity media-lightbox-list media-lightbox-item {
+  margin: 0 0.5em 0 0;  
+  max-height: var(--media-lightbox-item-max-height);
+  overflow: hidden;
+}
+
+archive-activity media-lightbox-list media-lightbox-item img {
+  width: var(--media-lightbox-item-img-width);
+}
+
+archive-activity media-lightbox-list media-lightbox-item video {
+  width: var(--media-lightbox-item-video-width);
 }
 
 archive-activity:last-of-type {

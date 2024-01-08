@@ -24,7 +24,7 @@
       <archive-nav-date-selector></archive-nav-date-selector>
       <archive-activity-list-controls for="main-list">
         <button class="toggle-grid">Grid layout</button>
-        <button class="toggle-time-since">Time since</button>
+        <button class="toggle-relative-time">Relative time</button>
       </archive-activity-list-controls>  
       <theme-selector>
         <button>
@@ -38,7 +38,9 @@
     <archive-main>
       <lazy-load-observer>
         <formatted-time-context>
-          {% block content %} {% endblock content %}
+          <media-lightbox-context>
+            {% block content %} {% endblock content %}
+          </media-lightbox-context>
         </formatted-time-context>
       </lazy-load-observer>
     </archive-main>
