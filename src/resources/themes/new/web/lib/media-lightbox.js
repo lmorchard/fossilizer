@@ -77,16 +77,16 @@ class MediaLightboxContext extends HTMLElement {
       display: block;
     }
     media-lightbox button.dismiss {
-      top: 1em;
-      right: 1em;
+      top: 1vh;
+      right: 1vw;
     }
     media-lightbox button.previous {
       top: 50vh;
-      left: 1em;
+      left: 1vw;
     }
     media-lightbox button.next {
       top: 50vh;
-      right: 1em;
+      right: 1vw;
     }
     @media (prefers-color-scheme: light) {
       media-lightbox button.dismiss {
