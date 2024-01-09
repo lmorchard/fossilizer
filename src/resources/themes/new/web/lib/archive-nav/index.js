@@ -27,7 +27,7 @@ class ArchiveNavSearch extends HTMLElement {
         showImages: true,
         showSubResults: true,
         highlightParam: "highlight",
-        pageSize: 5,
+        pageSize: 3,
         baseUrl: topUrl
       });
     }

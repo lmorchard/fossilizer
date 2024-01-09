@@ -16,6 +16,8 @@
 
   --theme-font-family: system, -apple-system, "BlinkMacSystemFont", ".SFNSText-Regular", "San Francisco", "Roboto", "Segoe UI", "Helvetica Neue", "Lucida Grande", "Ubuntu", "arial", sans-serif;
   --theme-font-size: 15px;
+  
+  --activity-normal-width: 38em;
 }
 
 @media (prefers-color-scheme: light) {
@@ -80,25 +82,44 @@ theme-selector button .icon {
 archive-nav {
   position: fixed;
   top: 0;
+  left: 0;
   z-index: 1000;
-  padding: 1em;
   width: 100vw;
   max-height: 100vh;
   overflow: auto;
   display: flex;
-  flex-direction: row;
-  align-items: flex-start;
+  flex-direction: column;
+  align-items: center;
   justify-content: center;
   background-color: var(--theme-bg-color);
+}
+
+archive-nav section {
+  display: flex;
+  flex-direction: row;
+  width: var(--activity-normal-width);
+  background-color: var(--theme-bg-color);
+  align-items: flex-start;
+  justify-content: space-evenly;
 }
 
 archive-nav archive-nav-date-selector {}
 
 archive-nav archive-nav-search {
   display: block;
+  padding: 0 1.25em;
+  width: 100vw;
+  max-height: 90vh;
+  overflow: auto;
 }
 
-archive-main {}
+theme-selector button {
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+archive-main {} 
 
 archive-activity-list {
   display: flex;
@@ -129,7 +150,7 @@ archive-activity-list archive-activity-list-contents {
 }
 
 archive-activity {
-  width: 38em;
+  width: var(--activity-normal-width);
   padding: 2em;
   position: relative;
   overflow: auto;

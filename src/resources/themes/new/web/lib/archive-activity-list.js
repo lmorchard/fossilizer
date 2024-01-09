@@ -8,21 +8,26 @@ customElements.define("archive-activity-list-contents", ArchiveActivityListConte
 
 class ArchiveActivityListControls extends HTMLElement {
   connectedCallback() {
-    this.querySelector("button.toggle-grid").addEventListener("click", () => this.toggleGridLayout());
-    this.querySelector("button.toggle-relative-time").addEventListener("click", () => this.toggleRelativeTime());
+    this.querySelector("input[name=grid]")
+      .addEventListener("change", (ev) => this.handleChangeGrid(ev));
+    this.querySelector("input[name=relative-time]")
+      .addEventListener("change", (ev) => this.handleChangeRelativeTime(ev));
+  }
+
+  handleChangeGrid(ev) {
+    this.getList().classList[ev.target.checked ? "add" : "remove"]("grid");
+  }
+
+  handleChangeRelativeTime(ev) {
+    document.querySelector("formatted-time-context")
+      .setRelativeTime(ev.target.checked);
   }
 
   getList() {
     const forId = this.getAttribute("for");
-    return forId ? document.body.querySelector(`#${forId}`) : this.closest("archive-activity-list");
-  }
-
-  toggleGridLayout() {
-    this.getList().classList.toggle("grid");
-  }
-
-  toggleRelativeTime() {
-    document.querySelector("formatted-time-context").toggleRelativeTime();
+    return forId
+      ? document.body.querySelector(`#${forId}`)
+      : this.closest("archive-activity-list");
   }
 }
 
