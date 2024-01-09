@@ -83,6 +83,8 @@ archive-nav {
   z-index: 1000;
   padding: 1em;
   width: 100vw;
+  max-height: 100vh;
+  overflow: auto;
   display: flex;
   flex-direction: row;
   align-items: flex-start;
