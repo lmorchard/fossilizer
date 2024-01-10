@@ -133,7 +133,7 @@ impl Importer {
             .join(&self.current_media_subpath)
             .join(entry_path);
 
-        info!("Extracting {:?}", output_path);
+        debug!("Extracting {:?}", output_path);
 
         let output_parent_path = output_path.parent().unwrap();
         fs::create_dir_all(output_parent_path)?;

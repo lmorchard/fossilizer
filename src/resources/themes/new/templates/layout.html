@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en" data-bs-theme="dark">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧐</text></svg>">
+    
+    {% block head %}
+      <title>{% block title %}{% endblock title %}</title>
+    {% endblock head %}
+
+    <link rel="base" href="{{ site_root }}" title="Base" />
+    <link rel="top" href="{{ site_root ~ "/index.html" }}" title="Index" />
+
+    <link href="{{ site_root | safe }}/pagefind/pagefind-ui.css" rel="stylesheet">
+    <script src="{{ site_root | safe }}/pagefind/pagefind-ui.js" type="text/javascript"></script>
+
+    <script src="{{ site_root | safe }}/vendor/timeago.min.js" type="text/javascript"></script>
+
+    <link href="{{ site_root | safe }}/index.css" rel="stylesheet">
+    <script src="{{ site_root | safe }}/index.js" type="module"></script>
+  </head>
+  <body class="fossilizer">
+
+    <archive-nav>
+      <section>
+        <details class="menu">
+          <summary>Menu</summary>
+          <section>
+            <archive-nav-date-selector></archive-nav-date-selector>
+            <archive-activity-list-controls for="main-list">
+              <label>
+                <input type="checkbox" name="grid" />
+                Grid layout
+              </label>
+              <label>
+                <input type="checkbox" name="relative-time" />
+                Relative time
+              </label>
+            </archive-activity-list-controls>
+            <theme-selector>
+              <button>
+                <span class="icon light">🌞 Light theme</span>
+                <span class="icon dark">🌚 Dark theme</span>
+              </button>
+            </theme-selector>
+          </section>
+        </details>
+        <archive-nav-search></archive-nav-search>
+      </section>
+    </archive-nav>
+
+    <archive-main>
+      <lazy-load-observer>
+        <formatted-time-context>
+          <media-lightbox-context>
+            {% block content %} {% endblock content %}
+          </media-lightbox-context>
+        </formatted-time-context>
+      </lazy-load-observer>
+    </archive-main>
+
+  </body>
+</html>

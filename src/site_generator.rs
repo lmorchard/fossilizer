@@ -1,3 +1,6 @@
+use crate::config::DEFAULT_CONFIG;
+use crate::templates::contexts;
+use crate::themes::{copy_embedded_themes, copy_embedded_web_assets};
 use crate::{activitystreams, config, db, templates};
 use anyhow::Result;
 use rayon::prelude::*;
@@ -5,15 +8,9 @@ use rust_embed::RustEmbed;
 use std::collections::HashMap;
 use std::error::Error;
 use std::fs;
-use std::path::{Path, PathBuf};
 use std::io::prelude::*;
+use std::path::{Path, PathBuf};
 use tera::Tera;
-use crate::config::DEFAULT_CONFIG;
-use crate::templates::contexts;
-
-#[derive(RustEmbed)]
-#[folder = "src/resources/web"]
-pub struct WebAsset;
 
 pub fn setup_build_path(build_path: &PathBuf, clean: &bool) -> Result<(), Box<dyn Error>> {
     if *clean {
@@ -49,14 +46,11 @@ pub fn setup_data_path(clean: &bool) -> Result<(), Box<dyn Error>> {
 
 pub fn unpack_customizable_resources() -> Result<(), Box<dyn Error>> {
     let config = config::config()?;
-    let data_path = &config.data_path;
 
-    let config_outpath = data_path.join("config.toml");
-    let mut config_outfile = open_outfile_with_parent_dir(&config_outpath)?;
+    let mut config_outfile = open_outfile_with_parent_dir(&config.config_path())?;
     config_outfile.write_all(DEFAULT_CONFIG.as_bytes())?;
 
-    copy_embedded_assets::<WebAsset>(&config.web_assets_path())?;
-    copy_embedded_assets::<templates::TemplateAsset>(&config.templates_path())?;
+    copy_embedded_themes(&config.themes_path())?;
 
     Ok(())
 }
@@ -96,7 +90,7 @@ pub fn copy_web_assets(build_path: &PathBuf) -> Result<(), Box<dyn Error>> {
         copy_files(web_assets_contents.as_slice(), build_path)?;
     } else {
         info!("Copying embedded static web assets");
-        copy_embedded_assets::<WebAsset>(build_path)?;
+        copy_embedded_web_assets(&config.theme, build_path)?;
     }
 
     Ok(())
@@ -111,8 +105,8 @@ where
         media_path,
         build_path,
         &fs_extra::dir::CopyOptions {
-            overwrite: false,
-            skip_exist: true,
+            overwrite: true,
+            skip_exist: false,
             buffer_size: 64000,
             copy_inside: true,
             content_only: false,
@@ -235,6 +229,27 @@ pub fn generate_index_page(
             calendar: day_entries.into(),
         },
     )?;
+
+    Ok(())
+}
+
+pub fn generate_index_json(
+    build_path: &PathBuf,
+    day_entries: &Vec<contexts::IndexDayContext>,
+) -> Result<(), Box<dyn Error>> {
+    info!("Generating site index JSON");
+
+    let file_path = PathBuf::from(&build_path)
+        .join("index")
+        .with_extension("json");
+
+    let output = serde_json::to_string_pretty(&day_entries)?;
+
+    let file_parent_path = file_path.parent().ok_or("no parent path")?;
+    fs::create_dir_all(file_parent_path)?;
+    
+    let mut file = fs::File::create(file_path)?;
+    file.write_all(output.as_bytes())?;
 
     Ok(())
 }
