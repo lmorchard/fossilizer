@@ -2,7 +2,7 @@
 {%- set actor_hash = actor.id | sha256 %}
 {%- set media_root = site_root ~ "/media/" ~ actor_hash -%}
 {%- set object = activity.object -%}
-<archive-activity id="{{ activity.id | sha256 }}" data-pagefind-filter="activityType:{{ activity.type }}">
+<archive-activity id="{{ activity.id | sha256 }}">
   <div class="header">
     <h3 class="published" id="anchor-{{ activity.id | sha256 }}">
       {%- if "Create" == activity.type and "Note" == object.type -%}
@@ -10,10 +10,10 @@
       {%- else -%}
         <time is="formatted-time" data-pagefind-meta="title" datetime="{{ activity.published }}" title="{{ activity.published }}">{{ activity.published }}</time>
       {%- endif -%}
-      &nbsp;-&nbsp;<a href="#anchor-{{ activity.id | sha256 }}">#</a>
+      <a href="#anchor-{{ activity.id | sha256 }}">#</a>
     </h3>
-    <div class="title" data-pagefind-filter="actorName">{{ actor.name }}</div>
-    <div class="subtitle">@<a href="{{ actor.url | safe }}" target="_blank" data-pagefind-filter="actorUrl">{{ actor.url }}</a></div>
+    <div class="title">{{ actor.name }}</div>
+    <div class="subtitle">@<a href="{{ actor.url | safe }}" target="_blank">{{ actor.url }}</a></div>
     <a class="avatar" href="{{ actor.url | safe }}" target="_blank"><img src="{{ media_root | safe}}/{{ actor.icon.url | safe }}" width="48" height="48" /></a>
   </div>
   <div class="body">

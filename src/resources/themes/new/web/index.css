@@ -24,6 +24,7 @@
   :root {
     --theme-bg-color: #eee;
     --theme-highlighted-bg-color: #dfdfdf;
+    --theme-dialog-bg-color: rgba(192,192,192,0.8);
     --theme-text-color: #111;
     --theme-border-color: #333;
     --theme-link-color: #383;
@@ -40,6 +41,7 @@
   :root {
     --theme-bg-color: #222;
     --theme-highlighted-bg-color: #332f33;
+    --theme-dialog-bg-color: rgba(0,0,0,0.8);
     --theme-text-color: #eee;
     --theme-border-color: #444;
     --theme-link-color: #a9f;
@@ -53,12 +55,12 @@
 }
 
 html {
-  scroll-padding-top: 8em;  
+  scroll-padding-top: 5em;
 }
 
 body {
   padding: 0;
-  margin: 6em 1em 1em 1em;
+  margin: 3em 1em 1em 1em;
 
   font-family: var(--theme-font-family);
   font-size: var(--theme-font-size);
@@ -73,7 +75,9 @@ a {
 
 theme-selector {}
 
-theme-selector button {}
+theme-selector button {
+  color: var(--theme-text-color);  
+}
 
 theme-selector button .icon {
   display: none
@@ -94,22 +98,50 @@ archive-nav {
   background-color: var(--theme-bg-color);
 }
 
-archive-nav section {
+archive-nav > section {
   display: flex;
   flex-direction: row;
-  width: var(--activity-normal-width);
+  width: calc(var(--activity-normal-width) + 3em);
   background-color: var(--theme-bg-color);
   align-items: flex-start;
-  justify-content: space-evenly;
+}
+
+archive-nav details {
+}
+
+archive-nav details summary:before {
+  content: "☰";
+  font-size: 36px;
+  padding: 0 4px;
+}
+archive-nav details summary {
+  padding: 0 36px 0 0;
+  margin: 0;
+  border: none;
+  cursor: pointer;
+  list-style: none;
+  width: 0px;
+  overflow: hidden;
+}
+
+archive-nav details[open] section {
+  position: fixed;
+  display: flex;
+  flex-direction: column;  
+  top: 3.5em;
+  padding: 1em;
+  background: var(--theme-dialog-bg-color);
+}
+archive-nav details[open] section > * {
+  padding: 0.5em;
 }
 
 archive-nav archive-nav-date-selector {}
 
 archive-nav archive-nav-search {
   display: block;
-  padding: 0 1.25em;
   width: 100vw;
-  max-height: 90vh;
+  max-height: 100vh;
   overflow: auto;
 }
 
@@ -134,10 +166,9 @@ archive-activity-list archive-activity-list-next-page {
   justify-content: center;
 }
 
-archive-activity-list archive-activity-list-controls {
+archive-activity-list-controls {
   display: flex;
-  width: 100%;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: center;
   align-self: center;
 }
@@ -151,7 +182,7 @@ archive-activity-list archive-activity-list-contents {
 
 archive-activity {
   width: var(--activity-normal-width);
-  padding: 2em;
+  padding: 1.5em;
   position: relative;
   overflow: auto;
   border-bottom: 1px solid var(--theme-border-color);
@@ -162,7 +193,6 @@ archive-activity.highlighted {
 }
 
 archive-activity .header {
-  position: relative;
   height: var(--avatar-size);
   padding-left: calc(var(--avatar-size) + 1em);
 }
@@ -171,19 +201,20 @@ archive-activity .header .published {
   position: absolute;
   padding: 0;
   margin: 0;
-  top: 0em;
-  right: 0em;
+  top: 1.5em;
+  right: 1.5em;
   font-weight: normal;
   font-size: 0.85em;
 }
 
 archive-activity .header .published time {
+  padding-right: 0.5em;
 }
 
 archive-activity .header .avatar {
   position: absolute;
-  left: 0;
-  top: 0;
+  left: 1.5em;
+  top: 1.5em;
 }
 
 archive-activity .header .avatar img {
@@ -271,4 +302,27 @@ archive-activity-list.grid archive-activity-list-contents archive-activity {
   overflow: auto;
   border-bottom: none;
   border-top: 1px solid var(--theme-border-color);
+}
+
+@media (max-width: 700px) {
+  :root {
+    --activity-normal-width: 90vw;    
+  }
+  archive-nav archive-nav-search {
+    padding: 0;
+  }
+}
+
+@media (max-width: 600px) {  
+  archive-activity .header {
+    height: auto;
+    padding-bottom: 0.5em;
+  }
+  archive-activity {
+    padding-bottom: 2.5em;
+  }
+  archive-activity .header .published {
+    top: inherit;
+    bottom: 1.5em;
+  }
 }
