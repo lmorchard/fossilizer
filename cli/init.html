@@ -178,15 +178,11 @@ will be set up for you:</p>
 <pre><code class="language-bash">my-mastodon-site/
 └── build
 └── data
-    └── media
     └── data.sqlite3
 </code></pre>
 <ul>
 <li>
 <p>The <code>build</code> directory is where your static site will be generated</p>
-</li>
-<li>
-<p>The <code>data/media</code> directory is where media attachments will be extracted</p>
 </li>
 <li>
 <p>The <code>data/data.sqlite3</code> file is a SQLite database into which things like
@@ -215,29 +211,29 @@ site is generated, you can extract these into external files to edit:</p>
     └── media
     ├── config.toml
     ├── data.sqlite3
-    ├── templates
-    │   ├── activity.html
-    │   ├── day.html
-    │   ├── index.html
-    │   └── layout.html
-    └── web
-        ├── index.css
-        ├── index.js
-        └── vendor
-            ├── bootstrap.bundle.min.js
-            └── bootstrap.min.css
+    └── themes
+        └── default
+            ├── templates
+            │   ├── activity.html
+            │   ├── day.html
+            │   ├── index.html
+            │   └── layout.html
+            └── web
+                ├── index.css
+                └── index.js
 </code></pre>
 <ul>
 <li>
 <p>The <code>config.toml</code> file can be used to supply configuration settings</p>
 </li>
 <li>
-<p>The <code>data/templates</code> directory holds <a href="https://tera.netlify.app/">Tera</a> templates
-used to generate HTML pages.</p>
+<p>The <code>data/themes</code> directory holds themes that can be used to customize the appearance of the site. The <code>default</code> theme is provided by default. If you want to use a different theme, you can copy the <code>default</code> directory and modify it under a directory with a different name. This name, then, can be supplied to the <code>build</code> command with the <code>--theme</code> option.</p>
 </li>
 <li>
-<p>The <code>data/web</code> directory holds web assets which will be copied into the root
-directory of your static site when it's generated.</p>
+<p>The <code>data/themes/default/templates</code> directory holds <a href="https://tera.netlify.app/">Tera</a> templates used to generate HTML pages.</p>
+</li>
+<li>
+<p>The <code>data/themes/default/web</code> directory holds web assets which will be copied into the root directory of your static site when it's generated.</p>
 </li>
 </ul>
 <p>TODO: Need to document configuration settings and templates. For now, just play around with the templates <a href="https://github.com/lmorchard/fossilizer/blob/main/src/cli/build.rs">used by <code>cli/build.rs</code></a> and see what happens! 😅 Configuration settings can be found in the <a href="https://github.com/lmorchard/fossilizer/blob/main/src/config.rs"><code>config.rs</code> module</a></p>

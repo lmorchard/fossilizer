@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["copy_embedded_themes","copy_embedded_web_assets","open_outfile_with_parent_dir","templates_source"],"struct":["ThemeAsset"]};

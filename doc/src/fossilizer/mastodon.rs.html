@@ -1,4 +1,6 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/mastodon.rs`."><title>mastodon.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-fa3bb1812debf86c.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="fossilizer" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.1 (a28077b28 2023-12-04)" data-channel="1.74.1" data-search-js="search-8be46b629f5f14a8.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-c5bd66d33317d69f.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../fossilizer/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/mastodon.rs`."><title>mastodon.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-5bc39a1768837dd0.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="fossilizer" data-themes="" data-resource-suffix="" data-rustdoc-version="1.77.1 (7cf61ebde 2024-03-27)" data-channel="1.77.1" data-search-js="search-dd67cee4cfa65049.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../static.files/storage-4c98445ec4002617.js"></script><script defer src="../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-48f368f3872407c8.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title">
+            <h2>Files</h2></div></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><div id="sidebar-button" tabindex="-1"><a href="../../fossilizer/all.html" title="show sidebar"></a></div><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -236,7 +238,7 @@
     <span class="kw">pub fn </span>new(conn: Connection, media_path: PathBuf, skip_media: bool) -&gt; <span class="self">Self </span>{
         <span class="comment">// Start with a temporary path, until we have found the actor JSON to derive a real path
         </span><span class="kw">let </span>current_media_subpath: String = <span class="macro">format!</span>(
-            <span class="string">&quot;tmp-{}&quot;</span>,
+            <span class="string">"tmp-{}"</span>,
             thread_rng()
                 .sample_iter(<span class="kw-2">&amp;</span>Alphanumeric)
                 .take(<span class="number">30</span>)
@@ -258,14 +260,14 @@
         <span class="comment">// todo: do something with filemagic here to auto-detect archive format based on file contents?
         </span><span class="kw">let </span>extension = filepath
             .extension()
-            .ok_or(<span class="macro">anyhow!</span>(<span class="string">&quot;no file extension&quot;</span>))<span class="question-mark">?
+            .ok_or(<span class="macro">anyhow!</span>(<span class="string">"no file extension"</span>))<span class="question-mark">?
             </span>.to_str()
-            .ok_or(<span class="macro">anyhow!</span>(<span class="string">&quot;no file extension&quot;</span>))<span class="question-mark">?</span>;
+            .ok_or(<span class="macro">anyhow!</span>(<span class="string">"no file extension"</span>))<span class="question-mark">?</span>;
         <span class="kw">match </span>extension {
-            <span class="string">&quot;gz&quot; </span>=&gt; <span class="self">self</span>.import_tar(file, <span class="bool-val">true</span>)<span class="question-mark">?</span>,
-            <span class="string">&quot;tar&quot; </span>=&gt; <span class="self">self</span>.import_tar(file, <span class="bool-val">false</span>)<span class="question-mark">?</span>,
-            <span class="string">&quot;zip&quot; </span>=&gt; <span class="self">self</span>.import_zip(file)<span class="question-mark">?</span>,
-            <span class="kw">_ </span>=&gt; <span class="macro">println!</span>(<span class="string">&quot;NO SCANNER AVAILABLE&quot;</span>),
+            <span class="string">"gz" </span>=&gt; <span class="self">self</span>.import_tar(file, <span class="bool-val">true</span>)<span class="question-mark">?</span>,
+            <span class="string">"tar" </span>=&gt; <span class="self">self</span>.import_tar(file, <span class="bool-val">false</span>)<span class="question-mark">?</span>,
+            <span class="string">"zip" </span>=&gt; <span class="self">self</span>.import_zip(file)<span class="question-mark">?</span>,
+            <span class="kw">_ </span>=&gt; <span class="macro">println!</span>(<span class="string">"NO SCANNER AVAILABLE"</span>),
         };
 
         <span class="prelude-val">Ok</span>(())
@@ -297,8 +299,8 @@
                 <span class="prelude-val">Some</span>(path) =&gt; path.to_owned(),
                 <span class="prelude-val">None </span>=&gt; <span class="kw">continue</span>,
             };
-            <span class="comment">// is this really the best way to detect that an entry isn&#39;t a directory?
-            </span><span class="kw">if </span>!(<span class="kw-2">*</span>file.name()).ends_with(<span class="string">&#39;/&#39;</span>) {
+            <span class="comment">// is this really the best way to detect that an entry isn't a directory?
+            </span><span class="kw">if </span>!(<span class="kw-2">*</span>file.name()).ends_with(<span class="string">'/'</span>) {
                 <span class="self">self</span>.handle_entry(<span class="kw-2">&amp;</span>outpath, <span class="kw-2">&amp;mut </span>file)<span class="question-mark">?</span>;
             }
         }
@@ -307,24 +309,24 @@
     }
 
     <span class="kw">fn </span>handle_entry(<span class="kw-2">&amp;mut </span><span class="self">self</span>, path: <span class="kw-2">&amp;</span>PathBuf, read: <span class="kw-2">&amp;mut </span><span class="kw">impl </span>Read) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-        <span class="kw">if </span>path.ends_with(<span class="string">&quot;outbox.json&quot;</span>) {
+        <span class="kw">if </span>path.ends_with(<span class="string">"outbox.json"</span>) {
             <span class="self">self</span>.handle_outbox(read)<span class="question-mark">?</span>;
-        } <span class="kw">else if </span>path.ends_with(<span class="string">&quot;actor.json&quot;</span>) {
+        } <span class="kw">else if </span>path.ends_with(<span class="string">"actor.json"</span>) {
             <span class="self">self</span>.handle_actor(read)<span class="question-mark">?</span>;
         } <span class="kw">else if </span>!<span class="self">self</span>.skip_media {
-            <span class="kw">if </span>path.to_str().unwrap().contains(<span class="string">&quot;media_attachments&quot;</span>) {
+            <span class="kw">if </span>path.to_str().unwrap().contains(<span class="string">"media_attachments"</span>) {
                 <span class="comment">// HACK: some exports seem to have leading directory paths before `media_attachments`, so strip that off
                 </span><span class="kw">let </span>normalized_path: PathBuf = path
                     .components()
                     .skip_while(|c| <span class="kw">match </span>c {
-                        Component::Normal(name) =&gt; name != <span class="kw-2">&amp;</span><span class="string">&quot;media_attachments&quot;</span>,
+                        Component::Normal(name) =&gt; name != <span class="kw-2">&amp;</span><span class="string">"media_attachments"</span>,
                         <span class="kw">_ </span>=&gt; <span class="bool-val">true</span>,
                     })
                     .collect();
                 <span class="self">self</span>.handle_media_attachment(<span class="kw-2">&amp;</span>normalized_path, read)<span class="question-mark">?</span>;
             } <span class="kw">else if let </span><span class="prelude-val">Some</span>(ext) = path.extension() {
                 <span class="comment">// mainly for {avatar,header}.{jpg,png}, but there may be more?
-                </span><span class="kw">if </span><span class="string">&quot;png&quot; </span>== ext || <span class="string">&quot;jpg&quot; </span>== ext {
+                </span><span class="kw">if </span><span class="string">"png" </span>== ext || <span class="string">"jpg" </span>== ext {
                     <span class="self">self</span>.handle_media_attachment(path, read)<span class="question-mark">?</span>;
                 }
             }
@@ -344,7 +346,7 @@
             .join(<span class="kw-2">&amp;</span><span class="self">self</span>.current_media_subpath)
             .join(entry_path);
 
-        <span class="macro">info!</span>(<span class="string">&quot;Extracting {:?}&quot;</span>, output_path);
+        <span class="macro">debug!</span>(<span class="string">"Extracting {:?}"</span>, output_path);
 
         <span class="kw">let </span>output_parent_path = output_path.parent().unwrap();
         fs::create_dir_all(output_parent_path)<span class="question-mark">?</span>;
@@ -357,14 +359,14 @@
 
     <span class="kw">fn </span>handle_outbox(<span class="kw-2">&amp;</span><span class="self">self</span>, read: <span class="kw-2">&amp;mut </span><span class="kw">impl </span>Read) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="kw">let </span>outbox: activitystreams::Outbox&lt;serde_json::Value&gt; = serde_json::from_reader(read)<span class="question-mark">?</span>;
-        <span class="macro">info!</span>(<span class="string">&quot;Found {:?} items&quot;</span>, outbox.ordered_items.len());
+        <span class="macro">info!</span>(<span class="string">"Found {:?} items"</span>, outbox.ordered_items.len());
         <span class="kw">let </span>activities = db::activities::Activities::new(<span class="kw-2">&amp;</span><span class="self">self</span>.conn);
         activities.import_collection(<span class="kw-2">&amp;</span>outbox)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
     }
 
     <span class="kw">fn </span>handle_actor(<span class="kw-2">&amp;mut </span><span class="self">self</span>, read: <span class="kw-2">&amp;mut </span><span class="kw">impl </span>Read) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-        <span class="macro">debug!</span>(<span class="string">&quot;Found actor&quot;</span>);
+        <span class="macro">debug!</span>(<span class="string">"Found actor"</span>);
 
         <span class="comment">// Grab the Actor as a Value to import it with max fidelity
         </span><span class="kw">let </span>actor: serde_json::Value = serde_json::from_reader(read)<span class="question-mark">?</span>;
@@ -383,7 +385,7 @@
         <span class="comment">// Move everything we have so far to the per-actor media path, if we have anything
         </span><span class="kw">if </span>temp_media_path.is_dir() {
             <span class="macro">info!</span>(
-                <span class="string">&quot;Moving temporary files from {:?} to {:?}&quot;</span>,
+                <span class="string">"Moving temporary files from {:?} to {:?}"</span>,
                 previous_media_subpath, <span class="self">self</span>.current_media_subpath
             );
 
@@ -406,7 +408,7 @@
                 fs::create_dir_all(new_parent_path)<span class="question-mark">?</span>;
 
                 <span class="macro">trace!</span>(
-                    <span class="string">&quot;Moving temporary file from {:?} to {:?}&quot;</span>,
+                    <span class="string">"Moving temporary file from {:?} to {:?}"</span>,
                     old_path,
                     new_path
                 );

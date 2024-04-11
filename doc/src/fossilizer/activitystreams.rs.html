@@ -1,4 +1,6 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/activitystreams.rs`."><title>activitystreams.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-fa3bb1812debf86c.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="fossilizer" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.1 (a28077b28 2023-12-04)" data-channel="1.74.1" data-search-js="search-8be46b629f5f14a8.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-c5bd66d33317d69f.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../fossilizer/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/activitystreams.rs`."><title>activitystreams.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-5bc39a1768837dd0.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="fossilizer" data-themes="" data-resource-suffix="" data-rustdoc-version="1.77.1 (7cf61ebde 2024-03-27)" data-channel="1.77.1" data-search-js="search-dd67cee4cfa65049.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../static.files/storage-4c98445ec4002617.js"></script><script defer src="../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-48f368f3872407c8.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title">
+            <h2>Files</h2></div></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><div id="sidebar-button" tabindex="-1"><a href="../../fossilizer/all.html" title="show sidebar"></a></div><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -470,17 +472,17 @@
 <span class="kw">use </span>std::path::PathBuf;
 <span class="kw">use </span>url::Url;
 
-<span class="kw">pub static </span>PUBLIC_ID: <span class="kw-2">&amp;</span>str = <span class="string">&quot;https://www.w3.org/ns/activitystreams#Public&quot;</span>;
-<span class="kw">pub static </span>CONTENT_TYPE: <span class="kw-2">&amp;</span>str = <span class="string">&quot;application/activity+json&quot;</span>;
+<span class="kw">pub static </span>PUBLIC_ID: <span class="kw-2">&amp;</span>str = <span class="string">"https://www.w3.org/ns/activitystreams#Public"</span>;
+<span class="kw">pub static </span>CONTENT_TYPE: <span class="kw-2">&amp;</span>str = <span class="string">"application/activity+json"</span>;
 
 <span class="kw">pub trait </span>OrderedItems&lt;TItem: Serialize&gt; {
     <span class="kw">fn </span>ordered_items(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>Vec&lt;TItem&gt;;
 }
 
 <span class="attr">#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = <span class="string">&quot;camelCase&quot;</span>)]
+#[serde(rename_all = <span class="string">"camelCase"</span>)]
 </span><span class="kw">pub struct </span>Attachment {
-    <span class="attr">#[serde(rename = <span class="string">&quot;type&quot;</span>)]
+    <span class="attr">#[serde(rename = <span class="string">"type"</span>)]
     </span><span class="kw">pub </span>type_field: String,
     <span class="kw">pub </span>media_type: String,
     <span class="kw">pub </span>url: String,
@@ -514,7 +516,7 @@
 
         <span class="self">Self </span>{
             <span class="comment">// todo use Image based on attachment.type?
-            </span>type_field: <span class="string">&quot;Document&quot;</span>.to_string(),
+            </span>type_field: <span class="string">"Document"</span>.to_string(),
             <span class="comment">// todo media_type mime-type from attachment.type? https://docs.joinmastodon.org/entities/MediaAttachment/#type
             </span>url: attachment.url,
             summary: attachment.description,
@@ -531,10 +533,10 @@
 }
 
 <span class="attr">#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = <span class="string">&quot;camelCase&quot;</span>)]
+#[serde(rename_all = <span class="string">"camelCase"</span>)]
 </span><span class="kw">pub struct </span>Outbox&lt;TItem: Serialize&gt; {
     <span class="kw">pub </span>id: String,
-    <span class="attr">#[serde(rename = <span class="string">&quot;type&quot;</span>)]
+    <span class="attr">#[serde(rename = <span class="string">"type"</span>)]
     </span><span class="kw">pub </span>type_field: String,
     <span class="kw">pub </span>total_items: i32,
     <span class="kw">pub </span>ordered_items: Vec&lt;TItem&gt;,
@@ -546,10 +548,10 @@
 }
 
 <span class="attr">#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = <span class="string">&quot;camelCase&quot;</span>)]
+#[serde(rename_all = <span class="string">"camelCase"</span>)]
 </span><span class="kw">pub struct </span>OrderedCollection {
     <span class="kw">pub </span>id: String,
-    <span class="attr">#[serde(rename = <span class="string">&quot;type&quot;</span>)]
+    <span class="attr">#[serde(rename = <span class="string">"type"</span>)]
     </span><span class="kw">pub </span>type_field: String,
     <span class="kw">pub </span>total_items: i32,
     <span class="kw">pub </span>first: String,
@@ -557,10 +559,10 @@
 }
 
 <span class="attr">#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = <span class="string">&quot;camelCase&quot;</span>)]
+#[serde(rename_all = <span class="string">"camelCase"</span>)]
 </span><span class="kw">pub struct </span>OrderedCollectionPage&lt;TItem: Serialize&gt; {
     <span class="kw">pub </span>id: String,
-    <span class="attr">#[serde(rename = <span class="string">&quot;type&quot;</span>)]
+    <span class="attr">#[serde(rename = <span class="string">"type"</span>)]
     </span><span class="kw">pub </span>type_field: String,
     <span class="kw">pub </span>next: <span class="prelude-ty">Option</span>&lt;String&gt;,
     <span class="kw">pub </span>prev: <span class="prelude-ty">Option</span>&lt;String&gt;,
@@ -574,10 +576,10 @@
 }
 
 <span class="attr">#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = <span class="string">&quot;camelCase&quot;</span>)]
+#[serde(rename_all = <span class="string">"camelCase"</span>)]
 </span><span class="kw">pub struct </span>Actor {
     <span class="kw">pub </span>id: String,
-    <span class="attr">#[serde(rename = <span class="string">&quot;type&quot;</span>)]
+    <span class="attr">#[serde(rename = <span class="string">"type"</span>)]
     </span><span class="kw">pub </span>type_field: String,
     <span class="kw">pub </span>following: String,
     <span class="kw">pub </span>followers: String,
@@ -621,7 +623,7 @@
 }
 
 <span class="attr">#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = <span class="string">&quot;camelCase&quot;</span>)]
+#[serde(rename_all = <span class="string">"camelCase"</span>)]
 </span><span class="kw">pub struct </span>PublicKey {}
 
 <span class="attr">#[allow(clippy::large_enum_variant)]
@@ -658,10 +660,10 @@
 }
 
 <span class="attr">#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = <span class="string">&quot;camelCase&quot;</span>)]
+#[serde(rename_all = <span class="string">"camelCase"</span>)]
 </span><span class="kw">pub struct </span>Activity {
     <span class="kw">pub </span>id: String,
-    <span class="attr">#[serde(rename = <span class="string">&quot;type&quot;</span>)]
+    <span class="attr">#[serde(rename = <span class="string">"type"</span>)]
     </span><span class="kw">pub </span>type_field: String,
     <span class="kw">pub </span>published: chrono::DateTime&lt;chrono::offset::Utc&gt;,
     <span class="kw">pub </span>to: Vec&lt;String&gt;,
@@ -688,22 +690,22 @@
         };
 
         <span class="self">Self </span>{
-            id: <span class="macro">format!</span>(<span class="string">&quot;{}/activity&quot;</span>, status.uri),
-            type_field: <span class="string">&quot;Create&quot;</span>.to_string(),
+            id: <span class="macro">format!</span>(<span class="string">"{}/activity"</span>, status.uri),
+            type_field: <span class="string">"Create"</span>.to_string(),
             published: status.created_at,
             to,
             <span class="comment">// cc
             </span>actor: IdOrObject::Id({
                 <span class="comment">// hack: this is some grungy butchery to derive an activitypub actor URL for mastodon
                 </span><span class="kw">let </span><span class="kw-2">mut </span>uri = uri;
-                uri.set_path(<span class="macro">format!</span>(<span class="string">&quot;/users/{}&quot;</span>, status.account.acct).as_str());
+                uri.set_path(<span class="macro">format!</span>(<span class="string">"/users/{}"</span>, status.account.acct).as_str());
                 uri.into()
             }),
             object: IdOrObject::Object(Object {
                 id: status.uri.clone(),
                 url: status.url.or_else(|| <span class="prelude-val">Some</span>(status.uri.clone())).unwrap(),
                 <span class="comment">// todo: account for polls, retoots, etc?
-                </span>type_field: <span class="string">&quot;Note&quot;</span>.to_string(),
+                </span>type_field: <span class="string">"Note"</span>.to_string(),
                 published: status.created_at,
                 content: <span class="prelude-val">Some</span>(status.content),
                 summary: <span class="kw">if </span>!status.spoiler_text.is_empty() {
@@ -724,10 +726,10 @@
 }
 
 <span class="attr">#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = <span class="string">&quot;camelCase&quot;</span>)]
+#[serde(rename_all = <span class="string">"camelCase"</span>)]
 </span><span class="kw">pub struct </span>Object {
     <span class="kw">pub </span>id: String,
-    <span class="attr">#[serde(rename = <span class="string">&quot;type&quot;</span>)]
+    <span class="attr">#[serde(rename = <span class="string">"type"</span>)]
     </span><span class="kw">pub </span>type_field: String,
     <span class="kw">pub </span>url: String,
     <span class="kw">pub </span>published: chrono::DateTime&lt;chrono::offset::Utc&gt;,
@@ -756,9 +758,9 @@
 }
 
 <span class="attr">#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = <span class="string">&quot;camelCase&quot;</span>)]
+#[serde(rename_all = <span class="string">"camelCase"</span>)]
 </span><span class="kw">pub struct </span>Tag {
-    <span class="attr">#[serde(rename = <span class="string">&quot;type&quot;</span>)]
+    <span class="attr">#[serde(rename = <span class="string">"type"</span>)]
     </span><span class="kw">pub </span>type_field: String,
     <span class="kw">pub </span>id: <span class="prelude-ty">Option</span>&lt;String&gt;,
     <span class="kw">pub </span>href: <span class="prelude-ty">Option</span>&lt;String&gt;,
@@ -784,14 +786,14 @@
     <span class="kw">use </span>std::str::FromStr;
     <span class="kw">use </span>test_log::test;
 
-    <span class="kw">const </span>JSON_OUTBOX: <span class="kw-2">&amp;</span>str = <span class="macro">include_str!</span>(<span class="string">&quot;./resources/test/outbox.json&quot;</span>);
+    <span class="kw">const </span>JSON_OUTBOX: <span class="kw-2">&amp;</span>str = <span class="macro">include_str!</span>(<span class="string">"./resources/test/outbox.json"</span>);
     <span class="kw">const </span>JSON_ACTIVITY_WITH_EMOJI: <span class="kw-2">&amp;</span>str =
-        <span class="macro">include_str!</span>(<span class="string">&quot;./resources/test/activity-with-emoji.json&quot;</span>);
+        <span class="macro">include_str!</span>(<span class="string">"./resources/test/activity-with-emoji.json"</span>);
     <span class="kw">const </span>JSON_ACTIVITY_WITH_ATTACHMENT: <span class="kw-2">&amp;</span>str =
-        <span class="macro">include_str!</span>(<span class="string">&quot;./resources/test/activity-with-attachment.json&quot;</span>);
-    <span class="kw">const </span>JSON_REMOTE_ACTOR: <span class="kw-2">&amp;</span>str = <span class="macro">include_str!</span>(<span class="string">&quot;./resources/test/actor-remote.json&quot;</span>);
+        <span class="macro">include_str!</span>(<span class="string">"./resources/test/activity-with-attachment.json"</span>);
+    <span class="kw">const </span>JSON_REMOTE_ACTOR: <span class="kw-2">&amp;</span>str = <span class="macro">include_str!</span>(<span class="string">"./resources/test/actor-remote.json"</span>);
     <span class="kw">const </span>JSON_MASTODON_STATUS_WITH_ATTACHMENT: <span class="kw-2">&amp;</span>str =
-        <span class="macro">include_str!</span>(<span class="string">&quot;./resources/test/mastodon-status-with-attachment.json&quot;</span>);
+        <span class="macro">include_str!</span>(<span class="string">"./resources/test/mastodon-status-with-attachment.json"</span>);
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_from_megalodon_status_to_activity() -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
@@ -799,27 +801,27 @@
             serde_json::from_str(JSON_MASTODON_STATUS_WITH_ATTACHMENT).unwrap();
         <span class="kw">let </span>activity: Activity = status.clone().into();
 
-        <span class="macro">trace!</span>(<span class="string">&quot;STATUS {:?}&quot;</span>, status);
-        <span class="macro">trace!</span>(<span class="string">&quot;ACTIVITY {:?}&quot;</span>, activity);
+        <span class="macro">trace!</span>(<span class="string">"STATUS {:?}"</span>, status);
+        <span class="macro">trace!</span>(<span class="string">"ACTIVITY {:?}"</span>, activity);
 
         <span class="macro">assert_eq!</span>(
             activity.id,
-            <span class="string">&quot;https://hackers.town/users/lmorchard/statuses/110726017288384411/activity&quot;
+            <span class="string">"https://hackers.town/users/lmorchard/statuses/110726017288384411/activity"
         </span>);
 
         <span class="macro">assert_eq!</span>(
             activity.actor.id().unwrap(),
-            <span class="string">&quot;https://hackers.town/users/lmorchard&quot;
+            <span class="string">"https://hackers.town/users/lmorchard"
         </span>);
 
         <span class="kw">let </span>object = activity.object.object().unwrap();
         <span class="macro">assert_eq!</span>(
             object.id,
-            <span class="string">&quot;https://hackers.town/users/lmorchard/statuses/110726017288384411&quot;
+            <span class="string">"https://hackers.town/users/lmorchard/statuses/110726017288384411"
         </span>);
 
         <span class="kw">let </span>expected_published: chrono::DateTime&lt;chrono::offset::Utc&gt; =
-            chrono::DateTime::from_str(<span class="string">&quot;2023-07-16T22:02:21.535Z&quot;</span>).unwrap();
+            chrono::DateTime::from_str(<span class="string">"2023-07-16T22:02:21.535Z"</span>).unwrap();
         <span class="macro">assert_eq!</span>(activity.published, expected_published);
         <span class="macro">assert_eq!</span>(object.published, expected_published);
 
@@ -831,14 +833,14 @@
         <span class="kw">let </span>actor: Actor = serde_json::from_str(JSON_REMOTE_ACTOR)<span class="question-mark">?</span>;
         <span class="kw">let </span>icon = actor.icon.as_ref().unwrap();
         <span class="kw">let </span>image = actor.image.as_ref().unwrap();
-        <span class="kw">let </span>media_path = PathBuf::new().join(<span class="string">&quot;media&quot;</span>);
+        <span class="kw">let </span>media_path = PathBuf::new().join(<span class="string">"media"</span>);
         <span class="macro">assert_eq!</span>(
             icon.local_media_path(<span class="kw-2">&amp;</span>media_path, <span class="kw-2">&amp;</span>actor)<span class="question-mark">?</span>,
-            Path::new(<span class="string">&quot;media/acc0bb231a7a2757c7e5c63aa68ce3cdbcfd32a43eb67a6bdedffe173c721184/system/accounts/avatars/000/136/533/original/1a8c651efe14fcd6.png&quot;</span>),
+            Path::new(<span class="string">"media/acc0bb231a7a2757c7e5c63aa68ce3cdbcfd32a43eb67a6bdedffe173c721184/system/accounts/avatars/000/136/533/original/1a8c651efe14fcd6.png"</span>),
         );
         <span class="macro">assert_eq!</span>(
             image.local_media_path(<span class="kw-2">&amp;</span>media_path, <span class="kw-2">&amp;</span>actor)<span class="question-mark">?</span>,
-            Path::new(<span class="string">&quot;media/acc0bb231a7a2757c7e5c63aa68ce3cdbcfd32a43eb67a6bdedffe173c721184/system/accounts/headers/000/136/533/original/60af00520bbf3704.jpg&quot;</span>),
+            Path::new(<span class="string">"media/acc0bb231a7a2757c7e5c63aa68ce3cdbcfd32a43eb67a6bdedffe173c721184/system/accounts/headers/000/136/533/original/60af00520bbf3704.jpg"</span>),
         );
         <span class="prelude-val">Ok</span>(())
     }
@@ -847,7 +849,7 @@
     </span><span class="kw">fn </span>test_activity_with_attachments() -&gt; <span class="prelude-ty">Result</span>&lt;(), Box&lt;<span class="kw">dyn </span>Error&gt;&gt; {
         <span class="kw">let </span>actor: Actor = serde_json::from_str(JSON_REMOTE_ACTOR)<span class="question-mark">?</span>;
         <span class="kw">let </span>activity: Activity = serde_json::from_str(JSON_ACTIVITY_WITH_ATTACHMENT)<span class="question-mark">?</span>;
-        <span class="kw">let </span>media_path = PathBuf::new().join(<span class="string">&quot;media&quot;</span>);
+        <span class="kw">let </span>media_path = PathBuf::new().join(<span class="string">"media"</span>);
 
         <span class="kw">let </span>object = activity.object;
         <span class="macro">assert!</span>(object.is_object());
@@ -860,9 +862,9 @@
             .collect();
 
         <span class="kw">let </span>expected = <span class="macro">vec!</span>[
-            Path::new(<span class="string">&quot;media/acc0bb231a7a2757c7e5c63aa68ce3cdbcfd32a43eb67a6bdedffe173c721184/users/media_attachments/files/002/337/518/original/ebbb5d342877102f.jpg&quot;</span>),
-            Path::new(<span class="string">&quot;media/acc0bb231a7a2757c7e5c63aa68ce3cdbcfd32a43eb67a6bdedffe173c721184/users/media_attachments/files/002/337/520/original/63a81769839a7ef6.jpg&quot;</span>),
-            Path::new(<span class="string">&quot;media/acc0bb231a7a2757c7e5c63aa68ce3cdbcfd32a43eb67a6bdedffe173c721184/system/custom_emojis/images/000/043/882/original/5cd6640bb919cf64.png&quot;</span>),
+            Path::new(<span class="string">"media/acc0bb231a7a2757c7e5c63aa68ce3cdbcfd32a43eb67a6bdedffe173c721184/users/media_attachments/files/002/337/518/original/ebbb5d342877102f.jpg"</span>),
+            Path::new(<span class="string">"media/acc0bb231a7a2757c7e5c63aa68ce3cdbcfd32a43eb67a6bdedffe173c721184/users/media_attachments/files/002/337/520/original/63a81769839a7ef6.jpg"</span>),
+            Path::new(<span class="string">"media/acc0bb231a7a2757c7e5c63aa68ce3cdbcfd32a43eb67a6bdedffe173c721184/system/custom_emojis/images/000/043/882/original/5cd6640bb919cf64.png"</span>),
         ];
 
         <span class="macro">assert_eq!</span>(result, expected);
@@ -876,15 +878,15 @@
 
         <span class="kw">let </span>ordered_items = outbox.ordered_items;
         <span class="macro">assert!</span>(!ordered_items.is_empty());
-        <span class="kw">let </span>item1 = ordered_items.get(<span class="number">0</span>).ok_or(<span class="string">&quot;no item1&quot;</span>)<span class="question-mark">?</span>;
+        <span class="kw">let </span>item1 = ordered_items.get(<span class="number">0</span>).ok_or(<span class="string">"no item1"</span>)<span class="question-mark">?</span>;
         <span class="macro">assert_eq!</span>(
             item1.id,
-            <span class="string">&quot;https://mastodon.social/users/lmorchard/statuses/55864/activity&quot;
+            <span class="string">"https://mastodon.social/users/lmorchard/statuses/55864/activity"
         </span>);
-        <span class="macro">assert_eq!</span>(item1.type_field, <span class="string">&quot;Create&quot;</span>);
+        <span class="macro">assert_eq!</span>(item1.type_field, <span class="string">"Create"</span>);
         <span class="macro">assert_eq!</span>(
-            item1.actor.id().ok_or(<span class="string">&quot;no actor id&quot;</span>)<span class="question-mark">?</span>,
-            <span class="string">&quot;https://mastodon.social/users/lmorchard&quot;
+            item1.actor.id().ok_or(<span class="string">"no actor id"</span>)<span class="question-mark">?</span>,
+            <span class="string">"https://mastodon.social/users/lmorchard"
         </span>);
 
         <span class="prelude-val">Ok</span>(())
@@ -902,8 +904,8 @@
         <span class="kw">let </span>item1: activitystreams::activity::Create = item1.clone().into_concrete()<span class="question-mark">?</span>;
 
         <span class="macro">assert_eq!</span>(
-            item1.object_props.id.ok_or(<span class="string">&quot;no id&quot;</span>)<span class="question-mark">?</span>.as_str(),
-            <span class="string">&quot;https://mastodon.social/users/lmorchard/statuses/55864/activity&quot;
+            item1.object_props.id.ok_or(<span class="string">"no id"</span>)<span class="question-mark">?</span>.as_str(),
+            <span class="string">"https://mastodon.social/users/lmorchard/statuses/55864/activity"
         </span>);
 
         <span class="comment">// assert_eq!(item1.kind, activitystreams::activity::kind::CreateType);
@@ -911,9 +913,9 @@
             item1
                 .create_props
                 .get_actor_xsd_any_uri()
-                .ok_or(<span class="string">&quot;no actor&quot;</span>)<span class="question-mark">?
+                .ok_or(<span class="string">"no actor"</span>)<span class="question-mark">?
                 </span>.as_str(),
-            <span class="string">&quot;https://mastodon.social/users/lmorchard&quot;
+            <span class="string">"https://mastodon.social/users/lmorchard"
         </span>);
         <span class="prelude-val">Ok</span>(())
     }
@@ -923,7 +925,7 @@
         <span class="kw">let </span>activity: Activity = serde_json::from_str(JSON_ACTIVITY_WITH_EMOJI)<span class="question-mark">?</span>;
         <span class="macro">assert_eq!</span>(
             activity.id,
-            <span class="string">&quot;https://toot.cafe/users/lmorchard/statuses/100599986688993237/activity&quot;</span>,
+            <span class="string">"https://toot.cafe/users/lmorchard/statuses/100599986688993237/activity"</span>,
         );
         <span class="prelude-val">Ok</span>(())
     }

@@ -195,7 +195,7 @@
 </code></pre>
 </li>
 <li>Build pagefind assets for search:
-<pre><code>pagefind --verbose --keep-index-url --site build --output-subdir pagefind 
+<pre><code>pagefind --keep-index-url --site build
 </code></pre>
 </li>
 <li>Serve the <code>build</code> directory up from a web server of your choice - e.g. <a href="https://github.com/raphamorim/cargo-server"><code>cargo server</code></a>:
@@ -260,15 +260,11 @@ will be set up for you:</p>
 <pre><code class="language-bash">my-mastodon-site/
 └── build
 └── data
-    └── media
     └── data.sqlite3
 </code></pre>
 <ul>
 <li>
 <p>The <code>build</code> directory is where your static site will be generated</p>
-</li>
-<li>
-<p>The <code>data/media</code> directory is where media attachments will be extracted</p>
 </li>
 <li>
 <p>The <code>data/data.sqlite3</code> file is a SQLite database into which things like
@@ -297,29 +293,29 @@ site is generated, you can extract these into external files to edit:</p>
     └── media
     ├── config.toml
     ├── data.sqlite3
-    ├── templates
-    │   ├── activity.html
-    │   ├── day.html
-    │   ├── index.html
-    │   └── layout.html
-    └── web
-        ├── index.css
-        ├── index.js
-        └── vendor
-            ├── bootstrap.bundle.min.js
-            └── bootstrap.min.css
+    └── themes
+        └── default
+            ├── templates
+            │   ├── activity.html
+            │   ├── day.html
+            │   ├── index.html
+            │   └── layout.html
+            └── web
+                ├── index.css
+                └── index.js
 </code></pre>
 <ul>
 <li>
 <p>The <code>config.toml</code> file can be used to supply configuration settings</p>
 </li>
 <li>
-<p>The <code>data/templates</code> directory holds <a href="https://tera.netlify.app/">Tera</a> templates
-used to generate HTML pages.</p>
+<p>The <code>data/themes</code> directory holds themes that can be used to customize the appearance of the site. The <code>default</code> theme is provided by default. If you want to use a different theme, you can copy the <code>default</code> directory and modify it under a directory with a different name. This name, then, can be supplied to the <code>build</code> command with the <code>--theme</code> option.</p>
 </li>
 <li>
-<p>The <code>data/web</code> directory holds web assets which will be copied into the root
-directory of your static site when it's generated.</p>
+<p>The <code>data/themes/default/templates</code> directory holds <a href="https://tera.netlify.app/">Tera</a> templates used to generate HTML pages.</p>
+</li>
+<li>
+<p>The <code>data/themes/default/web</code> directory holds web assets which will be copied into the root directory of your static site when it's generated.</p>
 </li>
 </ul>
 <p>TODO: Need to document configuration settings and templates. For now, just play around with the templates <a href="https://github.com/lmorchard/fossilizer/blob/main/src/cli/build.rs">used by <code>cli/build.rs</code></a> and see what happens! 😅 Configuration settings can be found in the <a href="https://github.com/lmorchard/fossilizer/blob/main/src/config.rs"><code>config.rs</code> module</a></p>
@@ -361,7 +357,7 @@ generate a static web site.</p>
 content and media attachments. It's used like so:</p>
 <pre><code class="language-bash">cd my-mastodon-site
 fossilzer build
-pagefind --verbose --keep-index-url --source build --bundle-dir pagefind
+pagefind --keep-index-url --site build
 </code></pre>
 <p>Note: Until or unless <a href="https://github.com/lmorchard/fossilizer/issues/7">Pagefind can be integrated into Fossilzer</a>, it needs to be run as a separate command to provide search indexes and code modules for the site. </p>
 <p>After using the <code>build</code> command, you should end up with a <code>build</code> directory
@@ -398,12 +394,14 @@ with a structure somewhat like this:</p>
 </ul>
 <p>You can customize both the templates and the static web assets used in this build. Check out <a href="cli/./init.html#--customize">the <code>init --customize</code> option</a> for more information.</p>
 <h2 id="options-1"><a class="header" href="#options-1">Options</a></h2>
+<h3 id="--theme"><a class="header" href="#--theme">--theme <THEME></a></h3>
+<p>Use the theme named <code>&lt;THEME&gt;</code> for rendering the site. This will look for a directory named <code>themes/&lt;THEME&gt;</code> in the <code>data</code> directory.</p>
 <h3 id="--clean-1"><a class="header" href="#--clean-1">--clean</a></h3>
 <p>Delete build directory before proceeding</p>
-<h3 id="--skip-media"><a class="header" href="#--skip-media">--skip-media</a></h3>
-<p>Skip copying over media files</p>
 <h3 id="--skip-index"><a class="header" href="#--skip-index">--skip-index</a></h3>
-<p>Skip building index page</p>
+<p>Skip building index page in HTML</p>
+<h3 id="--skip-index-json"><a class="header" href="#--skip-index-json">--skip-index-json</a></h3>
+<p>Skip building index page in JSON</p>
 <h3 id="--skip-activities"><a class="header" href="#--skip-activities">--skip-activities</a></h3>
 <p>Skip building pages for activities</p>
 <h3 id="--skip-assets"><a class="header" href="#--skip-assets">--skip-assets</a></h3>

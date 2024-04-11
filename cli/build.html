@@ -171,7 +171,7 @@
 content and media attachments. It's used like so:</p>
 <pre><code class="language-bash">cd my-mastodon-site
 fossilzer build
-pagefind --verbose --keep-index-url --source build --bundle-dir pagefind
+pagefind --keep-index-url --site build
 </code></pre>
 <p>Note: Until or unless <a href="https://github.com/lmorchard/fossilizer/issues/7">Pagefind can be integrated into Fossilzer</a>, it needs to be run as a separate command to provide search indexes and code modules for the site. </p>
 <p>After using the <code>build</code> command, you should end up with a <code>build</code> directory
@@ -208,12 +208,14 @@ with a structure somewhat like this:</p>
 </ul>
 <p>You can customize both the templates and the static web assets used in this build. Check out <a href="./init.html#--customize">the <code>init --customize</code> option</a> for more information.</p>
 <h2 id="options"><a class="header" href="#options">Options</a></h2>
+<h3 id="--theme"><a class="header" href="#--theme">--theme <THEME></a></h3>
+<p>Use the theme named <code>&lt;THEME&gt;</code> for rendering the site. This will look for a directory named <code>themes/&lt;THEME&gt;</code> in the <code>data</code> directory.</p>
 <h3 id="--clean"><a class="header" href="#--clean">--clean</a></h3>
 <p>Delete build directory before proceeding</p>
-<h3 id="--skip-media"><a class="header" href="#--skip-media">--skip-media</a></h3>
-<p>Skip copying over media files</p>
 <h3 id="--skip-index"><a class="header" href="#--skip-index">--skip-index</a></h3>
-<p>Skip building index page</p>
+<p>Skip building index page in HTML</p>
+<h3 id="--skip-index-json"><a class="header" href="#--skip-index-json">--skip-index-json</a></h3>
+<p>Skip building index page in JSON</p>
 <h3 id="--skip-activities"><a class="header" href="#--skip-activities">--skip-activities</a></h3>
 <p>Skip building pages for activities</p>
 <h3 id="--skip-assets"><a class="header" href="#--skip-assets">--skip-assets</a></h3>

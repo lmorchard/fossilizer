@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["filter_sha256","filter_urlpath","init","render_to_file","templates_source"],"mod":["contexts"],"struct":["TemplateAsset"]};
+window.SIDEBAR_ITEMS = {"fn":["filter_sha256","filter_urlpath","init","render_to_file"],"mod":["contexts"]};
