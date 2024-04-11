@@ -1,0 +1,34 @@
+{% extends "layout.html" %}
+
+{% block head %}
+  <title>{{ day.current.date | safe }}</title>
+  {% if day.previous %}
+    <link rel="prev" href="{{ site_root ~ "/" ~ day.previous.path }}" title="{{ day.previous.date }}" />
+  {% endif %}
+  {% if day.next %}
+    <link rel="next" href="{{ site_root ~ "/" ~ day.next.path }}" title="{{ day.next.date }}" />
+  {% endif %}
+{% endblock head %} 
+
+{% block pagetitle %}
+  {{ day.current.date | safe }}
+{% endblock pagetitle %} 
+
+{% block content %}
+  <archive-activity-list id="main-list" data-pagefind-body data-pagefind-meta="title:{{ day.current.date | safe }}">
+    <archive-activity-list-contents>
+      {% for activity in activities %}
+        {% include "activity.html" %}
+      {% endfor %}
+    </archive-activity-list-contents>
+    {% if day.next %}
+      <archive-activity-list-next-page>
+        <a class="lazy-load auto-click"
+            href="{{ site_root ~ "/" ~ day.next.path }}"
+            title="{{ day.next.date }}">
+          {{ day.next.date }}
+        </a>
+      </archive-activity-list-next-page>
+    {% endif %}
+  </archive-activity-list>
+{% endblock content %}

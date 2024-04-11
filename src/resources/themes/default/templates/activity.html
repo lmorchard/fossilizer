@@ -1,0 +1,52 @@
+{%- set actor = activity.actor -%}
+{%- set actor_hash = actor.id | sha256 %}
+{%- set media_root = site_root ~ "/media/" ~ actor_hash -%}
+{%- set object = activity.object -%}
+<archive-activity id="{{ activity.id | sha256 }}">
+  <div class="header">
+    <h3 class="published" id="anchor-{{ activity.id | sha256 }}">
+      {%- if "Create" == activity.type and "Note" == object.type -%}
+        <a href="{{ object.url }}" target="_blank"><time is="formatted-time" data-pagefind-meta="title" datetime="{{ activity.published }}" title="{{ activity.published }}">{{ activity.published }}</time></a>
+      {%- else -%}
+        <time is="formatted-time" data-pagefind-meta="title" datetime="{{ activity.published }}" title="{{ activity.published }}">{{ activity.published }}</time>
+      {%- endif -%}
+      <a href="#anchor-{{ activity.id | sha256 }}">#</a>
+    </h3>
+    <div class="title">{{ actor.name }}</div>
+    <div class="subtitle">@<a href="{{ actor.url | safe }}" target="_blank">{{ actor.url }}</a></div>
+    <a class="avatar" href="{{ actor.url | safe }}" target="_blank"><img src="{{ media_root | safe}}/{{ actor.icon.url | safe }}" width="48" height="48" /></a>
+  </div>
+  <div class="body">
+    <div class="text">
+      {%- if "Announce" == activity.type -%}
+        <a href="{{ object }}" class="boost">{{ object }}</a>
+      {%- elif "Create" == activity.type and "Note" == object.type -%}
+        {%- if object.summary -%}
+          <div class="summary">{{ object.summary }}</div>
+        {%- endif -%}
+        {%- if object.content -%}
+          {{ object.content | safe }}
+        {%- endif -%}
+      {%- else -%}
+        (unknown activity type)
+      {%- endif -%}
+    </div>
+    {%- if "Create" == activity.type and "Note" == object.type and object.attachment -%}
+      <media-lightbox-list>
+        {%- for attachment in object.attachment -%}
+          <media-lightbox-item>
+            <a href="{{ media_root | safe }}/{{ attachment.url | urlpath | safe }}" title="{{ attachment.name }}" target="_blank">
+              {%- if attachment.mediaType is starting_with("video/") -%}
+                <video controls title="{{ attachment.name }}" loop>
+                  <source src="{{ media_root | safe }}/{{ attachment.url | urlpath | safe }}" type="video/mp4" />
+                </video>
+              {%- else -%}
+                <img class="lazy-load" data-src="{{ media_root | safe }}/{{ attachment.url | urlpath | safe }}" />
+              {%- endif -%}
+            </a>
+          </media-lightbox-item>
+        {%- endfor -%}
+      </media-lightbox-list>
+    {%- endif -%}
+  </div>
+</archive-activity>
