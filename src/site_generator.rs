@@ -247,7 +247,7 @@ pub fn generate_index_json(
 
     let file_parent_path = file_path.parent().ok_or("no parent path")?;
     fs::create_dir_all(file_parent_path)?;
-    
+
     let mut file = fs::File::create(file_path)?;
     file.write_all(output.as_bytes())?;
 

@@ -61,7 +61,7 @@ pub async fn command(args: &Args) -> Result<(), Box<dyn Error>> {
             let actor: Actor = actor?;
 
             for attachment in actor.attachments() {
-                let task = downloader::DownloadTask{ 
+                let task = downloader::DownloadTask {
                     url: Url::parse(attachment.url.as_str())?,
                     destination: attachment.local_media_path(&media_path, &actor)?,
                 };
@@ -93,7 +93,7 @@ pub async fn command(args: &Args) -> Result<(), Box<dyn Error>> {
                     let activity: Activity = serde_json::from_value(activity.clone())?;
                     if let IdOrObject::Object(object) = &activity.object {
                         for attachment in object.attachments() {
-                            media_downloader.queue(downloader::DownloadTask{ 
+                            media_downloader.queue(downloader::DownloadTask {
                                 url: Url::parse(attachment.url.as_str())?,
                                 destination: attachment.local_media_path(&media_path, &actor)?,
                             })?;

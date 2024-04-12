@@ -9,6 +9,7 @@
     - [init](cli/init.md)
     - [import](cli/import.md)
     - [build](cli/build.md)
+    - [serve](cli/serve.md)
     - [upgrade](cli/upgrade.md)
 - [Customization](customization.md)
 - [Developers](developers/README.md)

@@ -7,4 +7,5 @@ The following sections describe the different commands available:
 - [`fossilizer init`](./init.md)
 - [`fossilizer import <export>`](./import.md)
 - [`fossilizer build`](./build.md)
+- [`fossilizer serve`](./serve.md)
 - [`fossilizer upgrade`](./upgrade.md)

@@ -9,6 +9,7 @@ use fossilizer::app;
 pub mod build;
 pub mod import;
 pub mod init;
+pub mod serve;
 pub mod upgrade;
 
 #[cfg(feature = "fetch_outbox")]
@@ -49,6 +50,8 @@ enum Commands {
     Import(import::ImportArgs),
     /// Build the static site
     Build(build::BuildArgs),
+    /// Serve the static site locally
+    Serve(serve::ServeArgs),
     /// Fetch an ActivityPub outbox URL
     #[cfg(feature = "fetch_outbox")]
     Fetch(fetch::Args),
@@ -72,6 +75,7 @@ pub async fn execute() -> Result<(), Box<dyn Error>> {
         Commands::Upgrade(args) => upgrade::command(args).await,
         Commands::Import(args) => import::command(args).await,
         Commands::Build(args) => build::command(args).await,
+        Commands::Serve(args) => serve::command(args).await,
         #[cfg(feature = "fetch_outbox")]
         Commands::Fetch(args) => fetch::command(args).await,
         #[cfg(feature = "fetch_mastodon")]
