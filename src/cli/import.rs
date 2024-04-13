@@ -26,7 +26,7 @@ pub async fn command(args: &ImportArgs) -> Result<(), Box<dyn Error>> {
 
         let media_path = config.media_path();
         fs::create_dir_all(&media_path)?;
-        
+
         let conn = db::conn()?;
 
         let mut importer = mastodon::Importer::new(conn, media_path, skip_media);

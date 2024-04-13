@@ -25,7 +25,10 @@ pub fn copy_embedded_web_assets(
     theme_prefix: &str,
     assets_output_path: &PathBuf,
 ) -> Result<(), Box<dyn Error>> {
-    let prefix = PathBuf::from(&theme_prefix).join("web").to_string_lossy().into_owned();
+    let prefix = PathBuf::from(&theme_prefix)
+        .join("web")
+        .to_string_lossy()
+        .into_owned();
     for filename in ThemeAsset::iter() {
         if !filename.to_string().starts_with(&prefix) {
             continue;
@@ -48,7 +51,10 @@ pub fn copy_embedded_web_assets(
 }
 
 pub fn templates_source(theme_prefix: &str) -> Vec<(String, String)> {
-    let prefix = PathBuf::from(&theme_prefix).join("templates").to_string_lossy().into_owned();
+    let prefix = PathBuf::from(&theme_prefix)
+        .join("templates")
+        .to_string_lossy()
+        .into_owned();
     ThemeAsset::iter()
         .filter(|filename| filename.to_string().starts_with(&prefix))
         .map(|filename| {

@@ -66,7 +66,7 @@ pub async fn command(args: &Args) -> Result<(), Box<dyn Error>> {
         }
 
         media_downloader.close()?;
-        
+
         anyhow::Ok(())
     });
 

@@ -60,8 +60,7 @@ pub async fn command(args: &BuildArgs) -> Result<(), Box<dyn Error>> {
             site_generator::generate_index_page(&config.build_path, &day_entries, &tera).unwrap();
         }
         if !skip_index_json {
-            site_generator::generate_index_json(&config.build_path, &day_entries)
-                .unwrap();
+            site_generator::generate_index_json(&config.build_path, &day_entries).unwrap();
         }
         if !skip_activities {
             site_generator::generate_activities_pages(

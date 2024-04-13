@@ -46,7 +46,7 @@ pub struct IndexDayEntry {
     pub count: usize,
 }
 
-/// Calendar of [IndexDayContext] structs, organized by into nested [HashMap]s 
+/// Calendar of [IndexDayContext] structs, organized by into nested [HashMap]s
 /// indexed by year, month, and day.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CalendarContext(HashMap<String, HashMap<String, HashMap<String, IndexDayContext>>>);
