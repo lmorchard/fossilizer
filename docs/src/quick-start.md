@@ -23,9 +23,9 @@ These are rough instructions for a rough command-line tool. There is no GUI, yet
     ```
     pagefind --keep-index-url --site build
     ```
-1. Serve the `build` directory up from a web server of your choice - e.g. [`cargo server`](https://github.com/raphamorim/cargo-server):
+1. Serve the `build` directory up with a local web server - the `--open` option will attempt to open a browser:
     ```
-    cargo server --path build -p 8081
+    fossilzer serve --open
     ```
 1. Enjoy a static web site of your Mastodon toots.
 
