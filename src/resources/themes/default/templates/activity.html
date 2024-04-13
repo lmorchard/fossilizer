@@ -28,7 +28,7 @@
           {{ object.content | safe }}
         {%- endif -%}
       {%- else -%}
-        (unknown activity type)
+        (unknown activity type {{ activity.type }})
       {%- endif -%}
     </div>
     {%- if "Create" == activity.type and "Note" == object.type and object.attachment -%}

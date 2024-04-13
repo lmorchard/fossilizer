@@ -9,14 +9,9 @@ use fossilizer::app;
 pub mod build;
 pub mod import;
 pub mod init;
+pub mod mastodon;
 pub mod serve;
 pub mod upgrade;
-
-#[cfg(feature = "fetch_outbox")]
-pub mod fetch;
-
-#[cfg(feature = "fetch_mastodon")]
-pub mod fetch_mastodon;
 
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
@@ -52,12 +47,8 @@ enum Commands {
     Build(build::BuildArgs),
     /// Serve the static site locally
     Serve(serve::ServeArgs),
-    /// Fetch an ActivityPub outbox URL
-    #[cfg(feature = "fetch_outbox")]
-    Fetch(fetch::Args),
-    /// Fetch from a Mastodon API endpoint
-    #[cfg(feature = "fetch_mastodon")]
-    FetchMastodon(fetch_mastodon::Args),
+    /// Connect to a Mastodon instance
+    Mastodon(mastodon::Args),
 }
 
 pub async fn execute() -> Result<(), Box<dyn Error>> {
@@ -76,9 +67,6 @@ pub async fn execute() -> Result<(), Box<dyn Error>> {
         Commands::Import(args) => import::command(args).await,
         Commands::Build(args) => build::command(args).await,
         Commands::Serve(args) => serve::command(args).await,
-        #[cfg(feature = "fetch_outbox")]
-        Commands::Fetch(args) => fetch::command(args).await,
-        #[cfg(feature = "fetch_mastodon")]
-        Commands::FetchMastodon(args) => fetch_mastodon::command(args).await,
+        Commands::Mastodon(args) => mastodon::command(args).await,
     }
 }

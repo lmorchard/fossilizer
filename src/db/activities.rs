@@ -1,10 +1,12 @@
+use crate::activitystreams::{Activity, OrderedItems};
+use anyhow::anyhow;
 use anyhow::Result;
+use megalodon::entities::Status;
+use rusqlite::types::Value;
 use rusqlite::{params, Connection};
 use serde::Serialize;
-use std::str::FromStr;
 use std::string::ToString;
-
-use crate::activitystreams::{Activity, OrderedItems};
+use std::{rc::Rc, str::FromStr};
 
 // todo: make this configurable?
 const IMPORT_TRANSACTION_PAGE_SIZE: usize = 500;
@@ -201,42 +203,52 @@ impl<'a> Activities<'a> {
     }
 
     pub fn get_activities_for_day(&self, day: &String) -> Result<Vec<Activity>> {
-        let conn = self.conn;
-        let mut stmt = conn.prepare_cached(
+        query_activities(
+            self.conn,
             r#"
                 SELECT json, schema
                 FROM activities
                 WHERE publishedYearMonthDay = ?1 AND isPublic = 1
+                ORDER BY published ASC
             "#,
-        )?;
+            [day],
+        )
+    }
 
-        let mut rows = stmt.query([day])?;
-        let mut out = Vec::new();
+    pub fn get_activities_by_ids(&self, ids: &Vec<String>) -> Result<Vec<Activity>> {
+        query_activities(
+            self.conn,
+            r#"
+                SELECT json, schema
+                FROM activities
+                WHERE id IN rarray(?1)
+                ORDER BY published ASC
+            "#,
+            [ids_to_rarray_param(ids)],
+        )
+    }
 
-        while let Some(r) = rows.next()? {
-            let json_data: String = r.get(0)?;
-            let schema_str: String = r.get(1)?;
-
-            match schema_str.parse::<ActivitySchema>()? {
-                ActivitySchema::Activity => {
-                    let activity: Activity = serde_json::from_str::<Activity>(&json_data)?;
-                    out.push(activity);
-                }
-                ActivitySchema::Status => {
-                    let status: megalodon::entities::Status = serde_json::from_str(&json_data)?;
-                    let activity: Activity = status.into();
-                    out.push(activity);
-                }
-                ActivitySchema::Unknown(_) => {
-                    trace!("unknown schema {:?}", schema_str);
-                }
-            }
-        }
-        Ok(out)
+    pub fn count_activities_by_ids(&self, ids: &Vec<String>) -> Result<i16> {
+        query_count(
+            self.conn,
+            r#"
+                SELECT COUNT(id)
+                FROM activities
+                WHERE id IN rarray(?1)
+                ORDER BY published ASC
+            "#,
+            [ids_to_rarray_param(ids)],
+        )
     }
 }
 
+// todo: move these query utilities into a separate module?
+
 type SingleColumnResult = Result<Vec<String>, rusqlite::Error>;
+
+fn ids_to_rarray_param(ids: &Vec<String>) -> Rc<Vec<rusqlite::types::Value>> {
+    Rc::new(ids.iter().cloned().map(Value::from).collect::<Vec<Value>>())
+}
 
 fn query_single_column<P>(
     conn: &Connection,
@@ -248,6 +260,39 @@ where
 {
     let mut stmt = conn.prepare_cached(sql)?;
     let result = stmt.query_map(params, |r| r.get(0))?.collect();
+    result
+}
+
+fn query_count<P>(conn: &Connection, sql: &str, params: P) -> Result<i16>
+where
+    P: rusqlite::Params,
+{
+    let mut stmt = conn.prepare_cached(sql)?;
+    // todo: wow, this is ugly. find a more elegant way to extract count from rows?
+    let count = stmt
+        .query(params)?
+        .next()?
+        .ok_or(anyhow!("no count returned"))?
+        .get(0)?;
+    Ok(count)
+}
+
+fn query_activities<P>(conn: &Connection, sql: &str, params: P) -> Result<Vec<Activity>>
+where
+    P: rusqlite::Params,
+{
+    let mut stmt = conn.prepare_cached(sql)?;
+    let result = stmt
+        .query_and_then(params, |r| -> Result<Activity> {
+            let json_data: String = r.get(0)?;
+            let schema_str: String = r.get(1)?;
+            match schema_str.parse::<ActivitySchema>()? {
+                ActivitySchema::Activity => Ok(serde_json::from_str::<Activity>(&json_data)?),
+                ActivitySchema::Status => Ok(serde_json::from_str::<Status>(&json_data)?.into()),
+                _ => Err(anyhow!("unknown schema {:?}", schema_str)),
+            }
+        })?
+        .collect::<Result<Vec<Activity>>>();
     result
 }
 

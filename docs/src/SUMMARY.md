@@ -8,6 +8,7 @@
 - [Command Line Tool](cli/README.md)
     - [init](cli/init.md)
     - [import](cli/import.md)
+    - [mastodon](cli/mastodon.md)
     - [build](cli/build.md)
     - [serve](cli/serve.md)
     - [upgrade](cli/upgrade.md)
