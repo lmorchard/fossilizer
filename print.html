@@ -1,17 +1,17 @@
 <!DOCTYPE HTML>
-<html lang="en" class="sidebar-visible no-js light">
+<html lang="en" class="light" dir="ltr">
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
         <title>Fossilizer</title>
-        <meta name="robots" content="noindex" />
+        <meta name="robots" content="noindex">
 
 
         <!-- Custom HTML head -->
         
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="theme-color" content="#ffffff" />
+        <meta name="theme-color" content="#ffffff">
 
         <link rel="icon" href="favicon.svg">
         <link rel="shortcut icon" href="favicon.png">
@@ -32,7 +32,7 @@
         <!-- Custom theme stylesheets -->
 
     </head>
-    <body>
+    <body class="sidebar-visible no-js">
     <div id="body-container">
         <!-- Provide site root to javascript -->
         <script>
@@ -62,31 +62,38 @@
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
             if (theme === null || theme === undefined) { theme = default_theme; }
             var html = document.querySelector('html');
-            html.classList.remove('no-js')
             html.classList.remove('light')
             html.classList.add(theme);
-            html.classList.add('js');
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
         </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
 
         <!-- Hide / unhide sidebar before it is displayed -->
         <script>
-            var html = document.querySelector('html');
+            var body = document.querySelector('body');
             var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
             if (document.body.clientWidth >= 1080) {
                 try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
                 sidebar = sidebar || 'visible';
             } else {
                 sidebar = 'hidden';
             }
-            html.classList.remove('sidebar-visible');
-            html.classList.add("sidebar-" + sidebar);
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
         </script>
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded affix "><a href="index.html">README</a></li><li class="chapter-item expanded "><a href="quick-start.html"><strong aria-hidden="true">1.</strong> Quick Start</a></li><li class="chapter-item expanded "><a href="cli/index.html"><strong aria-hidden="true">2.</strong> Command Line Tool</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="cli/init.html"><strong aria-hidden="true">2.1.</strong> init</a></li><li class="chapter-item expanded "><a href="cli/import.html"><strong aria-hidden="true">2.2.</strong> import</a></li><li class="chapter-item expanded "><a href="cli/build.html"><strong aria-hidden="true">2.3.</strong> build</a></li><li class="chapter-item expanded "><a href="cli/upgrade.html"><strong aria-hidden="true">2.4.</strong> upgrade</a></li></ol></li><li class="chapter-item expanded "><a href="customization.html"><strong aria-hidden="true">3.</strong> Customization</a></li><li class="chapter-item expanded "><a href="developers/index.html"><strong aria-hidden="true">4.</strong> Developers</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="index.html">README</a></li><li class="chapter-item expanded "><a href="quick-start.html"><strong aria-hidden="true">1.</strong> Quick Start</a></li><li class="chapter-item expanded "><a href="cli/index.html"><strong aria-hidden="true">2.</strong> Command Line Tool</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="cli/init.html"><strong aria-hidden="true">2.1.</strong> init</a></li><li class="chapter-item expanded "><a href="cli/import.html"><strong aria-hidden="true">2.2.</strong> import</a></li><li class="chapter-item expanded "><a href="cli/build.html"><strong aria-hidden="true">2.3.</strong> build</a></li><li class="chapter-item expanded "><a href="cli/serve.html"><strong aria-hidden="true">2.4.</strong> serve</a></li><li class="chapter-item expanded "><a href="cli/upgrade.html"><strong aria-hidden="true">2.5.</strong> upgrade</a></li></ol></li><li class="chapter-item expanded "><a href="customization.html"><strong aria-hidden="true">3.</strong> Customization</a></li><li class="chapter-item expanded "><a href="developers/index.html"><strong aria-hidden="true">4.</strong> Developers</a></li></ol>
             </div>
-            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
         </nav>
 
         <!-- Track and set sidebar scroll position -->
@@ -117,9 +124,9 @@
                                 <div id="menu-bar-hover-placeholder"></div>
                 <div id="menu-bar" class="menu-bar sticky">
                     <div class="left-buttons">
-                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
                             <i class="fa fa-bars"></i>
-                        </button>
+                        </label>
                         <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
                             <i class="fa fa-paint-brush"></i>
                         </button>
@@ -246,6 +253,7 @@
 <li><a href="cli/./init.html"><code>fossilizer init</code></a></li>
 <li><a href="cli/./import.html"><code>fossilizer import &lt;export&gt;</code></a></li>
 <li><a href="cli/./build.html"><code>fossilizer build</code></a></li>
+<li><a href="cli/./serve.html"><code>fossilizer serve</code></a></li>
 <li><a href="cli/./upgrade.html"><code>fossilizer upgrade</code></a></li>
 </ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="the-init-command"><a class="header" href="#the-init-command">The <code>init</code> command</a></h1>
@@ -359,7 +367,7 @@ content and media attachments. It's used like so:</p>
 fossilzer build
 pagefind --keep-index-url --site build
 </code></pre>
-<p>Note: Until or unless <a href="https://github.com/lmorchard/fossilizer/issues/7">Pagefind can be integrated into Fossilzer</a>, it needs to be run as a separate command to provide search indexes and code modules for the site. </p>
+<p>Note: Until or unless <a href="https://github.com/lmorchard/fossilizer/issues/7">Pagefind can be integrated into Fossilzer</a>, it needs to be run as a separate command to provide search indexes and code modules for the site.</p>
 <p>After using the <code>build</code> command, you should end up with a <code>build</code> directory
 with a structure somewhat like this:</p>
 <pre><code class="language-bash">my-mastodon-site/
@@ -406,6 +414,17 @@ with a structure somewhat like this:</p>
 <p>Skip building pages for activities</p>
 <h3 id="--skip-assets"><a class="header" href="#--skip-assets">--skip-assets</a></h3>
 <p>Skip copying over web assets</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="the-serve-command"><a class="header" href="#the-serve-command">The <code>serve</code> command</a></h1>
+<p>The <code>serve</code> command starts up a local web server to allow access to the static web site.</p>
+<pre><code class="language-bash">fossilizer serve
+</code></pre>
+<h2 id="options-2"><a class="header" href="#options-2">Options</a></h2>
+<h3 id="--host"><a class="header" href="#--host">--host <HOST></a></h3>
+<p>Listen on the specified <code>&lt;HOST&gt;</code> address. Default is <code>127.0.0.1</code>.</p>
+<h3 id="--port"><a class="header" href="#--port">--port <PORT></a></h3>
+<p>Listen on the specified <code>&lt;PORT&gt;</code> number. Default is <code>8881</code>.</p>
+<h3 id="--open"><a class="header" href="#--open">--open</a></h3>
+<p>Open a web browser to the server URL after starting.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="the-upgrade-command"><a class="header" href="#the-upgrade-command">The <code>upgrade</code> command</a></h1>
 <p>The <code>upgrade</code> command is used to upgrade the database and perform any other
 necessary changes after downloading a new version of Fossilzer.</p>

@@ -504,7 +504,7 @@
 
     <span class="kw">let </span>file_parent_path = file_path.parent().ok_or(<span class="string">"no parent path"</span>)<span class="question-mark">?</span>;
     fs::create_dir_all(file_parent_path)<span class="question-mark">?</span>;
-    
+
     <span class="kw">let </span><span class="kw-2">mut </span>file = fs::File::create(file_path)<span class="question-mark">?</span>;
     file.write_all(output.as_bytes())<span class="question-mark">?</span>;
 

@@ -74,6 +74,12 @@
 <a href="#72" id="72">72</a>
 <a href="#73" id="73">73</a>
 <a href="#74" id="74">74</a>
+<a href="#75" id="75">75</a>
+<a href="#76" id="76">76</a>
+<a href="#77" id="77">77</a>
+<a href="#78" id="78">78</a>
+<a href="#79" id="79">79</a>
+<a href="#80" id="80">80</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>rust_embed::RustEmbed;
 <span class="kw">use </span>std::error::Error;
 <span class="kw">use </span>std::fs;
@@ -101,7 +107,10 @@
     theme_prefix: <span class="kw-2">&amp;</span>str,
     assets_output_path: <span class="kw-2">&amp;</span>PathBuf,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;(), Box&lt;<span class="kw">dyn </span>Error&gt;&gt; {
-    <span class="kw">let </span>prefix = PathBuf::from(<span class="kw-2">&amp;</span>theme_prefix).join(<span class="string">"web"</span>).to_string_lossy().into_owned();
+    <span class="kw">let </span>prefix = PathBuf::from(<span class="kw-2">&amp;</span>theme_prefix)
+        .join(<span class="string">"web"</span>)
+        .to_string_lossy()
+        .into_owned();
     <span class="kw">for </span>filename <span class="kw">in </span>ThemeAsset::iter() {
         <span class="kw">if </span>!filename.to_string().starts_with(<span class="kw-2">&amp;</span>prefix) {
             <span class="kw">continue</span>;
@@ -124,7 +133,10 @@
 }
 
 <span class="kw">pub fn </span>templates_source(theme_prefix: <span class="kw-2">&amp;</span>str) -&gt; Vec&lt;(String, String)&gt; {
-    <span class="kw">let </span>prefix = PathBuf::from(<span class="kw-2">&amp;</span>theme_prefix).join(<span class="string">"templates"</span>).to_string_lossy().into_owned();
+    <span class="kw">let </span>prefix = PathBuf::from(<span class="kw-2">&amp;</span>theme_prefix)
+        .join(<span class="string">"templates"</span>)
+        .to_string_lossy()
+        .into_owned();
     ThemeAsset::iter()
         .filter(|filename| filename.to_string().starts_with(<span class="kw-2">&amp;</span>prefix))
         .map(|filename| {

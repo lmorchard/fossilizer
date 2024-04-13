@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>import - Fossilizer</title>
+        <title>serve - Fossilizer</title>
 
 
         <!-- Custom HTML head -->
@@ -88,7 +88,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded affix "><a href="../index.html">README</a></li><li class="chapter-item expanded "><a href="../quick-start.html"><strong aria-hidden="true">1.</strong> Quick Start</a></li><li class="chapter-item expanded "><a href="../cli/index.html"><strong aria-hidden="true">2.</strong> Command Line Tool</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../cli/init.html"><strong aria-hidden="true">2.1.</strong> init</a></li><li class="chapter-item expanded "><a href="../cli/import.html" class="active"><strong aria-hidden="true">2.2.</strong> import</a></li><li class="chapter-item expanded "><a href="../cli/build.html"><strong aria-hidden="true">2.3.</strong> build</a></li><li class="chapter-item expanded "><a href="../cli/serve.html"><strong aria-hidden="true">2.4.</strong> serve</a></li><li class="chapter-item expanded "><a href="../cli/upgrade.html"><strong aria-hidden="true">2.5.</strong> upgrade</a></li></ol></li><li class="chapter-item expanded "><a href="../customization.html"><strong aria-hidden="true">3.</strong> Customization</a></li><li class="chapter-item expanded "><a href="../developers/index.html"><strong aria-hidden="true">4.</strong> Developers</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="../index.html">README</a></li><li class="chapter-item expanded "><a href="../quick-start.html"><strong aria-hidden="true">1.</strong> Quick Start</a></li><li class="chapter-item expanded "><a href="../cli/index.html"><strong aria-hidden="true">2.</strong> Command Line Tool</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../cli/init.html"><strong aria-hidden="true">2.1.</strong> init</a></li><li class="chapter-item expanded "><a href="../cli/import.html"><strong aria-hidden="true">2.2.</strong> import</a></li><li class="chapter-item expanded "><a href="../cli/build.html"><strong aria-hidden="true">2.3.</strong> build</a></li><li class="chapter-item expanded "><a href="../cli/serve.html" class="active"><strong aria-hidden="true">2.4.</strong> serve</a></li><li class="chapter-item expanded "><a href="../cli/upgrade.html"><strong aria-hidden="true">2.5.</strong> upgrade</a></li></ol></li><li class="chapter-item expanded "><a href="../customization.html"><strong aria-hidden="true">3.</strong> Customization</a></li><li class="chapter-item expanded "><a href="../developers/index.html"><strong aria-hidden="true">4.</strong> Developers</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -173,49 +173,27 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="the-import-command"><a class="header" href="#the-import-command">The <code>import</code> command</a></h1>
-<p>The <code>import</code> command is used to ingest the content from a Mastodon export into
-the SQLite database and extract media attachments. It's used like so:</p>
-<pre><code class="language-bash">cd my-mastodon-site
-fossilizer import ../archive-20230720182703-36f08a7ce74bbf59f141b496b2b7f457.tar.gz
+                        <h1 id="the-serve-command"><a class="header" href="#the-serve-command">The <code>serve</code> command</a></h1>
+<p>The <code>serve</code> command starts up a local web server to allow access to the static web site.</p>
+<pre><code class="language-bash">fossilizer serve
 </code></pre>
-<p>Depending on the size of your export, this command should take a few seconds or
-minutes to extract all the posts and attachments.</p>
-<p>Along with inserting database records, you'll find files like the following
-added to your data directory, including all the media attachments associated
-with the export under a directory based on the SHA-256 hash of the account
-address:</p>
-<pre><code class="language-bash">my-mastodon-site/
-└── data
-    ├── data.sqlite3
-    ├── media
-    │   └── acc0bb231a7a2757c7e5c63aa68ce3cdbcfd32a43eb67a6bdedffe173c721184
-    │       ├── avatar.png
-    │       ├── header.jpg
-    │       └── media_attachments
-    │           └── files
-    │               ├── 002
-    │               │   ├── ...
-    │               ├── 105
-    │               │   ├── ...
-    │               ├── 106
-    │               │   ├── ...
-</code></pre>
-<p>You can run this command repeatedly, either with fresh exports from one
-Mastodon instance or with exports from many instances. All the data will be
-merged into the database from previous imports.</p>
-<p>After you've run this command, you can try <a href="./build.html">the <code>build</code> command</a> to
-generate a static web site.</p>
+<h2 id="options"><a class="header" href="#options">Options</a></h2>
+<h3 id="--host"><a class="header" href="#--host">--host <HOST></a></h3>
+<p>Listen on the specified <code>&lt;HOST&gt;</code> address. Default is <code>127.0.0.1</code>.</p>
+<h3 id="--port"><a class="header" href="#--port">--port <PORT></a></h3>
+<p>Listen on the specified <code>&lt;PORT&gt;</code> number. Default is <code>8881</code>.</p>
+<h3 id="--open"><a class="header" href="#--open">--open</a></h3>
+<p>Open a web browser to the server URL after starting.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../cli/init.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../cli/build.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../cli/build.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../cli/upgrade.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -225,11 +203,11 @@ generate a static web site.</p>
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../cli/init.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../cli/build.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../cli/build.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../cli/upgrade.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

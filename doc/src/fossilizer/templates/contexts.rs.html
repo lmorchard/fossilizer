@@ -147,7 +147,7 @@
     </span><span class="kw">pub </span>count: usize,
 }
 
-<span class="doccomment">/// Calendar of [IndexDayContext] structs, organized by into nested [HashMap]s 
+<span class="doccomment">/// Calendar of [IndexDayContext] structs, organized by into nested [HashMap]s
 /// indexed by year, month, and day.
 </span><span class="attr">#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 </span><span class="kw">pub struct </span>CalendarContext(HashMap&lt;String, HashMap&lt;String, HashMap&lt;String, IndexDayContext&gt;&gt;&gt;);
