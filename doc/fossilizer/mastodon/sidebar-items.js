@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["Importer"]};
+window.SIDEBAR_ITEMS = {"mod":["fetcher","importer","instance"],"static":["CLIENT_NAME","CLIENT_WEBSITE","OAUTH_SCOPES","REDIRECT_URI_OOB"]};

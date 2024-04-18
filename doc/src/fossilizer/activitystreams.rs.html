@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/activitystreams.rs`."><title>activitystreams.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-5bc39a1768837dd0.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="fossilizer" data-themes="" data-resource-suffix="" data-rustdoc-version="1.77.1 (7cf61ebde 2024-03-27)" data-channel="1.77.1" data-search-js="search-dd67cee4cfa65049.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../static.files/storage-4c98445ec4002617.js"></script><script defer src="../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-48f368f3872407c8.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title">
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/activitystreams.rs`."><title>activitystreams.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-5bc39a1768837dd0.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="fossilizer" data-themes="" data-resource-suffix="" data-rustdoc-version="1.77.2 (25ef9e3d8 2024-04-09)" data-channel="1.77.2" data-search-js="search-dd67cee4cfa65049.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../static.files/storage-4c98445ec4002617.js"></script><script defer src="../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-48f368f3872407c8.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title">
             <h2>Files</h2></div></nav><div class="sidebar-resizer"></div>
     <main><nav class="sub"><form class="search-form"><span></span><div id="sidebar-button" tabindex="-1"><a href="../../fossilizer/all.html" title="show sidebar"></a></div><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
@@ -465,8 +465,45 @@
 <a href="#463" id="463">463</a>
 <a href="#464" id="464">464</a>
 <a href="#465" id="465">465</a>
+<a href="#466" id="466">466</a>
+<a href="#467" id="467">467</a>
+<a href="#468" id="468">468</a>
+<a href="#469" id="469">469</a>
+<a href="#470" id="470">470</a>
+<a href="#471" id="471">471</a>
+<a href="#472" id="472">472</a>
+<a href="#473" id="473">473</a>
+<a href="#474" id="474">474</a>
+<a href="#475" id="475">475</a>
+<a href="#476" id="476">476</a>
+<a href="#477" id="477">477</a>
+<a href="#478" id="478">478</a>
+<a href="#479" id="479">479</a>
+<a href="#480" id="480">480</a>
+<a href="#481" id="481">481</a>
+<a href="#482" id="482">482</a>
+<a href="#483" id="483">483</a>
+<a href="#484" id="484">484</a>
+<a href="#485" id="485">485</a>
+<a href="#486" id="486">486</a>
+<a href="#487" id="487">487</a>
+<a href="#488" id="488">488</a>
+<a href="#489" id="489">489</a>
+<a href="#490" id="490">490</a>
+<a href="#491" id="491">491</a>
+<a href="#492" id="492">492</a>
+<a href="#493" id="493">493</a>
+<a href="#494" id="494">494</a>
+<a href="#495" id="495">495</a>
+<a href="#496" id="496">496</a>
+<a href="#497" id="497">497</a>
+<a href="#498" id="498">498</a>
+<a href="#499" id="499">499</a>
+<a href="#500" id="500">500</a>
+<a href="#501" id="501">501</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>anyhow::Result;
 <span class="kw">use </span>megalodon;
+<span class="kw">use </span>megalodon::entities::attachment::AttachmentType;
 <span class="kw">use </span>serde::{Deserialize, Serialize};
 <span class="kw">use </span>std::convert::From;
 <span class="kw">use </span>std::path::PathBuf;
@@ -514,13 +551,35 @@
         <span class="kw">let </span>width = meta_original.and_then(|original| original.width);
         <span class="kw">let </span>height = meta_original.and_then(|original| original.height);
 
+        <span class="comment">/*
+            Convert from Mastodon media type to mime-type as expected in ActivityPub
+            https://docs.joinmastodon.org/entities/MediaAttachment/#type
+
+            unknown = unsupported or unrecognized file type
+            image = Static image
+            gifv = Looping, soundless animation
+            video = Video clip
+            audio = Audio track
+
+            these are very stupid mime-type conversions, mainly to make the static site templates happy
+            should be okay, though, since we're not persisting this and will re-generate from raw JSON if we improve later
+        */
+        </span><span class="kw">let </span>media_type = <span class="kw">match </span>attachment.r#type {
+            AttachmentType::Audio =&gt; <span class="string">"audio/mp3"</span>,
+            AttachmentType::Image =&gt; <span class="string">"image/png"</span>,
+            AttachmentType::Video =&gt; <span class="string">"video/mp4"</span>,
+            AttachmentType::Gifv =&gt; <span class="string">"video/mp4"</span>,
+            AttachmentType::Unknown =&gt; <span class="string">"unknown"</span>,
+        }
+        .to_string();
+
         <span class="self">Self </span>{
             <span class="comment">// todo use Image based on attachment.type?
             </span>type_field: <span class="string">"Document"</span>.to_string(),
-            <span class="comment">// todo media_type mime-type from attachment.type? https://docs.joinmastodon.org/entities/MediaAttachment/#type
-            </span>url: attachment.url,
+            url: attachment.url,
             summary: attachment.description,
             blurhash: attachment.blurhash,
+            media_type,
             width,
             height,
             ..Default::default()
@@ -689,23 +748,21 @@
             to.push(PUBLIC_ID.to_string());
         };
 
-        <span class="self">Self </span>{
-            id: <span class="macro">format!</span>(<span class="string">"{}/activity"</span>, status.uri),
-            type_field: <span class="string">"Create"</span>.to_string(),
-            published: status.created_at,
-            to,
-            <span class="comment">// cc
-            </span>actor: IdOrObject::Id({
-                <span class="comment">// hack: this is some grungy butchery to derive an activitypub actor URL for mastodon
-                </span><span class="kw">let </span><span class="kw-2">mut </span>uri = uri;
-                uri.set_path(<span class="macro">format!</span>(<span class="string">"/users/{}"</span>, status.account.acct).as_str());
-                uri.into()
-            }),
-            object: IdOrObject::Object(Object {
+        <span class="comment">// todo: better account for polls, retoots, etc?
+        </span><span class="kw">let </span>activity_type_field = <span class="kw">if </span>status.reblog.is_some() {
+            <span class="string">"Announce"
+        </span>} <span class="kw">else </span>{
+            <span class="string">"Create"
+        </span>}
+        .to_string();
+
+        <span class="kw">let </span>object = <span class="kw">if </span>status.reblog.is_some() {
+            IdOrObject::Id(status.reblog.unwrap().uri)
+        } <span class="kw">else </span>{
+            IdOrObject::Object(Object {
                 id: status.uri.clone(),
                 url: status.url.or_else(|| <span class="prelude-val">Some</span>(status.uri.clone())).unwrap(),
-                <span class="comment">// todo: account for polls, retoots, etc?
-                </span>type_field: <span class="string">"Note"</span>.to_string(),
+                type_field: <span class="string">"Note"</span>.to_string(),
                 published: status.created_at,
                 content: <span class="prelude-val">Some</span>(status.content),
                 summary: <span class="kw">if </span>!status.spoiler_text.is_empty() {
@@ -719,7 +776,22 @@
                     .map(|media_attachment| Attachment::from(media_attachment.clone()))
                     .collect(),
                 ..Default::default()
+            })
+        };
+
+        <span class="self">Self </span>{
+            id: <span class="macro">format!</span>(<span class="string">"{}/activity"</span>, status.uri),
+            type_field: activity_type_field,
+            published: status.created_at,
+            to,
+            <span class="comment">// cc
+            </span>actor: IdOrObject::Id({
+                <span class="comment">// hack: this is some grungy butchery to derive an activitypub actor URL for mastodon
+                </span><span class="kw">let </span><span class="kw-2">mut </span>uri = uri;
+                uri.set_path(<span class="macro">format!</span>(<span class="string">"/users/{}"</span>, status.account.acct).as_str());
+                uri.into()
             }),
+            object,
             ..Default::default()
         }
     }

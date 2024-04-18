@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["load_instance_config","register_client_app","save_instance_config"],"struct":["InstanceConfig"]};

@@ -89,7 +89,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded affix "><a href="index.html">README</a></li><li class="chapter-item expanded "><a href="quick-start.html"><strong aria-hidden="true">1.</strong> Quick Start</a></li><li class="chapter-item expanded "><a href="cli/index.html"><strong aria-hidden="true">2.</strong> Command Line Tool</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="cli/init.html"><strong aria-hidden="true">2.1.</strong> init</a></li><li class="chapter-item expanded "><a href="cli/import.html"><strong aria-hidden="true">2.2.</strong> import</a></li><li class="chapter-item expanded "><a href="cli/build.html"><strong aria-hidden="true">2.3.</strong> build</a></li><li class="chapter-item expanded "><a href="cli/serve.html"><strong aria-hidden="true">2.4.</strong> serve</a></li><li class="chapter-item expanded "><a href="cli/upgrade.html"><strong aria-hidden="true">2.5.</strong> upgrade</a></li></ol></li><li class="chapter-item expanded "><a href="customization.html"><strong aria-hidden="true">3.</strong> Customization</a></li><li class="chapter-item expanded "><a href="developers/index.html"><strong aria-hidden="true">4.</strong> Developers</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="index.html">README</a></li><li class="chapter-item expanded "><a href="quick-start.html"><strong aria-hidden="true">1.</strong> Quick Start</a></li><li class="chapter-item expanded "><a href="cli/index.html"><strong aria-hidden="true">2.</strong> Command Line Tool</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="cli/init.html"><strong aria-hidden="true">2.1.</strong> init</a></li><li class="chapter-item expanded "><a href="cli/import.html"><strong aria-hidden="true">2.2.</strong> import</a></li><li class="chapter-item expanded "><a href="cli/mastodon.html"><strong aria-hidden="true">2.3.</strong> mastodon</a></li><li class="chapter-item expanded "><a href="cli/build.html"><strong aria-hidden="true">2.4.</strong> build</a></li><li class="chapter-item expanded "><a href="cli/serve.html"><strong aria-hidden="true">2.5.</strong> serve</a></li><li class="chapter-item expanded "><a href="cli/upgrade.html"><strong aria-hidden="true">2.6.</strong> upgrade</a></li></ol></li><li class="chapter-item expanded "><a href="customization.html"><strong aria-hidden="true">3.</strong> Customization</a></li><li class="chapter-item expanded "><a href="developers/index.html"><strong aria-hidden="true">4.</strong> Developers</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -252,6 +252,7 @@
 <ul>
 <li><a href="cli/./init.html"><code>fossilizer init</code></a></li>
 <li><a href="cli/./import.html"><code>fossilizer import &lt;export&gt;</code></a></li>
+<li><a href="cli/./mastodon.html"><code>fossilizer mastodon</code></a></li>
 <li><a href="cli/./build.html"><code>fossilizer build</code></a></li>
 <li><a href="cli/./serve.html"><code>fossilizer serve</code></a></li>
 <li><a href="cli/./upgrade.html"><code>fossilizer upgrade</code></a></li>
@@ -360,6 +361,67 @@ Mastodon instance or with exports from many instances. All the data will be
 merged into the database from previous imports.</p>
 <p>After you've run this command, you can try <a href="cli/./build.html">the <code>build</code> command</a> to
 generate a static web site.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="the-mastodon-sub-commands"><a class="header" href="#the-mastodon-sub-commands">The <code>mastodon</code> sub-commands</a></h1>
+<p>The <code>mastodon</code> collection of sub-commands is used to connect to a Mastodon instance and fetch toots from an account via the Mastodon API.</p>
+<p>To use these commands, first you'll need to connect to an existing account on a Mastodon instance using <code>link</code>, <code>code</code>, and then <code>verify</code> sub-commands.</p>
+<p>Then, you can fetch toots from that account and import them into the local database using the <code>fetch</code> sub-command.</p>
+<h2 id="selecting-a-mastodon-instance"><a class="header" href="#selecting-a-mastodon-instance">Selecting a Mastodon instance</a></h2>
+<p>By default, the <code>mastodon</code> command will connect to the instance at <code>https://mastodon.social</code>. You can specify a different instance hostname with the <code>--instance</code> / <code>-i</code> option:</p>
+<pre><code class="language-bash">fossilizer mastodon --instance mstdn.social link
+</code></pre>
+<p>Configuration and secrets for connecting to the selected Mastodon instance are stored in a file named <code>config-{instance}.toml</code> in the <code>data</code> directory.</p>
+<h2 id="connecting-to-a-mastodon-instance"><a class="header" href="#connecting-to-a-mastodon-instance">Connecting to a Mastodon instance</a></h2>
+<p>Before importing toots from a Mastodon account, you'll need to connect to the instance and authenticate with an account.</p>
+<p>The <code>link</code> sub-command will begin this process by attempting to register a new application with your instance and then offering an authorization URL to visit in a web browser. For example:</p>
+<pre><code class="language-bash">$ fossilizer mastodon link
+
+[2024-04-18T20:06:21Z INFO  fossilizer::cli::mastodon::link] Visit this link to begin authorization:
+[2024-04-18T20:06:21Z INFO  fossilizer::cli::mastodon::link] https://mastodon.social/oauth/authorize?client_id=w1pCC1ANqOqnrG6pk8cnbcMa0vTQjgmLQBHCrMqhEzY&amp;scope=read+read%3Anotifications+read%3Astatuses+write+follow+push&amp;redirect_uri=urn%3Aietf%3Awg%3Aoauth%3A2.0%3Aoob&amp;response_type=code
+</code></pre>
+<p>Once you've visited this link and authorized the application, you'll be given a code to paste back into the terminal to complete the process.</p>
+<p>The <code>code</code> sub-command will complete the process by exchanging the code for an access token:</p>
+<pre><code class="language-bash">$ fossilizer mastodon code 8675309jennyabcdefghiZZZFUVMixgjTlQMF0vK1I
+</code></pre>
+<p>After running the <code>code</code> sub-command, you can then run the <code>verify</code> sub-command to check that the connection is working:</p>
+<pre><code class="language-bash">$ fossilizer mastodon verify
+
+[2024-04-18T20:09:04Z INFO  fossilizer::cli::mastodon::verify] Verified as AuthVerifyResult { username: "lmorchard", url: "https://mastodon.social/@lmorchard", display_name: "Les Orchard 🕹\u{fe0f}🔧🐱🐰", created_at: "2016-11-01T00:00:00.000Z" }
+</code></pre>
+<p>Note that the access token secret obtained through the above steps is stored in the <code>config-{instance}.toml</code> file in the <code>data</code> directory:</p>
+<pre><code>data
+├── config-instance-hackers.town.toml
+├── config-instance-mastodon.social.toml
+└── data.sqlite3
+</code></pre>
+<p>Keep these files safe and don't publish them anywhere! Also, once you've connected to an instance, you can use the <code>--instance</code> / <code>-i</code> option to select it without needing to run <code>link</code> or <code>code</code> again.</p>
+<h2 id="fetching-toots"><a class="header" href="#fetching-toots">Fetching toots</a></h2>
+<p>Once you've connected to a Mastodon instance, you can import toots from an account with the <code>fetch</code> sub-command. By default, this command will attempt to fetch and import the newest 100 toots in pages of 25.</p>
+<pre><code class="language-bash">$ fossilizer mastodon fetch
+
+[2024-04-18T20:13:00Z INFO  fossilizer::mastodon::fetcher] Fetching statuses for account https://mastodon.social/@lmorchard
+[2024-04-18T20:13:01Z INFO  fossilizer::mastodon::fetcher] Fetched 25 (of 100 max)...
+[2024-04-18T20:13:04Z INFO  fossilizer::mastodon::fetcher] Fetched 50 (of 100 max)...
+[2024-04-18T20:13:04Z INFO  fossilizer::mastodon::fetcher] Fetched 75 (of 100 max)...
+[2024-04-18T20:13:05Z INFO  fossilizer::mastodon::fetcher] Fetched 100 (of 100 max)...
+</code></pre>
+<p>You can adjust the number of toots fetched with the <code>--max</code> / <code>-m</code> option and the page size with the <code>--page</code> / <code>-p</code> option. However, note that the Mastodon API may limit the number of toots you can fetch in a single request:</p>
+<pre><code class="language-bash">$ fossilizer mastodon fetch --max 200 --page 100
+
+[2024-04-18T20:15:28Z INFO  fossilizer::mastodon::fetcher] Fetching statuses for account https://mastodon.social/@lmorchard
+[2024-04-18T20:15:29Z INFO  fossilizer::mastodon::fetcher] Fetched 40 (of 200 max)...
+[2024-04-18T20:15:29Z INFO  fossilizer::mastodon::fetcher] Fetched 80 (of 200 max)...
+[2024-04-18T20:15:30Z INFO  fossilizer::mastodon::fetcher] Fetched 120 (of 200 max)...
+[2024-04-18T20:15:31Z INFO  fossilizer::mastodon::fetcher] Fetched 160 (of 200 max)...
+[2024-04-18T20:15:31Z INFO  fossilizer::mastodon::fetcher] Fetched 200 (of 200 max)...
+</code></pre>
+<h3 id="incremental-fetching"><a class="header" href="#incremental-fetching">Incremental fetching</a></h3>
+<p>If you've already imported most of your toots and would like to fetch only the newest ones, you can use the <code>--incremental</code> option. This will stop the fetch process as soon as a page is encountered that contains a toot already in the database:</p>
+<pre><code class="language-bash">$ fossilizer mastodon fetch --incremental
+
+2024-04-18T20:17:49Z INFO  fossilizer::mastodon::fetcher] Fetching statuses for account https://mastodon.social/@lmorchard
+[2024-04-18T20:17:50Z INFO  fossilizer::mastodon::fetcher] Fetched 25 (of 100 max)...
+[2024-04-18T20:17:50Z INFO  fossilizer::mastodon::fetcher] Stopping incremental fetch after catching up to imported activities
+</code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="the-build-command"><a class="header" href="#the-build-command">The <code>build</code> command</a></h1>
 <p>The <code>build</code> command is used to generate a static web site from imported
 content and media attachments. It's used like so:</p>

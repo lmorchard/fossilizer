@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["activitystreams","app","config","db","mastodon","site_generator","templates","themes"]};
+window.SIDEBAR_ITEMS = {"mod":["activitystreams","app","config","db","downloader","mastodon","site_generator","templates","themes"]};
