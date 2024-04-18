@@ -1,5 +1,6 @@
 use anyhow::Result;
 use megalodon;
+use megalodon::entities::attachment::AttachmentType;
 use serde::{Deserialize, Serialize};
 use std::convert::From;
 use std::path::PathBuf;
@@ -47,13 +48,35 @@ impl From<megalodon::entities::Attachment> for Attachment {
         let width = meta_original.and_then(|original| original.width);
         let height = meta_original.and_then(|original| original.height);
 
+        /*
+            Convert from Mastodon media type to mime-type as expected in ActivityPub
+            https://docs.joinmastodon.org/entities/MediaAttachment/#type
+
+            unknown = unsupported or unrecognized file type
+            image = Static image
+            gifv = Looping, soundless animation
+            video = Video clip
+            audio = Audio track
+
+            these are very stupid mime-type conversions, mainly to make the static site templates happy
+            should be okay, though, since we're not persisting this and will re-generate from raw JSON if we improve later
+        */
+        let media_type = match attachment.r#type {
+            AttachmentType::Audio => "audio/mp3",
+            AttachmentType::Image => "image/png",
+            AttachmentType::Video => "video/mp4",
+            AttachmentType::Gifv => "video/mp4",
+            AttachmentType::Unknown => "unknown",
+        }
+        .to_string();
+
         Self {
             // todo use Image based on attachment.type?
             type_field: "Document".to_string(),
-            // todo media_type mime-type from attachment.type? https://docs.joinmastodon.org/entities/MediaAttachment/#type
             url: attachment.url,
             summary: attachment.description,
             blurhash: attachment.blurhash,
+            media_type,
             width,
             height,
             ..Default::default()
@@ -222,22 +245,20 @@ impl From<megalodon::entities::Status> for Activity {
             to.push(PUBLIC_ID.to_string());
         };
 
-        Self {
-            id: format!("{}/activity", status.uri),
-            type_field: "Create".to_string(),
-            published: status.created_at,
-            to,
-            // cc
-            actor: IdOrObject::Id({
-                // hack: this is some grungy butchery to derive an activitypub actor URL for mastodon
-                let mut uri = uri;
-                uri.set_path(format!("/users/{}", status.account.acct).as_str());
-                uri.into()
-            }),
-            object: IdOrObject::Object(Object {
+        // todo: better account for polls, retoots, etc?
+        let activity_type_field = if status.reblog.is_some() {
+            "Announce"
+        } else {
+            "Create"
+        }
+        .to_string();
+
+        let object = if status.reblog.is_some() {
+            IdOrObject::Id(status.reblog.unwrap().uri)
+        } else {
+            IdOrObject::Object(Object {
                 id: status.uri.clone(),
                 url: status.url.or_else(|| Some(status.uri.clone())).unwrap(),
-                // todo: account for polls, retoots, etc?
                 type_field: "Note".to_string(),
                 published: status.created_at,
                 content: Some(status.content),
@@ -252,7 +273,22 @@ impl From<megalodon::entities::Status> for Activity {
                     .map(|media_attachment| Attachment::from(media_attachment.clone()))
                     .collect(),
                 ..Default::default()
+            })
+        };
+
+        Self {
+            id: format!("{}/activity", status.uri),
+            type_field: activity_type_field,
+            published: status.created_at,
+            to,
+            // cc
+            actor: IdOrObject::Id({
+                // hack: this is some grungy butchery to derive an activitypub actor URL for mastodon
+                let mut uri = uri;
+                uri.set_path(format!("/users/{}", status.account.acct).as_str());
+                uri.into()
             }),
+            object,
             ..Default::default()
         }
     }

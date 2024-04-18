@@ -29,7 +29,7 @@ pub async fn command(args: &ImportArgs) -> Result<(), Box<dyn Error>> {
 
         let conn = db::conn()?;
 
-        let mut importer = mastodon::Importer::new(conn, media_path, skip_media);
+        let mut importer = mastodon::importer::Importer::new(conn, media_path, skip_media);
         let filename: PathBuf = filename.into();
         info!("Importing {:?}", filename);
         importer.import(filename)?;

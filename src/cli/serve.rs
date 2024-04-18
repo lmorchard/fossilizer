@@ -1,8 +1,8 @@
 use anyhow::Result;
-use std::ffi::OsStr;
 use clap::Args;
 use fossilizer::config;
 use std::error::Error;
+use std::ffi::OsStr;
 use std::net::SocketAddr;
 
 #[derive(Debug, Args)]

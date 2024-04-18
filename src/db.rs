@@ -22,6 +22,8 @@ lazy_static! {
         M::up(include_str!("./db/migrations/202307021314-ispublic-up.sql")),
         M::up(include_str!("./db/migrations/202307021325-index-ispublic-up.sql")),
         M::up(include_str!("./db/migrations/202307191416-ingest-mastodon-statuses-up.sql")),
+        M::up(include_str!("./db/migrations/202404140958-id-from-mastodon-status.sql")),
+        M::up(include_str!("./db/migrations/202404141112-drop-old-activities.sql")),
     ]);
 }
 
@@ -35,6 +37,8 @@ pub fn conn() -> Result<Connection, Box<dyn Error>> {
     let conn = Connection::open(&database_path)?;
     conn.pragma_update(None, "journal_mode", "WAL").unwrap();
     conn.pragma_update(None, "foreign_keys", "ON").unwrap();
+
+    rusqlite::vtab::array::load_module(&conn)?;
 
     trace!("database connection opened {:?}", database_path);
     Ok(conn)
