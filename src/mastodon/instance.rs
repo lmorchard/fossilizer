@@ -47,7 +47,7 @@ pub fn load_instance_config(instance: &String) -> Result<InstanceConfig, Box<dyn
         config_path
     );
     if config_path.exists() {
-        let instance_config_file = fs::read_to_string(config_path)?;
+        let instance_config_file: String = fs::read_to_string(config_path)?;
         Ok(toml::from_str(instance_config_file.as_str())?)
     } else {
         Ok(InstanceConfig::new(instance))

@@ -43,6 +43,9 @@ warp = "0.3.7"
 opener = "0.7.0"
 toml = "0.8.12"
 fallible-streaming-iterator = "0.1.9"
+ring = "0.17.8"
+base64 = "0.22.1"
+pem = "3.0.4"
 
 [dev-dependencies]
 mockito = "1.1.0"

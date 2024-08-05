@@ -12,6 +12,7 @@ pub mod init;
 pub mod mastodon;
 pub mod serve;
 pub mod upgrade;
+pub mod fetch;
 
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
@@ -49,6 +50,8 @@ enum Commands {
     Serve(serve::ServeArgs),
     /// Connect to a Mastodon instance
     Mastodon(mastodon::Args),
+    /// Fetch from ActivityPub outboxes
+    Fetch(fetch::Args),
 }
 
 pub async fn execute() -> Result<(), Box<dyn Error>> {
@@ -68,5 +71,6 @@ pub async fn execute() -> Result<(), Box<dyn Error>> {
         Commands::Build(args) => build::command(args).await,
         Commands::Serve(args) => serve::command(args).await,
         Commands::Mastodon(args) => mastodon::command(args).await,
+        Commands::Fetch(args) => fetch::command(args).await,
     }
 }
