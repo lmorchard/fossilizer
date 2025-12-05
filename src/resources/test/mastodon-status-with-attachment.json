@@ -121,6 +121,12 @@
   "language": "en",
   "pinned": false,
   "emoji_reactions": null,
-  "quote": false,
+  "quote": null,
+  "quote_id": null,
+  "quote_approval": {
+    "automatic": [],
+    "manual": [],
+    "current_user": "denied"
+  },
   "bookmarked": false
 }

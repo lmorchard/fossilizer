@@ -413,4 +413,58 @@ mod tests {
         }
         Ok(())
     }
+
+    #[test]
+    fn test_upgrade_status_json_legacy_format() -> Result<()> {
+        // Test that old Status JSON with quote:false gets upgraded correctly
+        const LEGACY_JSON: &str = include_str!("../resources/test/mastodon-status-with-attachment-legacy.json");
+
+        // First verify the legacy JSON has the old format
+        let legacy_value: serde_json::Value = serde_json::from_str(LEGACY_JSON)?;
+        assert_eq!(legacy_value["quote"], false);
+        assert!(!legacy_value.as_object().unwrap().contains_key("quote_id"));
+        assert!(!legacy_value.as_object().unwrap().contains_key("quote_approval"));
+
+        // Upgrade the JSON
+        let upgraded_json = upgrade_status_json(LEGACY_JSON)?;
+        let upgraded_value: serde_json::Value = serde_json::from_str(&upgraded_json)?;
+
+        // Verify the upgraded JSON has the new format
+        assert!(upgraded_value["quote"].is_null());
+        assert!(upgraded_value["quote_id"].is_null());
+        assert!(upgraded_value["quote_approval"].is_object());
+        assert_eq!(upgraded_value["quote_approval"]["automatic"], serde_json::json!([]));
+        assert_eq!(upgraded_value["quote_approval"]["manual"], serde_json::json!([]));
+        assert_eq!(upgraded_value["quote_approval"]["current_user"], "denied");
+
+        // Verify it can now be deserialized as a Status
+        let _status: megalodon::entities::Status = serde_json::from_str(&upgraded_json)?;
+
+        Ok(())
+    }
+
+    #[test]
+    fn test_upgrade_status_json_modern_format() -> Result<()> {
+        // Test that modern Status JSON passes through unchanged
+        const MODERN_JSON: &str = include_str!("../resources/test/mastodon-status-with-attachment.json");
+
+        // Verify the modern JSON already has the new format
+        let modern_value: serde_json::Value = serde_json::from_str(MODERN_JSON)?;
+        assert!(modern_value["quote"].is_null());
+        assert!(modern_value.as_object().unwrap().contains_key("quote_id"));
+        assert!(modern_value.as_object().unwrap().contains_key("quote_approval"));
+
+        // Upgrade should not change anything
+        let upgraded_json = upgrade_status_json(MODERN_JSON)?;
+        let upgraded_value: serde_json::Value = serde_json::from_str(&upgraded_json)?;
+
+        // Should still be the same
+        assert!(upgraded_value["quote"].is_null());
+        assert!(upgraded_value["quote_approval"].is_object());
+
+        // Verify it can be deserialized as a Status
+        let _status: megalodon::entities::Status = serde_json::from_str(&upgraded_json)?;
+
+        Ok(())
+    }
 }

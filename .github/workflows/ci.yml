@@ -18,9 +18,13 @@ jobs:
   test:
     name: ${{ matrix.platform.os_name }} with rust ${{ matrix.toolchain }}
     runs-on: ${{ matrix.platform.os }}
+    # For PRs, only run Linux-x86_64. For main/tags, run all platforms
+    if: |
+      github.event_name != 'pull_request' ||
+      matrix.platform.os_name == 'Linux-x86_64'
     permissions:
       contents: write
-      discussions: write    
+      discussions: write
     strategy:
       fail-fast: false
       matrix:
