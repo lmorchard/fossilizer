@@ -62,7 +62,7 @@ impl Fetcher {
             format!("https://{instance}"),
             Some(access_token),
             None,
-        );
+        )?;
 
         let account = client.verify_account_credentials().await?.json();
         trace!("Fetched account {:?}", account);
@@ -83,9 +83,68 @@ impl Fetcher {
 
         // todo: should this loop be async to cooperate with the media downloader better? or is it fine as is?
         while keep_fetching && fetched_count < max {
-            let statuses_resp = client
+            trace!(
+                "Fetching batch with limit={:?}, max_id={:?}",
+                current_fetch_options.limit,
+                current_fetch_options.max_id
+            );
+
+            let statuses_resp = match client
                 .get_account_statuses(String::from(&account.id), Some(&current_fetch_options))
-                .await?;
+                .await
+            {
+                Ok(resp) => resp,
+                Err(e) => {
+                    error!(
+                        "Error fetching statuses at max_id={:?}, limit={:?}, fetched so far: {}. Error: {}",
+                        current_fetch_options.max_id, current_fetch_options.limit, fetched_count, e
+                    );
+
+                    // Try to recover by fetching with progressively smaller batch sizes
+                    let retry_limits = vec![10, 5, 1];
+                    let mut recovered_response = None;
+
+                    for retry_limit in retry_limits {
+                        if current_fetch_options.limit.unwrap_or(0) <= retry_limit {
+                            continue; // Skip if we're already at or below this limit
+                        }
+
+                        warn!(
+                            "Retrying with smaller batch size: limit={}",
+                            retry_limit
+                        );
+
+                        let mut retry_options = current_fetch_options.clone();
+                        retry_options.limit = Some(retry_limit);
+
+                        match client
+                            .get_account_statuses(String::from(&account.id), Some(&retry_options))
+                            .await
+                        {
+                            Ok(resp) => {
+                                info!("Successfully recovered with limit={}", retry_limit);
+                                current_fetch_options.limit = Some(retry_limit);
+                                recovered_response = Some(resp);
+                                break;
+                            }
+                            Err(retry_e) => {
+                                trace!("Retry with limit={} also failed: {}", retry_limit, retry_e);
+                            }
+                        }
+                    }
+
+                    match recovered_response {
+                        Some(resp) => resp,
+                        None => {
+                            warn!(
+                                "Could not recover from API error even with limit=1. Stopping fetch after {} statuses.",
+                                fetched_count
+                            );
+                            break;
+                        }
+                    }
+                }
+            };
 
             let statuses_and_activities: Vec<(Status, Activity)> = statuses_resp
                 .json()
