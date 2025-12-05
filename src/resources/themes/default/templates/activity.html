@@ -31,6 +31,15 @@
         (unknown activity type {{ activity.type }})
       {%- endif -%}
     </div>
+    {%- if "Create" == activity.type and "Note" == object.type and object.quote -%}
+      <div class="quoted-post">
+        <blockquote>
+          <div class="quote-content">
+            {{ object.quote.content | safe }}
+          </div>
+        </blockquote>
+      </div>
+    {%- endif -%}
     {%- if "Create" == activity.type and "Note" == object.type and object.attachment -%}
       <media-lightbox-list>
         {%- for attachment in object.attachment -%}
