@@ -18,10 +18,6 @@ jobs:
   test:
     name: ${{ matrix.platform.os_name }} with rust ${{ matrix.toolchain }}
     runs-on: ${{ matrix.platform.os }}
-    # For PRs, only run Linux-x86_64. For main/tags, run all platforms
-    if: |
-      github.event_name != 'pull_request' ||
-      matrix.platform.os_name == 'Linux-x86_64'
     permissions:
       contents: write
       discussions: write
@@ -169,6 +165,10 @@ jobs:
           toolchain: ${{ matrix.toolchain }}
           args: "--locked --release"
           strip: true
+        # For PRs, only run on Linux-x86_64 to save CI time
+        if: |
+          github.event_name != 'pull_request' ||
+          matrix.platform.os_name == 'Linux-x86_64'
       - name: Run tests
         uses: houseabsolute/actions-rust-cross@v0
         with:
@@ -176,7 +176,9 @@ jobs:
           target: ${{ matrix.platform.target }}
           toolchain: ${{ matrix.toolchain }}
           args: "--locked --release"
-        if: ${{ !matrix.platform.skip_tests }}
+        if: |
+          !matrix.platform.skip_tests &&
+          (github.event_name != 'pull_request' || matrix.platform.os_name == 'Linux-x86_64')
       - name: Package as archive
         shell: bash
         run: |
