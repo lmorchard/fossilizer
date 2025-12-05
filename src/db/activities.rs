@@ -304,7 +304,7 @@ where
                                 // Extract column number from error message if present
                                 let error_msg = format!("{}", e);
                                 if let Some(col_str) = error_msg.split("column ").nth(1) {
-                                    if let Ok(col) = col_str.split_whitespace().next().unwrap_or("0").parse::<usize>() {
+                                    if let Some(col) = col_str.split_whitespace().next().and_then(|s| s.parse::<usize>().ok()) {
                                         let start = col.saturating_sub(200);
                                         let end = (col + 200).min(upgraded_json.len());
                                         debug!("JSON around error at column {}: ...{}...",
