@@ -294,11 +294,30 @@ where
                         Ok(None)
                     }
                 },
-                ActivitySchema::Status => match serde_json::from_str::<Status>(&json_data) {
-                    Ok(status) => Ok(Some(status.into())),
-                    Err(e) => {
-                        warn!("Failed to deserialize Status: {}. Skipping.", e);
-                        Ok(None)
+                ActivitySchema::Status => {
+                    // Try to upgrade old Status JSON format to work with new megalodon version
+                    match upgrade_status_json(&json_data) {
+                        Ok(upgraded_json) => match serde_json::from_str::<Status>(&upgraded_json) {
+                            Ok(status) => Ok(Some(status.into())),
+                            Err(e) => {
+                                warn!("Failed to deserialize upgraded Status: {}.", e);
+                                // Extract column number from error message if present
+                                let error_msg = format!("{}", e);
+                                if let Some(col_str) = error_msg.split("column ").nth(1) {
+                                    if let Ok(col) = col_str.split_whitespace().next().unwrap_or("0").parse::<usize>() {
+                                        let start = col.saturating_sub(200);
+                                        let end = (col + 200).min(upgraded_json.len());
+                                        debug!("JSON around error at column {}: ...{}...",
+                                            col, &upgraded_json[start..end]);
+                                    }
+                                }
+                                Ok(None)
+                            }
+                        },
+                        Err(e) => {
+                            warn!("Failed to upgrade Status JSON: {}. Skipping.", e);
+                            Ok(None)
+                        }
                     }
                 },
                 _ => Err(anyhow!("unknown schema {:?}", schema_str)),
@@ -307,6 +326,69 @@ where
         .filter_map(|r| r.ok().flatten())
         .collect();
     Ok(result)
+}
+
+/// Upgrades old Status JSON format to be compatible with newer megalodon versions
+fn upgrade_status_json(json_str: &str) -> Result<String> {
+    let mut value: serde_json::Value = serde_json::from_str(json_str)?;
+
+    // Ensure we have an object to work with
+    if let Some(obj) = value.as_object_mut() {
+        // Handle quote field - old format used boolean, new format uses enum (null or object)
+        if let Some(quote_val) = obj.get("quote") {
+            if quote_val.is_boolean() {
+                // Replace boolean false with null
+                obj.insert("quote".to_string(), serde_json::Value::Null);
+            }
+        } else {
+            // Add quote field if missing
+            obj.insert("quote".to_string(), serde_json::Value::Null);
+        }
+
+        // Add quote_id field if missing
+        if !obj.contains_key("quote_id") {
+            obj.insert("quote_id".to_string(), serde_json::Value::Null);
+        }
+
+        // Add quote_approval field if missing (must be an object, not null)
+        if !obj.contains_key("quote_approval") {
+            obj.insert("quote_approval".to_string(),
+                serde_json::json!({
+                    "automatic": [],
+                    "manual": [],
+                    "current_user": "denied"
+                }));
+        }
+
+        // Recursively handle reblog field if it exists
+        if let Some(reblog) = obj.get_mut("reblog") {
+            if let Some(reblog_obj) = reblog.as_object_mut() {
+                // Fix quote field in reblogged status too
+                if let Some(quote_val) = reblog_obj.get("quote") {
+                    if quote_val.is_boolean() {
+                        reblog_obj.insert("quote".to_string(), serde_json::Value::Null);
+                    }
+                } else {
+                    reblog_obj.insert("quote".to_string(), serde_json::Value::Null);
+                }
+
+                if !reblog_obj.contains_key("quote_id") {
+                    reblog_obj.insert("quote_id".to_string(), serde_json::Value::Null);
+                }
+
+                if !reblog_obj.contains_key("quote_approval") {
+                    reblog_obj.insert("quote_approval".to_string(),
+                        serde_json::json!({
+                            "automatic": [],
+                            "manual": [],
+                            "current_user": "denied"
+                        }));
+                }
+            }
+        }
+    }
+
+    Ok(serde_json::to_string(&value)?)
 }
 
 #[cfg(test)]
