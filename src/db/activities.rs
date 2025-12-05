@@ -282,18 +282,31 @@ where
     P: rusqlite::Params,
 {
     let mut stmt = conn.prepare_cached(sql)?;
-    let result = stmt
-        .query_and_then(params, |r| -> Result<Activity> {
+    let result: Vec<Activity> = stmt
+        .query_and_then(params, |r| -> Result<Option<Activity>> {
             let json_data: String = r.get(0)?;
             let schema_str: String = r.get(1)?;
             match schema_str.parse::<ActivitySchema>()? {
-                ActivitySchema::Activity => Ok(serde_json::from_str::<Activity>(&json_data)?),
-                ActivitySchema::Status => Ok(serde_json::from_str::<Status>(&json_data)?.into()),
+                ActivitySchema::Activity => match serde_json::from_str::<Activity>(&json_data) {
+                    Ok(activity) => Ok(Some(activity)),
+                    Err(e) => {
+                        warn!("Failed to deserialize Activity: {}. Skipping.", e);
+                        Ok(None)
+                    }
+                },
+                ActivitySchema::Status => match serde_json::from_str::<Status>(&json_data) {
+                    Ok(status) => Ok(Some(status.into())),
+                    Err(e) => {
+                        warn!("Failed to deserialize Status: {}. Skipping.", e);
+                        Ok(None)
+                    }
+                },
                 _ => Err(anyhow!("unknown schema {:?}", schema_str)),
             }
         })?
-        .collect::<Result<Vec<Activity>>>();
-    result
+        .filter_map(|r| r.ok().flatten())
+        .collect();
+    Ok(result)
 }
 
 #[cfg(test)]
