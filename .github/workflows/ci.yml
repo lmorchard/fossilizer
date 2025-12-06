@@ -18,7 +18,7 @@ jobs:
   # Quick test for PRs - only Linux-x86_64
   test-pr:
     name: PR Quick Test - Linux-x86_64
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     if: github.event_name == 'pull_request'
     steps:
       - uses: actions/checkout@v4
@@ -59,17 +59,17 @@ jobs:
       matrix:
         platform:
           - os_name: Linux-x86_64
-            os: ubuntu-20.04
+            os: ubuntu-24.04
             target: x86_64-unknown-linux-musl
             bin: fossilizer
             name: fossilizer-Linux-x86_64-musl.tar.gz
           - os_name: Linux-aarch64
-            os: ubuntu-20.04
+            os: ubuntu-24.04
             target: aarch64-unknown-linux-musl
             bin: fossilizer
             name: fossilizer-Linux-aarch64-musl.tar.gz
           - os_name: Linux-arm
-            os: ubuntu-20.04
+            os: ubuntu-24.04
             target: arm-unknown-linux-musleabi
             bin: fossilizer
             name: fossilizer-Linux-arm-musl.tar.gz
@@ -92,7 +92,7 @@ jobs:
 
           # fixme: this target fails on building "ring"?
           # - os_name: Linux-i686
-          #   os: ubuntu-20.04
+          #   os: ubuntu-24.04
           #   target: i686-unknown-linux-musl
           #   bin: fossilizer
           #   name: fossilizer-Linux-i686-musl.tar.gz
@@ -106,64 +106,64 @@ jobs:
           #   name: fossilizer-Windows-i686.zip
           #   skip_tests: true
           # - os_name: FreeBSD-x86_64
-          #   os: ubuntu-20.04
+          #   os: ubuntu-24.04
           #   target: x86_64-unknown-freebsd
           #   bin: fossilizer
           #   name: fossilizer-FreeBSD-x86_64.tar.gz
           #   skip_tests: true
           # - os_name: Linux-mips
-          #   os: ubuntu-20.04
+          #   os: ubuntu-24.04
           #   target: mips-unknown-linux-musl
           #   bin: fossilizer
           #   name: fossilizer-Linux-mips.tar.gz
           # - os_name: Linux-mipsel
-          #   os: ubuntu-20.04
+          #   os: ubuntu-24.04
           #   target: mipsel-unknown-linux-musl
           #   bin: fossilizer
           #   name: fossilizer-Linux-mipsel.tar.gz
           # - os_name: Linux-mips64
-          #   os: ubuntu-20.04
+          #   os: ubuntu-24.04
           #   target: mips64-unknown-linux-muslabi64
           #   bin: fossilizer
           #   name: fossilizer-Linux-mips64.tar.gz
           #   skip_tests: true
           # - os_name: Linux-mips64el
-          #   os: ubuntu-20.04
+          #   os: ubuntu-24.04
           #   target: mips64el-unknown-linux-muslabi64
           #   bin: fossilizer
           #   name: fossilizer-Linux-mips64el.tar.gz
           #   skip_tests: true
           # - os_name: Linux-powerpc
-          #   os: ubuntu-20.04
+          #   os: ubuntu-24.04
           #   target: powerpc-unknown-linux-gnu
           #   bin: fossilizer
           #   name: fossilizer-Linux-powerpc-gnu.tar.gz
           #   skip_tests: true
           # - os_name: Linux-powerpc64
-          #   os: ubuntu-20.04
+          #   os: ubuntu-24.04
           #   target: powerpc64-unknown-linux-gnu
           #   bin: fossilizer
           #   name: fossilizer-Linux-powerpc64-gnu.tar.gz
           #   skip_tests: true
           # - os_name: Linux-powerpc64le
-          #   os: ubuntu-20.04
+          #   os: ubuntu-24.04
           #   target: powerpc64le-unknown-linux-gnu
           #   bin: fossilizer
           #   name: fossilizer-Linux-powerpc64le.tar.gz
           #   skip_tests: true
           # - os_name: Linux-riscv64
-          #   os: ubuntu-20.04
+          #   os: ubuntu-24.04
           #   target: riscv64gc-unknown-linux-gnu
           #   bin: fossilizer
           #   name: fossilizer-Linux-riscv64gc-gnu.tar.gz
           # - os_name: Linux-s390x
-          #   os: ubuntu-20.04
+          #   os: ubuntu-24.04
           #   target: s390x-unknown-linux-gnu
           #   bin: fossilizer
           #   name: fossilizer-Linux-s390x-gnu.tar.gz
           #   skip_tests: true
           # - os_name: NetBSD-x86_64
-          #   os: ubuntu-20.04
+          #   os: ubuntu-24.04
           #   target: x86_64-unknown-netbsd
           #   bin: fossilizer
           #   name: fossilizer-NetBSD-x86_64.tar.gz
