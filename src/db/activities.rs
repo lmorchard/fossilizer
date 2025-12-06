@@ -282,18 +282,113 @@ where
     P: rusqlite::Params,
 {
     let mut stmt = conn.prepare_cached(sql)?;
-    let result = stmt
-        .query_and_then(params, |r| -> Result<Activity> {
+    let result: Vec<Activity> = stmt
+        .query_and_then(params, |r| -> Result<Option<Activity>> {
             let json_data: String = r.get(0)?;
             let schema_str: String = r.get(1)?;
             match schema_str.parse::<ActivitySchema>()? {
-                ActivitySchema::Activity => Ok(serde_json::from_str::<Activity>(&json_data)?),
-                ActivitySchema::Status => Ok(serde_json::from_str::<Status>(&json_data)?.into()),
+                ActivitySchema::Activity => match serde_json::from_str::<Activity>(&json_data) {
+                    Ok(activity) => Ok(Some(activity)),
+                    Err(e) => {
+                        warn!("Failed to deserialize Activity: {}. Skipping.", e);
+                        Ok(None)
+                    }
+                },
+                ActivitySchema::Status => {
+                    // Try to upgrade old Status JSON format to work with new megalodon version
+                    match upgrade_status_json(&json_data) {
+                        Ok(upgraded_json) => match serde_json::from_str::<Status>(&upgraded_json) {
+                            Ok(status) => Ok(Some(status.into())),
+                            Err(e) => {
+                                warn!("Failed to deserialize upgraded Status: {}.", e);
+                                // Extract column number from error message if present
+                                let error_msg = format!("{}", e);
+                                if let Some(col_str) = error_msg.split("column ").nth(1) {
+                                    if let Some(col) = col_str.split_whitespace().next().and_then(|s| s.parse::<usize>().ok()) {
+                                        let start = col.saturating_sub(200);
+                                        let end = (col + 200).min(upgraded_json.len());
+                                        debug!("JSON around error at column {}: ...{}...",
+                                            col, &upgraded_json[start..end]);
+                                    }
+                                }
+                                Ok(None)
+                            }
+                        },
+                        Err(e) => {
+                            warn!("Failed to upgrade Status JSON: {}. Skipping.", e);
+                            Ok(None)
+                        }
+                    }
+                },
                 _ => Err(anyhow!("unknown schema {:?}", schema_str)),
             }
         })?
-        .collect::<Result<Vec<Activity>>>();
-    result
+        .filter_map(|r| r.ok().flatten())
+        .collect();
+    Ok(result)
+}
+
+/// Upgrades old Status JSON format to be compatible with newer megalodon versions
+fn upgrade_status_json(json_str: &str) -> Result<String> {
+    let mut value: serde_json::Value = serde_json::from_str(json_str)?;
+
+    // Ensure we have an object to work with
+    if let Some(obj) = value.as_object_mut() {
+        // Handle quote field - old format used boolean, new format uses enum (null or object)
+        if let Some(quote_val) = obj.get("quote") {
+            if quote_val.is_boolean() {
+                // Replace boolean false with null
+                obj.insert("quote".to_string(), serde_json::Value::Null);
+            }
+        } else {
+            // Add quote field if missing
+            obj.insert("quote".to_string(), serde_json::Value::Null);
+        }
+
+        // Add quote_id field if missing
+        if !obj.contains_key("quote_id") {
+            obj.insert("quote_id".to_string(), serde_json::Value::Null);
+        }
+
+        // Add quote_approval field if missing (must be an object, not null)
+        if !obj.contains_key("quote_approval") {
+            obj.insert("quote_approval".to_string(),
+                serde_json::json!({
+                    "automatic": [],
+                    "manual": [],
+                    "current_user": "denied"
+                }));
+        }
+
+        // Recursively handle reblog field if it exists
+        if let Some(reblog) = obj.get_mut("reblog") {
+            if let Some(reblog_obj) = reblog.as_object_mut() {
+                // Fix quote field in reblogged status too
+                if let Some(quote_val) = reblog_obj.get("quote") {
+                    if quote_val.is_boolean() {
+                        reblog_obj.insert("quote".to_string(), serde_json::Value::Null);
+                    }
+                } else {
+                    reblog_obj.insert("quote".to_string(), serde_json::Value::Null);
+                }
+
+                if !reblog_obj.contains_key("quote_id") {
+                    reblog_obj.insert("quote_id".to_string(), serde_json::Value::Null);
+                }
+
+                if !reblog_obj.contains_key("quote_approval") {
+                    reblog_obj.insert("quote_approval".to_string(),
+                        serde_json::json!({
+                            "automatic": [],
+                            "manual": [],
+                            "current_user": "denied"
+                        }));
+                }
+            }
+        }
+    }
+
+    Ok(serde_json::to_string(&value)?)
 }
 
 #[cfg(test)]
@@ -316,6 +411,60 @@ mod tests {
             let result_schema: ActivitySchema = expected_str.parse()?;
             assert_eq!(result_schema, expected_schema);
         }
+        Ok(())
+    }
+
+    #[test]
+    fn test_upgrade_status_json_legacy_format() -> Result<()> {
+        // Test that old Status JSON with quote:false gets upgraded correctly
+        const LEGACY_JSON: &str = include_str!("../resources/test/mastodon-status-with-attachment-legacy.json");
+
+        // First verify the legacy JSON has the old format
+        let legacy_value: serde_json::Value = serde_json::from_str(LEGACY_JSON)?;
+        assert_eq!(legacy_value["quote"], false);
+        assert!(!legacy_value.as_object().unwrap().contains_key("quote_id"));
+        assert!(!legacy_value.as_object().unwrap().contains_key("quote_approval"));
+
+        // Upgrade the JSON
+        let upgraded_json = upgrade_status_json(LEGACY_JSON)?;
+        let upgraded_value: serde_json::Value = serde_json::from_str(&upgraded_json)?;
+
+        // Verify the upgraded JSON has the new format
+        assert!(upgraded_value["quote"].is_null());
+        assert!(upgraded_value["quote_id"].is_null());
+        assert!(upgraded_value["quote_approval"].is_object());
+        assert_eq!(upgraded_value["quote_approval"]["automatic"], serde_json::json!([]));
+        assert_eq!(upgraded_value["quote_approval"]["manual"], serde_json::json!([]));
+        assert_eq!(upgraded_value["quote_approval"]["current_user"], "denied");
+
+        // Verify it can now be deserialized as a Status
+        let _status: megalodon::entities::Status = serde_json::from_str(&upgraded_json)?;
+
+        Ok(())
+    }
+
+    #[test]
+    fn test_upgrade_status_json_modern_format() -> Result<()> {
+        // Test that modern Status JSON passes through unchanged
+        const MODERN_JSON: &str = include_str!("../resources/test/mastodon-status-with-attachment.json");
+
+        // Verify the modern JSON already has the new format
+        let modern_value: serde_json::Value = serde_json::from_str(MODERN_JSON)?;
+        assert!(modern_value["quote"].is_null());
+        assert!(modern_value.as_object().unwrap().contains_key("quote_id"));
+        assert!(modern_value.as_object().unwrap().contains_key("quote_approval"));
+
+        // Upgrade should not change anything
+        let upgraded_json = upgrade_status_json(MODERN_JSON)?;
+        let upgraded_value: serde_json::Value = serde_json::from_str(&upgraded_json)?;
+
+        // Should still be the same
+        assert!(upgraded_value["quote"].is_null());
+        assert!(upgraded_value["quote_approval"].is_object());
+
+        // Verify it can be deserialized as a Status
+        let _status: megalodon::entities::Status = serde_json::from_str(&upgraded_json)?;
+
         Ok(())
     }
 }

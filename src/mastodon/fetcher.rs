@@ -62,7 +62,7 @@ impl Fetcher {
             format!("https://{instance}"),
             Some(access_token),
             None,
-        );
+        )?;
 
         let account = client.verify_account_credentials().await?.json();
         trace!("Fetched account {:?}", account);

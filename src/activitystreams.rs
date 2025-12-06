@@ -256,6 +256,36 @@ impl From<megalodon::entities::Status> for Activity {
         let object = if status.reblog.is_some() {
             IdOrObject::Id(status.reblog.unwrap().uri)
         } else {
+            // Extract quote information if present
+            let quote_object = status.quote.and_then(|quoted| {
+                // QuotedStatus can be Quote or ShallowQuote - we only handle Quote with full status
+                match quoted {
+                    megalodon::entities::QuotedStatus::Quote(quote) => {
+                        quote.quoted_status.map(|quoted_status| {
+                            Box::new(Object {
+                                id: quoted_status.uri.clone(),
+                                url: quoted_status.url.clone().or_else(|| Some(quoted_status.uri.clone())).unwrap(),
+                                type_field: "Note".to_string(),
+                                published: quoted_status.created_at,
+                                content: Some(quoted_status.content.clone()),
+                                summary: if !quoted_status.spoiler_text.is_empty() {
+                                    Some(quoted_status.spoiler_text.clone())
+                                } else {
+                                    None
+                                },
+                                attachment: quoted_status
+                                    .media_attachments
+                                    .iter()
+                                    .map(|media_attachment| Attachment::from(media_attachment.clone()))
+                                    .collect(),
+                                ..Default::default()
+                            })
+                        })
+                    }
+                    megalodon::entities::QuotedStatus::ShallowQuote(_) => None,
+                }
+            });
+
             IdOrObject::Object(Object {
                 id: status.uri.clone(),
                 url: status.url.or_else(|| Some(status.uri.clone())).unwrap(),
@@ -272,6 +302,7 @@ impl From<megalodon::entities::Status> for Activity {
                     .iter()
                     .map(|media_attachment| Attachment::from(media_attachment.clone()))
                     .collect(),
+                quote: quote_object,
                 ..Default::default()
             })
         };
@@ -309,6 +340,7 @@ pub struct Object {
     pub in_reply_to: Option<String>,
     pub tag: Vec<Tag>,
     pub attachment: Vec<Attachment>,
+    pub quote: Option<Box<Object>>,
 }
 
 impl Attachments for Object {

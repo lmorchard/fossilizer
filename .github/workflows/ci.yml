@@ -4,7 +4,7 @@ name: Test, Build, & Release
 on:
   push:
     branches:
-      - "**"
+      - main
     tags-ignore:
       - "fossilizer-*"
   pull_request:
@@ -15,12 +15,45 @@ env:
   RUST_BACKTRACE: 1
 
 jobs:
+  # Quick test for PRs - only Linux-x86_64
+  test-pr:
+    name: PR Quick Test - Linux-x86_64
+    runs-on: ubuntu-20.04
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Cache cargo & target directories
+        uses: Swatinem/rust-cache@v2
+      - name: Configure Git
+        run: |
+          git config --global user.email "me@lmorchard.com"
+          git config --global user.name "Les Orchard"
+      - name: Install musl-tools
+        run: sudo apt-get update --yes && sudo apt-get install --yes musl-tools
+      - name: Build binary
+        uses: houseabsolute/actions-rust-cross@v0
+        with:
+          command: "build"
+          target: x86_64-unknown-linux-musl
+          toolchain: stable
+          args: "--locked --release"
+          strip: true
+      - name: Run tests
+        uses: houseabsolute/actions-rust-cross@v0
+        with:
+          command: "test"
+          target: x86_64-unknown-linux-musl
+          toolchain: stable
+          args: "--locked --release"
+
+  # Full matrix for main branch and tags
   test:
     name: ${{ matrix.platform.os_name }} with rust ${{ matrix.toolchain }}
     runs-on: ${{ matrix.platform.os }}
+    if: github.event_name != 'pull_request'
     permissions:
       contents: write
-      discussions: write    
+      discussions: write
     strategy:
       fail-fast: false
       matrix:

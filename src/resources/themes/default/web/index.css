@@ -294,6 +294,18 @@ archive-activity .body .text .summary:before {
   content: "⚠️ ";
 }
 
+archive-activity .quoted-post {
+  margin: 1em 0;
+}
+
+archive-activity .quoted-post blockquote {
+  margin: 0;
+  padding: 0.75em 1em;
+  border-left: 4px solid var(--theme-border-color);
+  background-color: var(--theme-highlighted-bg-color);
+  border-radius: 4px;
+}
+
 archive-activity media-lightbox-list {
   display: flex;
   margin: 1em 0 0 0;
