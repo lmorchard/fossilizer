@@ -1,7 +1,7 @@
 # The `init` command
 
 The `init` command prepares the current directory with data and configuration
-files needed by Fossilzer. It's used like so:
+files needed by Fossilizer. It's used like so:
 
 ```bash
 mkdir my-mastodon-site
@@ -41,7 +41,7 @@ fossilizer init --clean
 
 ### `--customize`
 
-By default, Fossilzer will use templates and assets embedded in the executable
+By default, Fossilizer will use templates and assets embedded in the executable
 to generate a static web site. However, if you'd like to customize how your
 site is generated, you can extract these into external files to edit:
 

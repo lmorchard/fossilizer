@@ -25,7 +25,7 @@ These are rough instructions for a rough command-line tool. There is no GUI, yet
     ```
 1. Serve the `build` directory up with a local web server - the `--open` option will attempt to open a browser:
     ```
-    fossilzer serve --open
+    fossilizer serve --open
     ```
 1. Enjoy a static web site of your Mastodon toots.
 

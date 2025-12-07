@@ -5,11 +5,11 @@ content and media attachments. It's used like so:
 
 ```bash
 cd my-mastodon-site
-fossilzer build
+fossilizer build
 pagefind --keep-index-url --site build
 ```
 
-Note: Until or unless [Pagefind can be integrated into Fossilzer](https://github.com/lmorchard/fossilizer/issues/7), it needs to be run as a separate command to provide search indexes and code modules for the site. 
+Note: Until or unless [Pagefind can be integrated into Fossilizer](https://github.com/lmorchard/fossilizer/issues/7), it needs to be run as a separate command to provide search indexes and code modules for the site. 
 
 After using the `build` command, you should end up with a `build` directory
 with a structure somewhat like this:
