@@ -11,7 +11,7 @@
 <a href=#11 id=11 data-nosnippet>11</a><span class="kw">pub fn </span>copy_embedded_themes(assets_output_path: <span class="kw-2">&amp;</span>PathBuf) -&gt; <span class="prelude-ty">Result</span>&lt;(), Box&lt;<span class="kw">dyn </span>Error&gt;&gt; {
 <a href=#12 id=12 data-nosnippet>12</a>    <span class="kw">for </span>filename <span class="kw">in </span>ThemeAsset::iter() {
 <a href=#13 id=13 data-nosnippet>13</a>        <span class="kw">let </span>file = ThemeAsset::get(<span class="kw-2">&amp;</span>filename).ok_or(<span class="string">"no asset"</span>)<span class="question-mark">?</span>;
-<a href=#14 id=14 data-nosnippet>14</a>        <span class="kw">let </span>outpath = PathBuf::from(<span class="kw-2">&amp;</span>assets_output_path).join(<span class="kw-2">&amp;</span>filename.to_string());
+<a href=#14 id=14 data-nosnippet>14</a>        <span class="kw">let </span>outpath = PathBuf::from(<span class="kw-2">&amp;</span>assets_output_path).join(filename.to_string());
 <a href=#15 id=15 data-nosnippet>15</a>
 <a href=#16 id=16 data-nosnippet>16</a>        <span class="kw">let </span><span class="kw-2">mut </span>outfile = open_outfile_with_parent_dir(<span class="kw-2">&amp;</span>outpath)<span class="question-mark">?</span>;
 <a href=#17 id=17 data-nosnippet>17</a>        outfile.write_all(file.data.as_ref())<span class="question-mark">?</span>;

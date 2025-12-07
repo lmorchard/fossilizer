@@ -61,7 +61,7 @@
 <a href=#61 id=61 data-nosnippet>61</a>) -&gt; <span class="prelude-ty">Result</span>&lt;(), Box&lt;<span class="kw">dyn </span>Error&gt;&gt; {
 <a href=#62 id=62 data-nosnippet>62</a>    <span class="kw">for </span>filename <span class="kw">in </span>Assets::iter() {
 <a href=#63 id=63 data-nosnippet>63</a>        <span class="kw">let </span>file = Assets::get(<span class="kw-2">&amp;</span>filename).ok_or(<span class="string">"no asset"</span>)<span class="question-mark">?</span>;
-<a href=#64 id=64 data-nosnippet>64</a>        <span class="kw">let </span>outpath = PathBuf::from(<span class="kw-2">&amp;</span>assets_output_path).join(<span class="kw-2">&amp;</span>filename.to_string());
+<a href=#64 id=64 data-nosnippet>64</a>        <span class="kw">let </span>outpath = PathBuf::from(<span class="kw-2">&amp;</span>assets_output_path).join(filename.to_string());
 <a href=#65 id=65 data-nosnippet>65</a>
 <a href=#66 id=66 data-nosnippet>66</a>        <span class="kw">let </span><span class="kw-2">mut </span>outfile = open_outfile_with_parent_dir(<span class="kw-2">&amp;</span>outpath)<span class="question-mark">?</span>;
 <a href=#67 id=67 data-nosnippet>67</a>        outfile.write_all(file.data.as_ref())<span class="question-mark">?</span>;

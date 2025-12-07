@@ -87,7 +87,7 @@
 <a href=#87 id=87 data-nosnippet>87</a>
 <a href=#88 id=88 data-nosnippet>88</a><span class="kw">pub fn </span>update&lt;U&gt;(updater: U) -&gt; <span class="prelude-ty">Result</span>&lt;(), Box&lt;<span class="kw">dyn </span>Error&gt;&gt;
 <a href=#89 id=89 data-nosnippet>89</a><span class="kw">where
-<a href=#90 id=90 data-nosnippet>90</a>    </span>U: FnOnce(<span class="kw-2">&amp;mut </span>AppConfig) -&gt; (),
+<a href=#90 id=90 data-nosnippet>90</a>    </span>U: FnOnce(<span class="kw-2">&amp;mut </span>AppConfig),
 <a href=#91 id=91 data-nosnippet>91</a>{
 <a href=#92 id=92 data-nosnippet>92</a>    <span class="kw">let </span><span class="kw-2">mut </span>context = CONTEXT.write()<span class="question-mark">?</span>;
 <a href=#93 id=93 data-nosnippet>93</a>    updater(<span class="kw-2">&amp;mut </span>context.config);
