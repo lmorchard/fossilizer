@@ -1,0 +1,31 @@
+{
+  "name": "Fossilizer Rust Development",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": ".."
+  },
+  "features": {
+    "ghcr.io/devcontainers/features/github-cli:1": {}
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "rust-lang.rust-analyzer",
+        "tamasfe.even-better-toml",
+        "serayuzgur.crates",
+        "vadimcn.vscode-lldb",
+        "usernamehw.errorlens"
+      ],
+      "settings": {
+        "rust-analyzer.check.command": "clippy",
+        "rust-analyzer.cargo.allTargets": true,
+        "editor.formatOnSave": true,
+        "[rust]": {
+          "editor.defaultFormatter": "rust-lang.rust-analyzer"
+        }
+      }
+    }
+  },
+  "postCreateCommand": "cargo fetch",
+  "remoteUser": "vscode"
+}
