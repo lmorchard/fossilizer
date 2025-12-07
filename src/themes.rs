@@ -11,7 +11,7 @@ pub struct ThemeAsset;
 pub fn copy_embedded_themes(assets_output_path: &PathBuf) -> Result<(), Box<dyn Error>> {
     for filename in ThemeAsset::iter() {
         let file = ThemeAsset::get(&filename).ok_or("no asset")?;
-        let outpath = PathBuf::from(&assets_output_path).join(&filename.to_string());
+        let outpath = PathBuf::from(&assets_output_path).join(filename.to_string());
 
         let mut outfile = open_outfile_with_parent_dir(&outpath)?;
         outfile.write_all(file.data.as_ref())?;

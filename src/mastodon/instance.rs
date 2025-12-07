@@ -24,9 +24,9 @@ pub struct InstanceConfig {
     pub created_at: Option<u32>,
 }
 impl InstanceConfig {
-    pub fn new(instance: &String) -> Self {
+    pub fn new(instance: &str) -> Self {
         InstanceConfig {
-            host: instance.clone(),
+            host: instance.to_owned(),
             ..Default::default()
         }
     }

@@ -31,12 +31,12 @@ impl FromStr for ActivitySchema {
         })
     }
 }
-impl ToString for ActivitySchema {
-    fn to_string(&self) -> String {
+impl std::fmt::Display for ActivitySchema {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            ActivitySchema::Activity => ACTIVITYSCHEMA_ACTIVITY.to_string(),
-            ActivitySchema::Status => ACTIVITYSCHEMA_STATUS.to_string(),
-            ActivitySchema::Unknown(s) => s.clone(),
+            ActivitySchema::Activity => write!(f, "{}", ACTIVITYSCHEMA_ACTIVITY),
+            ActivitySchema::Status => write!(f, "{}", ACTIVITYSCHEMA_STATUS),
+            ActivitySchema::Unknown(s) => write!(f, "{}", s),
         }
     }
 }
@@ -215,7 +215,7 @@ impl<'a> Activities<'a> {
         )
     }
 
-    pub fn get_activities_by_ids(&self, ids: &Vec<String>) -> Result<Vec<Activity>> {
+    pub fn get_activities_by_ids(&self, ids: &[String]) -> Result<Vec<Activity>> {
         query_activities(
             self.conn,
             r#"
@@ -228,7 +228,7 @@ impl<'a> Activities<'a> {
         )
     }
 
-    pub fn count_activities_by_ids(&self, ids: &Vec<String>) -> Result<i16> {
+    pub fn count_activities_by_ids(&self, ids: &[String]) -> Result<i16> {
         query_count(
             self.conn,
             r#"
@@ -246,7 +246,7 @@ impl<'a> Activities<'a> {
 
 type SingleColumnResult = Result<Vec<String>, rusqlite::Error>;
 
-fn ids_to_rarray_param(ids: &Vec<String>) -> Rc<Vec<rusqlite::types::Value>> {
+fn ids_to_rarray_param(ids: &[String]) -> Rc<Vec<rusqlite::types::Value>> {
     Rc::new(ids.iter().cloned().map(Value::from).collect::<Vec<Value>>())
 }
 
@@ -304,11 +304,18 @@ where
                                 // Extract column number from error message if present
                                 let error_msg = format!("{}", e);
                                 if let Some(col_str) = error_msg.split("column ").nth(1) {
-                                    if let Some(col) = col_str.split_whitespace().next().and_then(|s| s.parse::<usize>().ok()) {
+                                    if let Some(col) = col_str
+                                        .split_whitespace()
+                                        .next()
+                                        .and_then(|s| s.parse::<usize>().ok())
+                                    {
                                         let start = col.saturating_sub(200);
                                         let end = (col + 200).min(upgraded_json.len());
-                                        debug!("JSON around error at column {}: ...{}...",
-                                            col, &upgraded_json[start..end]);
+                                        debug!(
+                                            "JSON around error at column {}: ...{}...",
+                                            col,
+                                            &upgraded_json[start..end]
+                                        );
                                     }
                                 }
                                 Ok(None)
@@ -319,7 +326,7 @@ where
                             Ok(None)
                         }
                     }
-                },
+                }
                 _ => Err(anyhow!("unknown schema {:?}", schema_str)),
             }
         })?
@@ -352,12 +359,14 @@ fn upgrade_status_json(json_str: &str) -> Result<String> {
 
         // Add quote_approval field if missing (must be an object, not null)
         if !obj.contains_key("quote_approval") {
-            obj.insert("quote_approval".to_string(),
+            obj.insert(
+                "quote_approval".to_string(),
                 serde_json::json!({
                     "automatic": [],
                     "manual": [],
                     "current_user": "denied"
-                }));
+                }),
+            );
         }
 
         // Recursively handle reblog field if it exists
@@ -377,12 +386,14 @@ fn upgrade_status_json(json_str: &str) -> Result<String> {
                 }
 
                 if !reblog_obj.contains_key("quote_approval") {
-                    reblog_obj.insert("quote_approval".to_string(),
+                    reblog_obj.insert(
+                        "quote_approval".to_string(),
                         serde_json::json!({
                             "automatic": [],
                             "manual": [],
                             "current_user": "denied"
-                        }));
+                        }),
+                    );
                 }
             }
         }
@@ -417,13 +428,17 @@ mod tests {
     #[test]
     fn test_upgrade_status_json_legacy_format() -> Result<()> {
         // Test that old Status JSON with quote:false gets upgraded correctly
-        const LEGACY_JSON: &str = include_str!("../resources/test/mastodon-status-with-attachment-legacy.json");
+        const LEGACY_JSON: &str =
+            include_str!("../resources/test/mastodon-status-with-attachment-legacy.json");
 
         // First verify the legacy JSON has the old format
         let legacy_value: serde_json::Value = serde_json::from_str(LEGACY_JSON)?;
         assert_eq!(legacy_value["quote"], false);
         assert!(!legacy_value.as_object().unwrap().contains_key("quote_id"));
-        assert!(!legacy_value.as_object().unwrap().contains_key("quote_approval"));
+        assert!(!legacy_value
+            .as_object()
+            .unwrap()
+            .contains_key("quote_approval"));
 
         // Upgrade the JSON
         let upgraded_json = upgrade_status_json(LEGACY_JSON)?;
@@ -433,8 +448,14 @@ mod tests {
         assert!(upgraded_value["quote"].is_null());
         assert!(upgraded_value["quote_id"].is_null());
         assert!(upgraded_value["quote_approval"].is_object());
-        assert_eq!(upgraded_value["quote_approval"]["automatic"], serde_json::json!([]));
-        assert_eq!(upgraded_value["quote_approval"]["manual"], serde_json::json!([]));
+        assert_eq!(
+            upgraded_value["quote_approval"]["automatic"],
+            serde_json::json!([])
+        );
+        assert_eq!(
+            upgraded_value["quote_approval"]["manual"],
+            serde_json::json!([])
+        );
         assert_eq!(upgraded_value["quote_approval"]["current_user"], "denied");
 
         // Verify it can now be deserialized as a Status
@@ -446,13 +467,17 @@ mod tests {
     #[test]
     fn test_upgrade_status_json_modern_format() -> Result<()> {
         // Test that modern Status JSON passes through unchanged
-        const MODERN_JSON: &str = include_str!("../resources/test/mastodon-status-with-attachment.json");
+        const MODERN_JSON: &str =
+            include_str!("../resources/test/mastodon-status-with-attachment.json");
 
         // Verify the modern JSON already has the new format
         let modern_value: serde_json::Value = serde_json::from_str(MODERN_JSON)?;
         assert!(modern_value["quote"].is_null());
         assert!(modern_value.as_object().unwrap().contains_key("quote_id"));
-        assert!(modern_value.as_object().unwrap().contains_key("quote_approval"));
+        assert!(modern_value
+            .as_object()
+            .unwrap()
+            .contains_key("quote_approval"));
 
         // Upgrade should not change anything
         let upgraded_json = upgrade_status_json(MODERN_JSON)?;

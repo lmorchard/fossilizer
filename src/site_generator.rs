@@ -61,7 +61,7 @@ pub fn copy_embedded_assets<Assets: RustEmbed>(
 ) -> Result<(), Box<dyn Error>> {
     for filename in Assets::iter() {
         let file = Assets::get(&filename).ok_or("no asset")?;
-        let outpath = PathBuf::from(&assets_output_path).join(&filename.to_string());
+        let outpath = PathBuf::from(&assets_output_path).join(filename.to_string());
 
         let mut outfile = open_outfile_with_parent_dir(&outpath)?;
         outfile.write_all(file.data.as_ref())?;
