@@ -174,7 +174,25 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="for-developers"><a class="header" href="#for-developers">For Developers</a></h1>
-<p>TODO: jot down design notions and useful information for folks aiming to help contribute to or customize this software.</p>
+<p>This section covers information useful for folks aiming to help contribute to or customize this software.</p>
+<h2 id="getting-started"><a class="header" href="#getting-started">Getting Started</a></h2>
+<h3 id="using-github-codespaces--devcontainer"><a class="header" href="#using-github-codespaces--devcontainer">Using GitHub Codespaces / Devcontainer</a></h3>
+<p>The easiest way to get started with development is to use GitHub Codespaces or a local devcontainer. The repository includes a <code>.devcontainer</code> configuration that sets up:</p>
+<ul>
+<li>Rust toolchain with rust-analyzer</li>
+<li>Clippy for linting</li>
+<li>Recommended VS Code extensions</li>
+<li>All necessary dependencies</li>
+</ul>
+<p>Simply open the repository in GitHub Codespaces or use VS Code's "Reopen in Container" feature.</p>
+<h3 id="manual-setup"><a class="header" href="#manual-setup">Manual Setup</a></h3>
+<ol>
+<li>Install Rust via <a href="https://rustup.rs/">rustup</a></li>
+<li>Clone the repository</li>
+<li>Run <code>cargo build</code> to build the project</li>
+<li>Run <code>cargo test</code> to run the test suite</li>
+</ol>
+<h2 id="crate-documentation"><a class="header" href="#crate-documentation">Crate Documentation</a></h2>
 <p><code>fossilizer</code> has not yet been published as a crate, but you can see the module docs here:</p>
 <ul>
 <li><a href="../doc/fossilizer/index.html">Crate fossilizer</a></li>

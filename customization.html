@@ -186,7 +186,15 @@
 <p>Note: this will <em>not</em> overwrite the database for an existing <code>data</code> directory, though it <em>will</em> overwrite any existing <code>templates</code> or <code>web</code> directories.</p>
 </li>
 </ul>
-<p>Check out the templates to see how the pages are built. For a more in-depth reference on what variables are supplied when rendering templates, check out the crate documentation:</p>
+<p>Check out the templates to see how the pages are built.</p>
+<h2 id="template-features"><a class="header" href="#template-features">Template Features</a></h2>
+<p>The default templates support the following features:</p>
+<ul>
+<li><strong>Quote reposts</strong>: When a post includes a quoted/referenced post, the template will render the quoted content in a styled blockquote.</li>
+<li><strong>Media attachments</strong>: Images and other media are displayed in a lightbox-enabled gallery.</li>
+<li><strong>Boosts/Reblogs</strong>: Boosted posts are displayed with attribution to the original author.</li>
+</ul>
+<p>For a more in-depth reference on what variables are supplied when rendering templates, check out the crate documentation:</p>
 <ul>
 <li><a href="./doc/fossilizer/templates/contexts/struct.IndexTemplateContext.html"><code>index.html</code> template context</a></li>
 <li><a href="./doc/fossilizer/templates/contexts/struct.DayTemplateContext.html"><code>day.html</code> template context</a></li>

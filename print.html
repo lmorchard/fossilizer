@@ -206,7 +206,7 @@
 </code></pre>
 </li>
 <li>Serve the <code>build</code> directory up with a local web server - the <code>--open</code> option will attempt to open a browser:
-<pre><code>fossilzer serve --open
+<pre><code>fossilizer serve --open
 </code></pre>
 </li>
 <li>Enjoy a static web site of your Mastodon toots.</li>
@@ -259,7 +259,7 @@
 </ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="the-init-command"><a class="header" href="#the-init-command">The <code>init</code> command</a></h1>
 <p>The <code>init</code> command prepares the current directory with data and configuration
-files needed by Fossilzer. It's used like so:</p>
+files needed by Fossilizer. It's used like so:</p>
 <pre><code class="language-bash">mkdir my-mastodon-site
 cd my-mastodon-site
 fossilizer init
@@ -290,7 +290,7 @@ data!</p>
 <pre><code class="language-bash">fossilizer init --clean
 </code></pre>
 <h3 id="--customize"><a class="header" href="#--customize"><code>--customize</code></a></h3>
-<p>By default, Fossilzer will use templates and assets embedded in the executable
+<p>By default, Fossilizer will use templates and assets embedded in the executable
 to generate a static web site. However, if you'd like to customize how your
 site is generated, you can extract these into external files to edit:</p>
 <pre><code class="language-bash">fossilizer init --customize
@@ -426,10 +426,10 @@ generate a static web site.</p>
 <p>The <code>build</code> command is used to generate a static web site from imported
 content and media attachments. It's used like so:</p>
 <pre><code class="language-bash">cd my-mastodon-site
-fossilzer build
+fossilizer build
 pagefind --keep-index-url --site build
 </code></pre>
-<p>Note: Until or unless <a href="https://github.com/lmorchard/fossilizer/issues/7">Pagefind can be integrated into Fossilzer</a>, it needs to be run as a separate command to provide search indexes and code modules for the site.</p>
+<p>Note: Until or unless <a href="https://github.com/lmorchard/fossilizer/issues/7">Pagefind can be integrated into Fossilizer</a>, it needs to be run as a separate command to provide search indexes and code modules for the site.</p>
 <p>After using the <code>build</code> command, you should end up with a <code>build</code> directory
 with a structure somewhat like this:</p>
 <pre><code class="language-bash">my-mastodon-site/
@@ -489,11 +489,14 @@ with a structure somewhat like this:</p>
 <p>Open a web browser to the server URL after starting.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="the-upgrade-command"><a class="header" href="#the-upgrade-command">The <code>upgrade</code> command</a></h1>
 <p>The <code>upgrade</code> command is used to upgrade the database and perform any other
-necessary changes after downloading a new version of Fossilzer.</p>
-<p>Run this command whenever you upgrade Fossilzer.</p>
+necessary changes after downloading a new version of Fossilizer.</p>
+<p>Run this command whenever you upgrade Fossilizer.</p>
 <pre><code class="language-bash">cd my-mastodon-site
-fossilzer upgrade
+fossilizer upgrade
 </code></pre>
+<h2 id="automatic-data-migration"><a class="header" href="#automatic-data-migration">Automatic Data Migration</a></h2>
+<p>Fossilizer automatically handles some data format migrations when reading from the database. For example, if you have data imported with an older version, the newer version will transparently upgrade the internal format when generating your site.</p>
+<p>This means you generally don't need to re-import your data when upgrading Fossilizer - just run <code>upgrade</code> and rebuild your site.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="customization"><a class="header" href="#customization">Customization</a></h1>
 <p>Try <code>fossilizer init --customize</code>, which unpacks the following for customization:</p>
 <ul>
@@ -507,14 +510,40 @@ fossilzer upgrade
 <p>Note: this will <em>not</em> overwrite the database for an existing <code>data</code> directory, though it <em>will</em> overwrite any existing <code>templates</code> or <code>web</code> directories.</p>
 </li>
 </ul>
-<p>Check out the templates to see how the pages are built. For a more in-depth reference on what variables are supplied when rendering templates, check out the crate documentation:</p>
+<p>Check out the templates to see how the pages are built.</p>
+<h2 id="template-features"><a class="header" href="#template-features">Template Features</a></h2>
+<p>The default templates support the following features:</p>
+<ul>
+<li><strong>Quote reposts</strong>: When a post includes a quoted/referenced post, the template will render the quoted content in a styled blockquote.</li>
+<li><strong>Media attachments</strong>: Images and other media are displayed in a lightbox-enabled gallery.</li>
+<li><strong>Boosts/Reblogs</strong>: Boosted posts are displayed with attribution to the original author.</li>
+</ul>
+<p>For a more in-depth reference on what variables are supplied when rendering templates, check out the crate documentation:</p>
 <ul>
 <li><a href="./doc/fossilizer/templates/contexts/struct.IndexTemplateContext.html"><code>index.html</code> template context</a></li>
 <li><a href="./doc/fossilizer/templates/contexts/struct.DayTemplateContext.html"><code>day.html</code> template context</a></li>
 <li><a href="./doc/fossilizer/templates/contexts/index.html">All template context structs</a></li>
 </ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="for-developers"><a class="header" href="#for-developers">For Developers</a></h1>
-<p>TODO: jot down design notions and useful information for folks aiming to help contribute to or customize this software.</p>
+<p>This section covers information useful for folks aiming to help contribute to or customize this software.</p>
+<h2 id="getting-started"><a class="header" href="#getting-started">Getting Started</a></h2>
+<h3 id="using-github-codespaces--devcontainer"><a class="header" href="#using-github-codespaces--devcontainer">Using GitHub Codespaces / Devcontainer</a></h3>
+<p>The easiest way to get started with development is to use GitHub Codespaces or a local devcontainer. The repository includes a <code>.devcontainer</code> configuration that sets up:</p>
+<ul>
+<li>Rust toolchain with rust-analyzer</li>
+<li>Clippy for linting</li>
+<li>Recommended VS Code extensions</li>
+<li>All necessary dependencies</li>
+</ul>
+<p>Simply open the repository in GitHub Codespaces or use VS Code's "Reopen in Container" feature.</p>
+<h3 id="manual-setup"><a class="header" href="#manual-setup">Manual Setup</a></h3>
+<ol>
+<li>Install Rust via <a href="https://rustup.rs/">rustup</a></li>
+<li>Clone the repository</li>
+<li>Run <code>cargo build</code> to build the project</li>
+<li>Run <code>cargo test</code> to run the test suite</li>
+</ol>
+<h2 id="crate-documentation"><a class="header" href="#crate-documentation">Crate Documentation</a></h2>
 <p><code>fossilizer</code> has not yet been published as a crate, but you can see the module docs here:</p>
 <ul>
 <li><a href="developers/../doc/fossilizer/index.html">Crate fossilizer</a></li>
