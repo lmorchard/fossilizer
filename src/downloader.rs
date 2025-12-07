@@ -136,6 +136,7 @@ mod tests {
     use super::*;
     use rand::prelude::*;
     use std::env;
+    use std::path::Path;
     use test_log::test;
     use tokio::time::{sleep, Duration};
 
@@ -217,7 +218,7 @@ mod tests {
     }
 
     fn generate_download_task(
-        base_path: &PathBuf,
+        base_path: &Path,
         server: &mut mockito::ServerGuard,
     ) -> (DownloadTask, mockito::Mock, std::string::String) {
         let rand_path: u16 = random();

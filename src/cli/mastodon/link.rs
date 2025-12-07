@@ -17,7 +17,7 @@ pub async fn command(
     let instance = &parent_args.instance;
 
     if instance_config.client_id.is_none() {
-        register_client_app(&instance, instance_config).await?;
+        register_client_app(instance, instance_config).await?;
     }
 
     let base_url = format!("https://{instance}/oauth/authorize");

@@ -264,7 +264,11 @@ impl From<megalodon::entities::Status> for Activity {
                         quote.quoted_status.map(|quoted_status| {
                             Box::new(Object {
                                 id: quoted_status.uri.clone(),
-                                url: quoted_status.url.clone().or_else(|| Some(quoted_status.uri.clone())).unwrap(),
+                                url: quoted_status
+                                    .url
+                                    .clone()
+                                    .or_else(|| Some(quoted_status.uri.clone()))
+                                    .unwrap(),
                                 type_field: "Note".to_string(),
                                 published: quoted_status.created_at,
                                 content: Some(quoted_status.content.clone()),
@@ -276,7 +280,9 @@ impl From<megalodon::entities::Status> for Activity {
                                 attachment: quoted_status
                                     .media_attachments
                                     .iter()
-                                    .map(|media_attachment| Attachment::from(media_attachment.clone()))
+                                    .map(|media_attachment| {
+                                        Attachment::from(media_attachment.clone())
+                                    })
                                     .collect(),
                                 ..Default::default()
                             })
@@ -479,7 +485,7 @@ mod tests {
 
         let ordered_items = outbox.ordered_items;
         assert!(!ordered_items.is_empty());
-        let item1 = ordered_items.get(0).ok_or("no item1")?;
+        let item1 = ordered_items.first().ok_or("no item1")?;
         assert_eq!(
             item1.id,
             "https://mastodon.social/users/lmorchard/statuses/55864/activity"

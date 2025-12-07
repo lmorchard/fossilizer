@@ -70,8 +70,8 @@ impl Fetcher {
         // todo: update actor from mastodon data
 
         let conn = &self.conn;
-        let db_activities = db::activities::Activities::new(&conn);
-        let db_actors = db::actors::Actors::new(&conn);
+        let db_activities = db::activities::Activities::new(conn);
+        let db_actors = db::actors::Actors::new(conn);
         let actors = db_actors.get_actors_by_id().unwrap();
 
         let mut keep_fetching = true;
@@ -113,7 +113,7 @@ impl Fetcher {
             for (status, activity) in statuses_and_activities {
                 trace!("Importing status {:?}", status.url);
                 db_activities.import(&status)?;
-                fetched_count = fetched_count + 1;
+                fetched_count += 1;
                 current_fetch_options.max_id = Some(status.id);
 
                 // If this is a note, import any attachments
@@ -126,7 +126,7 @@ impl Fetcher {
                     for &attachment in &object.attachments() {
                         media_downloader.queue(downloader::DownloadTask {
                             url: Url::parse(attachment.url.as_str())?,
-                            destination: attachment.local_media_path(&media_path, &actor)?,
+                            destination: attachment.local_media_path(&media_path, actor)?,
                         })?;
                     }
                 }

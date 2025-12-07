@@ -87,7 +87,7 @@ pub fn config() -> Result<AppConfig, Box<dyn Error>> {
 
 pub fn update<U>(updater: U) -> Result<(), Box<dyn Error>>
 where
-    U: FnOnce(&mut AppConfig) -> (),
+    U: FnOnce(&mut AppConfig),
 {
     let mut context = CONTEXT.write()?;
     updater(&mut context.config);
