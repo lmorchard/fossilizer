@@ -42,15 +42,20 @@ pub fn ensure_build_media(build_path: &Path, media_path: &Path) -> Result<(), Bo
                 )
                 .into());
             }
-            if media_existed {
-                // media_path already present, legacy dir empty: drop the legacy dir.
-                fs::remove_dir_all(&link)?;
-            } else {
-                // Promote the legacy dir to become the media store.
+            if legacy_nonempty {
+                // Promote the legacy dir to become the media store. An empty
+                // media_path (if present) is treated as absent: remove it so the
+                // rename lands cleanly and no legacy content is ever dropped.
+                if media_existed {
+                    fs::remove_dir_all(media_path)?; // safe: empty (media_nonempty == false here)
+                }
                 if let Some(parent) = media_path.parent() {
                     fs::create_dir_all(parent)?;
                 }
                 fs::rename(&link, media_path)?;
+            } else {
+                // Legacy dir is empty: drop it; media_path (if any) is authoritative.
+                fs::remove_dir_all(&link)?;
             }
         }
         Ok(_) => {
@@ -128,7 +133,10 @@ mod tests {
         ensure_build_media(&build, &media).unwrap();
 
         let link = build.join("media");
-        assert!(fs::symlink_metadata(&link).unwrap().file_type().is_symlink());
+        assert!(fs::symlink_metadata(&link)
+            .unwrap()
+            .file_type()
+            .is_symlink());
         // Readable through the link.
         assert_eq!(fs::read(link.join("photo.jpg")).unwrap(), b"bytes");
     }
@@ -152,7 +160,7 @@ mod tests {
         let root = test_dir("migrate");
         let build = root.join("build");
         let media = root.join("media"); // does NOT exist yet
-        // Legacy layout: real build/media dir with a file.
+                                        // Legacy layout: real build/media dir with a file.
         fs::create_dir_all(build.join("media")).unwrap();
         fs::write(build.join("media").join("old.png"), b"legacy").unwrap();
 
@@ -161,8 +169,62 @@ mod tests {
         // File now lives in the media store...
         assert_eq!(fs::read(media.join("old.png")).unwrap(), b"legacy");
         // ...and build/media is now a symlink to it.
-        assert!(fs::symlink_metadata(build.join("media")).unwrap().file_type().is_symlink());
-        assert_eq!(fs::read(build.join("media").join("old.png")).unwrap(), b"legacy");
+        assert!(fs::symlink_metadata(build.join("media"))
+            .unwrap()
+            .file_type()
+            .is_symlink());
+        assert_eq!(
+            fs::read(build.join("media").join("old.png")).unwrap(),
+            b"legacy"
+        );
+    }
+
+    #[test]
+    fn migrates_legacy_dir_when_media_exists_but_empty() {
+        let root = test_dir("migrate-empty-media");
+        let build = root.join("build");
+        let media = root.join("media");
+        // Legacy real dir WITH content...
+        fs::create_dir_all(build.join("media")).unwrap();
+        fs::write(build.join("media").join("old.png"), b"legacy").unwrap();
+        // ...and media_path exists but is EMPTY.
+        fs::create_dir_all(&media).unwrap();
+
+        ensure_build_media(&build, &media).unwrap();
+
+        // Legacy content migrated, nothing lost.
+        assert_eq!(fs::read(media.join("old.png")).unwrap(), b"legacy");
+        assert!(fs::symlink_metadata(build.join("media"))
+            .unwrap()
+            .file_type()
+            .is_symlink());
+        assert_eq!(
+            fs::read(build.join("media").join("old.png")).unwrap(),
+            b"legacy"
+        );
+    }
+
+    #[test]
+    fn repoints_symlink_when_target_is_wrong() {
+        let root = test_dir("repoint");
+        let build = root.join("build");
+        let right = root.join("media");
+        let wrong = root.join("other-media");
+        fs::create_dir_all(&right).unwrap();
+        fs::write(right.join("r.txt"), b"right").unwrap();
+        fs::create_dir_all(&wrong).unwrap();
+        fs::create_dir_all(&build).unwrap();
+        // Pre-existing symlink pointing at the WRONG place.
+        super::symlink_dir(&wrong, &build.join("media")).unwrap();
+
+        ensure_build_media(&build, &right).unwrap();
+
+        // Now points at the right store and serves its content.
+        assert_eq!(fs::read_link(build.join("media")).unwrap(), right);
+        assert_eq!(
+            fs::read(build.join("media").join("r.txt")).unwrap(),
+            b"right"
+        );
     }
 
     #[test]
