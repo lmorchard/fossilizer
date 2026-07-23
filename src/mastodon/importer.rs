@@ -57,7 +57,7 @@ impl Importer {
             "gz" => self.import_tar(file, true)?,
             "tar" => self.import_tar(file, false)?,
             "zip" => self.import_zip(file)?,
-            _ => println!("NO SCANNER AVAILABLE"),
+            other => return Err(anyhow!("unsupported archive format: {other}")),
         };
 
         Ok(())
@@ -81,10 +81,10 @@ impl Importer {
     }
 
     pub fn import_zip(&mut self, file: File) -> Result<()> {
-        let mut archive = zip::ZipArchive::new(file).unwrap();
+        let mut archive = zip::ZipArchive::new(file)?;
 
         for i in 0..archive.len() {
-            let mut file = archive.by_index(i).unwrap();
+            let mut file = archive.by_index(i)?;
             let outpath = match file.enclosed_name() {
                 Some(path) => path.to_owned(),
                 None => continue,

@@ -6,3 +6,9 @@ Settings.toml
 /build
 /data
 /.vscode
+# Local build/backup archives at repo root — guard against committing large blobs
+# (anchored to root so test fixtures under src/resources/test/ stay addable)
+/*.tgz
+/*.tar.gz
+/*.tar
+/*.zip

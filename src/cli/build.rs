@@ -33,8 +33,8 @@ pub async fn command(args: &BuildArgs) -> Result<(), Box<dyn Error>> {
     let skip_assets = args.skip_assets;
 
     config::update(|config| {
-        if args.theme.is_some() {
-            config.theme = args.theme.as_ref().unwrap().clone();
+        if let Some(theme) = &args.theme {
+            config.theme = theme.clone();
         }
     })?;
 
@@ -44,23 +44,23 @@ pub async fn command(args: &BuildArgs) -> Result<(), Box<dyn Error>> {
     site_generator::setup_build_path(&config.build_path, &clean)?;
 
     if !skip_assets {
-        site_generator::copy_web_assets(&config.build_path).unwrap();
+        site_generator::copy_web_assets(&config.build_path)?;
     }
 
     if !skip_activities || !skip_index || !skip_index_json {
-        let tera = templates::init().unwrap();
-        let db_conn = db::conn().unwrap();
+        let tera = templates::init()?;
+        let db_conn = db::conn()?;
         let db_activities = db::activities::Activities::new(&db_conn);
         let db_actors = db::actors::Actors::new(&db_conn);
 
-        let actors = db_actors.get_actors_by_id().unwrap();
+        let actors = db_actors.get_actors_by_id()?;
         let day_entries =
-            site_generator::plan_activities_pages(&config.build_path, &db_activities).unwrap();
+            site_generator::plan_activities_pages(&config.build_path, &db_activities)?;
         if !skip_index {
-            site_generator::generate_index_page(&config.build_path, &day_entries, &tera).unwrap();
+            site_generator::generate_index_page(&config.build_path, &day_entries, &tera)?;
         }
         if !skip_index_json {
-            site_generator::generate_index_json(&config.build_path, &day_entries).unwrap();
+            site_generator::generate_index_json(&config.build_path, &day_entries)?;
         }
         if !skip_activities {
             site_generator::generate_activities_pages(
@@ -68,8 +68,7 @@ pub async fn command(args: &BuildArgs) -> Result<(), Box<dyn Error>> {
                 &tera,
                 &actors,
                 &day_entries,
-            )
-            .unwrap();
+            )?;
         }
     }
 

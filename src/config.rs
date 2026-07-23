@@ -72,11 +72,11 @@ pub fn init(config_path: &Path) -> Result<(), Box<dyn Error>> {
     }
     config = config.add_source(config::Environment::with_prefix(ENV_PREFIX));
 
-    let config = config.build().unwrap();
+    let config = config.build()?;
 
     let mut context = CONTEXT.write()?;
     context.raw_config = config.clone();
-    context.config = config.try_deserialize().unwrap();
+    context.config = config.try_deserialize()?;
 
     Ok(())
 }

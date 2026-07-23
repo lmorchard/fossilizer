@@ -142,7 +142,9 @@ class MediaLightbox extends HTMLElement {
     img.setAttribute("title", description);
 
     const descriptionEl = this.querySelector(".description");
-    descriptionEl.innerHTML = description;
+    // Media descriptions are user/remote-authored alt-text; assign as text to
+    // avoid HTML injection into the generated archive pages.
+    descriptionEl.textContent = description;
     descriptionEl.classList[!!description ? "add" : "remove"]("visible");
 
     this.previous = previous;

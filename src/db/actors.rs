@@ -44,8 +44,12 @@ impl<'a> Actors<'a> {
         let mut out = Vec::new();
         while let Some(r) = rows.next()? {
             let json_text: String = r.get(0)?;
-            let actor: T = serde_json::from_str(json_text.as_str())?;
-            out.push(actor);
+            // Skip (rather than abort on) actor rows that fail to deserialize,
+            // mirroring the resilience of query_activities.
+            match serde_json::from_str(json_text.as_str()) {
+                Ok(actor) => out.push(actor),
+                Err(err) => warn!("skipping un-parseable actor row: {err}"),
+            }
         }
         Ok(out)
     }

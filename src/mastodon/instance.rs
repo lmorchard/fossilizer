@@ -1,6 +1,6 @@
 use crate::config;
 
-use anyhow::Result;
+use anyhow::{anyhow, Result};
 
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -88,10 +88,10 @@ pub async fn register_client_app(
     params.insert("scopes", OAUTH_SCOPES);
 
     let url = format!("https://{instance}/api/v1/apps");
-    let client = reqwest::ClientBuilder::new().build().unwrap();
-    let res = client.post(url).json(&params).send().await?;
+    let client = reqwest::Client::new();
 
     debug!("Registering new app with instance {}", instance);
+    let res = client.post(url).json(&params).send().await?;
 
     if res.status() == reqwest::StatusCode::OK {
         let result: AppRegistrationResult = res.json().await?;
@@ -100,8 +100,8 @@ pub async fn register_client_app(
         instance_config.vapid_key = Some(result.vapid_key);
         Ok(())
     } else {
-        // todo: throw an error here
-        error!("Failed to register app");
-        Ok(())
+        let status = res.status();
+        let body = res.text().await.unwrap_or_default();
+        Err(anyhow!("failed to register app: {status} - {body}"))
     }
 }

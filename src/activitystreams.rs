@@ -253,8 +253,8 @@ impl From<megalodon::entities::Status> for Activity {
         }
         .to_string();
 
-        let object = if status.reblog.is_some() {
-            IdOrObject::Id(status.reblog.unwrap().uri)
+        let object = if let Some(reblog) = status.reblog {
+            IdOrObject::Id(reblog.uri)
         } else {
             // Extract quote information if present
             let quote_object = status.quote.and_then(|quoted| {
@@ -267,8 +267,7 @@ impl From<megalodon::entities::Status> for Activity {
                                 url: quoted_status
                                     .url
                                     .clone()
-                                    .or_else(|| Some(quoted_status.uri.clone()))
-                                    .unwrap(),
+                                    .unwrap_or_else(|| quoted_status.uri.clone()),
                                 type_field: "Note".to_string(),
                                 published: quoted_status.created_at,
                                 content: Some(quoted_status.content.clone()),
@@ -294,7 +293,7 @@ impl From<megalodon::entities::Status> for Activity {
 
             IdOrObject::Object(Object {
                 id: status.uri.clone(),
-                url: status.url.or_else(|| Some(status.uri.clone())).unwrap(),
+                url: status.url.unwrap_or_else(|| status.uri.clone()),
                 type_field: "Note".to_string(),
                 published: status.created_at,
                 content: Some(status.content),

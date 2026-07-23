@@ -24,8 +24,12 @@ pub struct DownloadTask {
 impl DownloadTask {
     async fn execute(self) -> Result<DownloadTask> {
         // todo: download with progress narration? https://gist.github.com/giuliano-oliveira/4d11d6b3bb003dba3a1b53f43d81b30d
-        let client = reqwest::ClientBuilder::new().build().unwrap();
-        let response = client.get(self.url.clone()).send().await?;
+        let client = reqwest::ClientBuilder::new().build()?;
+        let response = client
+            .get(self.url.clone())
+            .send()
+            .await?
+            .error_for_status()?;
 
         let file_parent_path = self.destination.parent().ok_or(anyhow!("no parent path"))?;
         fs::create_dir_all(file_parent_path)?;

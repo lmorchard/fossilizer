@@ -27,36 +27,36 @@ pub async fn command(
     let instance = &parent_args.instance;
     let code = &args.code;
 
-    if instance_config.client_id.is_none() {
-        // todo: throw an error if no client has been registered yet
-        return Ok(());
-    }
+    let not_registered =
+        || format!("no client registered for {instance}; run `mastodon link` first");
+    let client_id = instance_config
+        .client_id
+        .as_ref()
+        .ok_or_else(not_registered)?;
+    let client_secret = instance_config
+        .client_secret
+        .as_ref()
+        .ok_or_else(not_registered)?;
 
     let mut params = HashMap::new();
     params.insert("scopes", OAUTH_SCOPES);
     params.insert("redirect_uri", REDIRECT_URI_OOB);
     params.insert("grant_type", "authorization_code");
     params.insert("code", code);
-
-    let client_id = instance_config.client_id.as_ref().unwrap();
     params.insert("client_id", client_id.as_str());
-
-    let client_secret = instance_config.client_secret.as_ref().unwrap();
     params.insert("client_secret", client_secret.as_str());
 
     let url = format!("https://{instance}/oauth/token");
-    let client = reqwest::ClientBuilder::new().build().unwrap();
+    let client = reqwest::Client::new();
     let res = client.post(url).json(&params).send().await?;
 
     if res.status() == reqwest::StatusCode::OK {
         let result: CodeAuthResult = res.json().await?;
         instance_config.access_token = Some(result.access_token);
         instance_config.created_at = Some(result.created_at);
-        println!("CODE {} {:?}", args.code, instance_config.access_token);
+        info!("Authorization successful for {instance}");
         Ok(())
     } else {
-        // todo: throw an error here
-        error!("Failed to authorize with code");
-        Ok(())
+        Err(format!("failed to authorize with code: {}", res.status()).into())
     }
 }
