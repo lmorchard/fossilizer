@@ -5,8 +5,8 @@ extern crate log;
 
 #[tokio::main]
 async fn main() {
-    match cli::execute().await {
-        Ok(_) => {}
-        Err(err) => println!("Error: {err:?}"),
+    if let Err(err) = cli::execute().await {
+        eprintln!("Error: {err:?}");
+        std::process::exit(1);
     }
 }
