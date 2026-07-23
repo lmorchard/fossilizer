@@ -52,7 +52,7 @@ pub fn ensure_build_media(build_path: &Path, media_path: &Path) -> Result<(), Bo
                 if let Some(parent) = media_path.parent() {
                     fs::create_dir_all(parent)?;
                 }
-                fs::rename(&link, media_path)?;
+                move_dir(&link, media_path)?;
             } else {
                 // Legacy dir is empty: drop it; media_path (if any) is authoritative.
                 fs::remove_dir_all(&link)?;
@@ -72,6 +72,10 @@ pub fn ensure_build_media(build_path: &Path, media_path: &Path) -> Result<(), Bo
     fs::create_dir_all(media_path)?;
     if let Err(e) = symlink_dir(&media_target, &link) {
         warn!("could not symlink {link:?} -> {media_target:?} ({e}); copying media instead");
+        // Note: this copy fallback is not idempotent across repeated builds on
+        // symlink-less platforms (e.g. Windows without the symlink privilege) —
+        // a subsequent build will see `link` as a populated legacy dir and may
+        // hit the "refusing to migrate" ambiguity error above.
         fs::create_dir_all(&link)?;
         copy_dir_contents(media_path, &link)?;
     }
@@ -97,6 +101,31 @@ fn copy_dir_contents(from: &Path, to: &Path) -> Result<(), Box<dyn Error>> {
         ..Default::default()
     };
     fs_extra::dir::copy(from, to, &opts)?;
+    Ok(())
+}
+
+/// Move a directory, falling back to copy-then-remove when a plain rename is
+/// not possible (e.g. `EXDEV` across filesystems).
+fn move_dir(from: &Path, to: &Path) -> Result<(), Box<dyn Error>> {
+    match fs::rename(from, to) {
+        Ok(()) => Ok(()),
+        // rename can't cross filesystems; copy the contents then drop the source.
+        Err(_) => copy_dir_across(from, to),
+    }
+}
+
+fn copy_dir_across(from: &Path, to: &Path) -> Result<(), Box<dyn Error>> {
+    if let Some(parent) = to.parent() {
+        fs::create_dir_all(parent)?;
+    }
+    fs::create_dir_all(to)?;
+    let opts = fs_extra::dir::CopyOptions {
+        overwrite: true,
+        content_only: true,
+        ..Default::default()
+    };
+    fs_extra::dir::copy(from, to, &opts)?;
+    fs::remove_dir_all(from)?;
     Ok(())
 }
 
@@ -263,6 +292,23 @@ mod tests {
         assert!(
             media.join("important.bin").exists(),
             "clean must remove the symlink entry, never follow it into the media store"
+        );
+    }
+
+    #[test]
+    fn copy_dir_across_moves_content_and_removes_source() {
+        let root = test_dir("cross-fs-move");
+        let from = root.join("from");
+        let to = root.join("to");
+        fs::create_dir_all(&from).unwrap();
+        fs::write(from.join("a.bin"), b"data").unwrap();
+
+        super::copy_dir_across(&from, &to).unwrap();
+
+        assert_eq!(fs::read(to.join("a.bin")).unwrap(), b"data");
+        assert!(
+            !from.exists(),
+            "source must be removed after the cross-fs move"
         );
     }
 }

@@ -1,11 +1,13 @@
 ## 0.5.0
 
 - Media now downloads to `data/media` (durable) instead of `build/media`.
-  `build` creates `build/media` as a symlink to it, so the generated site is
-  unchanged and `build --clean` no longer risks deleting media. Existing media
-  in `build/media` is auto-migrated to `data/media` on the next `build`.
-  Override the location with `APP_MEDIA_PATH`. Operators: back up `data/`
-  (which now includes media); `build/` is fully regeneratable.
+  `build` creates `build/media` as an absolute symlink to it, so `build/`
+  serves media in place without duplicating it, and `build --clean` no longer
+  risks deleting media. Existing media in `build/media` is auto-migrated to
+  `data/media` on the next `build`. Note `build/` is only complete alongside
+  `data/`; copying `build/` elsewhere on its own loses media (portable
+  external publishing is tracked in issue #15). Override the location with
+  `APP_MEDIA_PATH`. Operators: back up `data/` (which now includes media).
 - Code cleanup to fix Clippy warnings
 
 ## 0.4.0

@@ -23,3 +23,13 @@
 ## Follow-ups / notes
 - `serve` (warp) follows the symlink; no change needed. Confirm when validating.
 - External publish (issue #15) will assemble/upload media from `data/media`.
+
+## Known limitations
+- On platforms without symlink support (e.g. Windows without the symlink
+  privilege), `ensure_build_media` falls back to copying media into
+  `build/media` instead of symlinking it. That copy is not idempotent across
+  repeated builds: the next build sees `build/media` as a populated legacy
+  directory alongside a populated `data/media` and hits the "refusing to
+  migrate" ambiguity error, requiring `build/media` to be cleared manually
+  first. The media relocation is designed with Unix/self-hosted deployments
+  in mind.
