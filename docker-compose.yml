@@ -1,0 +1,25 @@
+services:
+  web:
+    build:
+      context: .
+    image: fossilizer:local
+    command: ["serve", "--host", "0.0.0.0", "--port", "8881"]
+    volumes:
+      - ./build:/build:ro
+    ports:
+      - "${WEB_PORT:-8881}:8881"
+    restart: unless-stopped
+
+  backup:
+    build:
+      context: .
+    image: fossilizer:local
+    entrypoint: ["/usr/local/bin/backup-loop.sh"]
+    environment:
+      FETCH_MAX: "${FETCH_MAX:-5000}"
+      BACKUP_INTERVAL: "${BACKUP_INTERVAL:-86400}"
+      RUN_ON_START: "${RUN_ON_START:-true}"
+    volumes:
+      - ./data:/data
+      - ./build:/build
+    restart: unless-stopped
