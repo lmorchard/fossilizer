@@ -27,22 +27,23 @@ pub async fn command(
     let instance = &parent_args.instance;
     let code = &args.code;
 
-    if instance_config.client_id.is_none() {
-        return Err(
-            format!("no client registered for {instance}; run `mastodon link` first").into(),
-        );
-    }
+    let not_registered =
+        || format!("no client registered for {instance}; run `mastodon link` first");
+    let client_id = instance_config
+        .client_id
+        .as_ref()
+        .ok_or_else(not_registered)?;
+    let client_secret = instance_config
+        .client_secret
+        .as_ref()
+        .ok_or_else(not_registered)?;
 
     let mut params = HashMap::new();
     params.insert("scopes", OAUTH_SCOPES);
     params.insert("redirect_uri", REDIRECT_URI_OOB);
     params.insert("grant_type", "authorization_code");
     params.insert("code", code);
-
-    let client_id = instance_config.client_id.as_ref().unwrap();
     params.insert("client_id", client_id.as_str());
-
-    let client_secret = instance_config.client_secret.as_ref().unwrap();
     params.insert("client_secret", client_secret.as_str());
 
     let url = format!("https://{instance}/oauth/token");
