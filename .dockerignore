@@ -1,0 +1,21 @@
+# Build artifacts
+/target
+/build
+
+# Local state and secrets (tokens live in data/)
+/data
+/tmp
+tmp
+
+# Large local archives and vendored tooling
+*.tgz
+/pagefind
+
+# VCS and editor
+.git
+.gitignore
+/.vscode
+/.devcontainer
+
+# Docs and CI not needed in the image
+/docs
