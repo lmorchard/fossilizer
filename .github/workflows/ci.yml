@@ -15,6 +15,26 @@ env:
   RUST_BACKTRACE: 1
 
 jobs:
+  # Fast lint gate - formatting and clippy on a single target
+  lint:
+    name: Lint (fmt + clippy)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+      - name: Cache cargo & target directories
+        uses: Swatinem/rust-cache@v2
+        with:
+          prefix-key: "v0-rust"
+          shared-key: "lint"
+      - name: Check formatting
+        run: cargo fmt --all -- --check
+      - name: Run clippy
+        run: cargo clippy --all-targets --locked -- -D warnings
+
   # Quick test for PRs - only Linux-x86_64
   test-pr:
     name: PR Quick Test - Linux-x86_64
