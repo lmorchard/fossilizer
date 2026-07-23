@@ -253,8 +253,8 @@ impl From<megalodon::entities::Status> for Activity {
         }
         .to_string();
 
-        let object = if status.reblog.is_some() {
-            IdOrObject::Id(status.reblog.unwrap().uri)
+        let object = if let Some(reblog) = status.reblog {
+            IdOrObject::Id(reblog.uri)
         } else {
             // Extract quote information if present
             let quote_object = status.quote.and_then(|quoted| {
