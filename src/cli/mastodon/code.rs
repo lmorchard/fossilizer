@@ -28,8 +28,9 @@ pub async fn command(
     let code = &args.code;
 
     if instance_config.client_id.is_none() {
-        // todo: throw an error if no client has been registered yet
-        return Ok(());
+        return Err(
+            format!("no client registered for {instance}; run `mastodon link` first").into(),
+        );
     }
 
     let mut params = HashMap::new();
@@ -45,18 +46,16 @@ pub async fn command(
     params.insert("client_secret", client_secret.as_str());
 
     let url = format!("https://{instance}/oauth/token");
-    let client = reqwest::ClientBuilder::new().build().unwrap();
+    let client = reqwest::Client::new();
     let res = client.post(url).json(&params).send().await?;
 
     if res.status() == reqwest::StatusCode::OK {
         let result: CodeAuthResult = res.json().await?;
         instance_config.access_token = Some(result.access_token);
         instance_config.created_at = Some(result.created_at);
-        println!("CODE {} {:?}", args.code, instance_config.access_token);
+        info!("Authorization successful for {instance}");
         Ok(())
     } else {
-        // todo: throw an error here
-        error!("Failed to authorize with code");
-        Ok(())
+        Err(format!("failed to authorize with code: {}", res.status()).into())
     }
 }

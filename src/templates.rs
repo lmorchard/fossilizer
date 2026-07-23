@@ -48,12 +48,10 @@ pub fn filter_sha256(value: &Value, _: &HashMap<String, Value>) -> tera::Result<
 
 /// Strip a URL down to just its path
 pub fn filter_urlpath(value: &Value, _: &HashMap<String, Value>) -> tera::Result<Value> {
-    let s = try_get_value!("filter_sha256", "value", String, value);
-    // todo: this is pretty ugly:
+    let s = try_get_value!("filter_urlpath", "value", String, value);
     let url = Url::parse("http://example.com")
-        .unwrap()
-        .join(s.as_str())
-        .unwrap();
+        .and_then(|base| base.join(s.as_str()))
+        .map_err(tera::Error::msg)?;
     Ok(to_value(url.path()).unwrap())
 }
 

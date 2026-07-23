@@ -228,14 +228,13 @@ impl<'a> Activities<'a> {
         )
     }
 
-    pub fn count_activities_by_ids(&self, ids: &[String]) -> Result<i16> {
+    pub fn count_activities_by_ids(&self, ids: &[String]) -> Result<i64> {
         query_count(
             self.conn,
             r#"
                 SELECT COUNT(id)
                 FROM activities
                 WHERE id IN rarray(?1)
-                ORDER BY published ASC
             "#,
             [ids_to_rarray_param(ids)],
         )
@@ -263,7 +262,7 @@ where
     result
 }
 
-fn query_count<P>(conn: &Connection, sql: &str, params: P) -> Result<i16>
+fn query_count<P>(conn: &Connection, sql: &str, params: P) -> Result<i64>
 where
     P: rusqlite::Params,
 {

@@ -25,15 +25,13 @@ pub async fn command(args: &ServeArgs) -> Result<(), Box<dyn Error>> {
     let build_path = config.build_path;
 
     let addr = format!("{}:{}", args.host.clone(), args.port);
-    let addr: SocketAddr = addr.parse().unwrap();
+    let addr: SocketAddr = addr
+        .parse()
+        .map_err(|e| format!("invalid host/port {addr:?}: {e}"))?;
 
     let serving_url = format!("http://{}", addr);
 
-    info!(
-        "Serving up {} at {}",
-        build_path.to_str().unwrap(),
-        serving_url
-    );
+    info!("Serving up {} at {}", build_path.display(), serving_url);
 
     if open_browser {
         open(serving_url);

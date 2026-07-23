@@ -32,11 +32,11 @@ pub fn conn() -> Result<Connection, Box<dyn Error>> {
 
     let database_path = config.database_path();
     let database_parent_path = Path::new(&database_path).parent().ok_or("no parent path")?;
-    fs::create_dir_all(database_parent_path).unwrap();
+    fs::create_dir_all(database_parent_path)?;
 
     let conn = Connection::open(&database_path)?;
-    conn.pragma_update(None, "journal_mode", "WAL").unwrap();
-    conn.pragma_update(None, "foreign_keys", "ON").unwrap();
+    conn.pragma_update(None, "journal_mode", "WAL")?;
+    conn.pragma_update(None, "foreign_keys", "ON")?;
 
     rusqlite::vtab::array::load_module(&conn)?;
 
