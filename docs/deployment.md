@@ -29,6 +29,10 @@ serve the generated archive.
 | `BACKUP_INTERVAL` | `86400` | Seconds between runs. `0` or less = one run, then exit. |
 | `RUN_ON_START`    | `true`  | Run a backup immediately on container start.        |
 
+> **`BACKUP_INTERVAL` must be a whole number of seconds** (e.g. `86400` for daily) — values like `24h` or `1d` are not supported and will crash the container.
+
+> **Use `BACKUP_INTERVAL=0` only with `docker compose run --rm ... backup`, never in the `docker compose up -d` stack.** Under the always-on stack the `restart: unless-stopped` policy would immediately restart the single-run container after it exits, causing continuous back-to-back fetches (Mastodon rate-limit risk).
+
 ## Accounts
 
 The backup loop auto-discovers every `./data/config-instance-*.toml` that contains

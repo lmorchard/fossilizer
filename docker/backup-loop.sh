@@ -35,9 +35,14 @@ run_backup() {
     fi
   done
   log "building static site"
-  "$FOSSILIZER" build
+  if ! "$FOSSILIZER" build; then
+    log "WARN: build failed, skipping index this run"
+    return 0
+  fi
   log "indexing site with pagefind"
-  "$PAGEFIND" --keep-index-url --site "$BUILD_DIR"
+  if ! "$PAGEFIND" --keep-index-url --site "$BUILD_DIR"; then
+    log "WARN: pagefind indexing failed"
+  fi
   log "backup run: complete"
 }
 
