@@ -46,6 +46,28 @@ Reviewed in 6 parallel agent passes: CLI, Mastodon subsystem, DB, ActivityStream
 - Temp media dir leak on failed import
 - Orphaned `src/cli/fetch.rs` (WIP for existing #12)
 
+## GitHub issues filed
+- #49 Security: zip-slip path traversal in tar/gz import
+- #50 Security: sanitize/escape remote-authored HTML rendered with `| safe`
+- #51 Downloader: surface failures, timeouts, shared client, stream to disk
+- #52 Replace panicking `From` impls with `TryFrom` for untrusted data
+- #53 DB: RAII transactions in import paths
+- #54 Consolidate HTTP/TLS deps (reqwest 0.12, drop vendored openssl)
+- #55 Reduce reliance on global mutable config (testability)
+- #56 Migration validation test + single-quote SQL literals
+- #57 Fix remote-actor URL derivation for federated accounts
+- #58 Code-quality cleanup grab-bag (orphaned fetch.rs, no-op flags, temp-dir leak, docs, mime mapping, disabled template tests, cargo-audit)
+
+Existing issues cross-referenced: #14 (error handling), #12 (outbox fetch → orphaned cli/fetch.rs), #35 (fetch-before-link panic).
+
+## Fixes committed (this branch, worktree-code-review)
+1. `850cee9` Replace panics with error propagation; stop swallowing failures (12 files)
+2. `321d105` Render media descriptions as text (XSS)
+3. `6b8c106` Add Makefile, CI lint gate, archive gitignore guardrail
+4. `4b2313a` Session notes
+
+Not committed / flagged for Les: the stray ~2.9 GB `build-20251205.tgz` and `backup-toots.sh` at the repo root (untracked, live in the main checkout, not the worktree). `.gitignore` now guards against committing root archives; the tarball itself should be deleted/moved manually.
+
 ## Notes / non-issues confirmed by agents
 - rarray() queries are injection-safe (bound params)
 - per-page db::conn() in rayon loop is intentional/correct
