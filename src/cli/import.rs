@@ -1,7 +1,6 @@
 use anyhow::Result;
 use clap::Args;
 use std::convert::From;
-use std::error::Error;
 use std::fs;
 use std::path::PathBuf;
 
@@ -16,7 +15,7 @@ pub struct ImportArgs {
     skip_media: bool,
 }
 
-pub async fn command(args: &ImportArgs) -> Result<(), Box<dyn Error>> {
+pub async fn command(args: &ImportArgs) -> Result<()> {
     let config = config::config()?;
     let skip_media = args.skip_media;
 

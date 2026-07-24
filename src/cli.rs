@@ -1,7 +1,5 @@
 use anyhow::Result;
 use clap::{Parser, Subcommand};
-use std::convert::From;
-use std::error::Error;
 use std::path::{Path, PathBuf};
 
 use fossilizer::app;
@@ -51,7 +49,7 @@ enum Commands {
     Mastodon(mastodon::Args),
 }
 
-pub async fn execute() -> Result<(), Box<dyn Error>> {
+pub async fn execute() -> Result<()> {
     let cli = Cli::parse();
 
     let config_path = match cli.config.as_deref() {

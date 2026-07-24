@@ -1,7 +1,6 @@
 use anyhow::Result;
 use clap::Args;
 use fossilizer::{config, db, media, site_generator, templates};
-use std::error::Error;
 
 #[derive(Debug, Args)]
 pub struct BuildArgs {
@@ -25,7 +24,7 @@ pub struct BuildArgs {
     theme: Option<String>,
 }
 
-pub async fn command(args: &BuildArgs) -> Result<(), Box<dyn Error>> {
+pub async fn command(args: &BuildArgs) -> Result<()> {
     let clean = args.clean;
     let skip_index = args.skip_index;
     let skip_index_json = args.skip_index_json;

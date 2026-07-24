@@ -133,14 +133,20 @@ let database_parent_path = Path::new(&database_path)
 ```
 
 **Verification — automated:**
-- [ ] `grep -rn "Box<dyn Error>" src/` returns nothing (or only intentional, documented exceptions)
-- [ ] `grep -rn "use std::error::Error" src/` returns nothing
-- [ ] `make test` passes
-- [ ] `make lint` passes
-- [ ] `cargo build --locked` succeeds
+- [x] `grep -rn "Box<dyn Error>" src/` returns nothing (except the dead, non-compiled `src/cli/fetch.rs` — see note)
+- [x] `grep -rn "use std::error::Error" src/` returns nothing (except dead `src/cli/fetch.rs`)
+- [x] `make test` passes (12 unit + exit_code)
+- [x] `make lint` passes (clippy `-D warnings`)
+- [x] `cargo build --locked` succeeds
 
 **Verification — manual:**
-- [ ] Error messages on a forced failure (e.g. `fossilizer build` with no DB) still read sensibly, now with anyhow context
+- [x] Forced failure `cargo run -- build` (no DB) prints a clean anyhow chain: `Error: no such table: actors` / `Caused by: ...`
+
+**Adaptation notes:**
+- `config.rs` `RwLock` `PoisonError` is `!Send`, so it can't propagate via `?` under anyhow (which needs `Send + Sync + 'static`). Converted the 5 lock sites to `.map_err(|e| anyhow!("config context lock poisoned: {e}"))?`.
+- `.ok_or("str")?` doesn't compile under anyhow (no `From<&str>`); converted to `.context("str")?` (added `anyhow::Context` imports, incl. into the activitystreams test module).
+- `serve.rs`/`code.rs` string-based errors from the earlier review PR (`format!(..).into()`, `String` closure) converted to `anyhow!`.
+- **`src/cli/fetch.rs` intentionally left on `Box<dyn Error>`**: it is not a declared module (dead/uncompiled), tracked for deletion/wiring by #58/#12. Excluded from the grep checks.
 
 ---
 

@@ -4,7 +4,6 @@ use serde::{Deserialize, Serialize};
 
 use crate::cli::mastodon::Args;
 use fossilizer::mastodon::instance::InstanceConfig;
-use std::error::Error;
 
 #[derive(Serialize, Deserialize, Debug)]
 struct AuthVerifyResult {
@@ -21,7 +20,7 @@ pub async fn command(
     _args: &VerifyArgs,
     parent_args: &Args,
     instance_config: &mut InstanceConfig,
-) -> Result<(), Box<dyn Error>> {
+) -> Result<()> {
     let instance = &parent_args.instance;
 
     if instance_config.access_token.is_none() {

@@ -1,21 +1,18 @@
 use crate::util;
+use anyhow::Result;
 use rust_embed::RustEmbed;
-use std::error::Error;
 use std::path::{Path, PathBuf};
 
 #[derive(RustEmbed)]
 #[folder = "src/resources/themes"]
 pub struct ThemeAsset;
 
-pub fn copy_embedded_themes(assets_output_path: &Path) -> Result<(), Box<dyn Error>> {
+pub fn copy_embedded_themes(assets_output_path: &Path) -> Result<()> {
     util::copy_embedded_assets::<ThemeAsset>(assets_output_path, None)?;
     Ok(())
 }
 
-pub fn copy_embedded_web_assets(
-    theme_prefix: &str,
-    assets_output_path: &Path,
-) -> Result<(), Box<dyn Error>> {
+pub fn copy_embedded_web_assets(theme_prefix: &str, assets_output_path: &Path) -> Result<()> {
     let prefix = format!("{theme_prefix}/web");
     util::copy_embedded_assets::<ThemeAsset>(assets_output_path, Some(&prefix))?;
     Ok(())

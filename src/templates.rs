@@ -1,7 +1,7 @@
+use anyhow::{Context, Result};
 use serde::Serialize;
 use serde_json::value::{to_value, Value};
 use std::collections::HashMap;
-use std::error::Error;
 use std::fs;
 use std::io::prelude::*;
 use std::path::PathBuf;
@@ -13,7 +13,7 @@ use crate::themes::templates_source;
 
 pub mod contexts;
 
-pub fn init() -> Result<Tera, Box<dyn Error>> {
+pub fn init() -> Result<Tera> {
     let config = config::config()?;
 
     let mut tera: Tera;
@@ -24,7 +24,7 @@ pub fn init() -> Result<Tera, Box<dyn Error>> {
         tera = Tera::new(
             templates_glob
                 .to_str()
-                .ok_or("failed to construct templates glob")?,
+                .context("failed to construct templates glob")?,
         )?;
     } else {
         debug!("Using embedded templates");
@@ -60,8 +60,8 @@ pub fn render_to_file(
     file_path: &PathBuf,
     template_name: &str,
     context: impl Serialize,
-) -> Result<(), Box<dyn Error>> {
-    let file_parent_path = file_path.parent().ok_or("no parent path")?;
+) -> Result<()> {
+    let file_parent_path = file_path.parent().context("no parent path")?;
     fs::create_dir_all(file_parent_path)?;
     let context = tera::Context::from_serialize(context)?;
     let output = tera.render(template_name, &context)?;
@@ -85,7 +85,7 @@ mod tests {
     const JSON_ACTOR: &str = include_str!("./resources/test/actor.json");
 
     #[test]
-    fn test_activity_template_with_attachment() -> Result<(), Box<dyn Error>> {
+    fn test_activity_template_with_attachment() -> Result<()> {
         config::init(&Path::new("./resources/default_config.toml"))?;
         let tera = init()?;
 

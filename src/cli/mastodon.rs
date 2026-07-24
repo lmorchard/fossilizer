@@ -1,7 +1,6 @@
 use anyhow::Result;
 use clap::Subcommand;
 use fossilizer::mastodon::instance::{load_instance_config, save_instance_config};
-use std::error::Error;
 
 mod code;
 mod fetch;
@@ -30,7 +29,7 @@ enum Commands {
     Fetch(fetch::FetchArgs),
 }
 
-pub async fn command(args: &Args) -> Result<(), Box<dyn Error>> {
+pub async fn command(args: &Args) -> Result<()> {
     let instance = args.instance.clone();
     let mut instance_config = load_instance_config(&instance)?;
     match &args.command {

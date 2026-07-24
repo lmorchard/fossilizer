@@ -387,7 +387,7 @@ impl Attachments for Tag {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::error::Error;
+    use anyhow::Context;
     use std::path::Path;
     use std::str::FromStr;
     use test_log::test;
@@ -435,7 +435,7 @@ mod tests {
     }
 
     #[test]
-    fn test_remote_actor_attachments() -> Result<(), Box<dyn Error>> {
+    fn test_remote_actor_attachments() -> Result<()> {
         let actor: Actor = serde_json::from_str(JSON_REMOTE_ACTOR)?;
         let icon = actor.icon.as_ref().unwrap();
         let image = actor.image.as_ref().unwrap();
@@ -452,7 +452,7 @@ mod tests {
     }
 
     #[test]
-    fn test_activity_with_attachments() -> Result<(), Box<dyn Error>> {
+    fn test_activity_with_attachments() -> Result<()> {
         let actor: Actor = serde_json::from_str(JSON_REMOTE_ACTOR)?;
         let activity: Activity = serde_json::from_str(JSON_ACTIVITY_WITH_ATTACHMENT)?;
         let media_path = PathBuf::new().join("media");
@@ -479,19 +479,19 @@ mod tests {
     }
 
     #[test]
-    fn test_outbox_parsing_with_local_model() -> Result<(), Box<dyn Error>> {
+    fn test_outbox_parsing_with_local_model() -> Result<()> {
         let outbox: Outbox<Activity> = serde_json::from_str(JSON_OUTBOX)?;
 
         let ordered_items = outbox.ordered_items;
         assert!(!ordered_items.is_empty());
-        let item1 = ordered_items.first().ok_or("no item1")?;
+        let item1 = ordered_items.first().context("no item1")?;
         assert_eq!(
             item1.id,
             "https://mastodon.social/users/lmorchard/statuses/55864/activity"
         );
         assert_eq!(item1.type_field, "Create");
         assert_eq!(
-            item1.actor.id().ok_or("no actor id")?,
+            item1.actor.id().context("no actor id")?,
             "https://mastodon.social/users/lmorchard"
         );
 
@@ -499,7 +499,7 @@ mod tests {
     }
 
     #[test]
-    fn test_outbox_parsing_with_external_model() -> Result<(), Box<dyn Error>> {
+    fn test_outbox_parsing_with_external_model() -> Result<()> {
         let outbox: Outbox<activitystreams::activity::ActivityBox> =
             serde_json::from_str(JSON_OUTBOX)?;
 
@@ -510,7 +510,7 @@ mod tests {
         let item1: activitystreams::activity::Create = item1.clone().into_concrete()?;
 
         assert_eq!(
-            item1.object_props.id.ok_or("no id")?.as_str(),
+            item1.object_props.id.context("no id")?.as_str(),
             "https://mastodon.social/users/lmorchard/statuses/55864/activity"
         );
 
@@ -519,7 +519,7 @@ mod tests {
             item1
                 .create_props
                 .get_actor_xsd_any_uri()
-                .ok_or("no actor")?
+                .context("no actor")?
                 .as_str(),
             "https://mastodon.social/users/lmorchard"
         );
@@ -527,7 +527,7 @@ mod tests {
     }
 
     #[test]
-    fn test_activity_parsing_with_emoji() -> Result<(), Box<dyn Error>> {
+    fn test_activity_parsing_with_emoji() -> Result<()> {
         let activity: Activity = serde_json::from_str(JSON_ACTIVITY_WITH_EMOJI)?;
         assert_eq!(
             activity.id,

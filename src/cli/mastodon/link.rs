@@ -4,7 +4,6 @@ use fossilizer::mastodon::{
     instance::{register_client_app, InstanceConfig},
     OAUTH_SCOPES, REDIRECT_URI_OOB,
 };
-use std::error::Error;
 
 #[derive(Debug, clap::Args)]
 pub struct LinkArgs {}
@@ -13,7 +12,7 @@ pub async fn command(
     _args: &LinkArgs,
     parent_args: &Args,
     instance_config: &mut InstanceConfig,
-) -> Result<(), Box<dyn Error>> {
+) -> Result<()> {
     let instance = &parent_args.instance;
 
     if instance_config.client_id.is_none() {

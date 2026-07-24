@@ -5,7 +5,6 @@ use anyhow::{anyhow, Result};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
-use std::error::Error;
 use std::fs;
 
 use std::io::prelude::*;
@@ -32,14 +31,14 @@ impl InstanceConfig {
     }
 }
 
-fn build_instance_config_path(instance: &String) -> Result<PathBuf, Box<dyn Error>> {
+fn build_instance_config_path(instance: &String) -> Result<PathBuf> {
     let config = config::config()?;
     let data_path = config.data_path;
     // todo: hash the instance domain string rather than using it verbatim?
     Ok(data_path.join(format!("config-instance-{instance}.toml")))
 }
 
-pub fn load_instance_config(instance: &String) -> Result<InstanceConfig, Box<dyn Error>> {
+pub fn load_instance_config(instance: &String) -> Result<InstanceConfig> {
     let config_path = build_instance_config_path(instance)?;
     trace!(
         "Loading {} instance config file from {:?}",
@@ -54,10 +53,7 @@ pub fn load_instance_config(instance: &String) -> Result<InstanceConfig, Box<dyn
     }
 }
 
-pub fn save_instance_config(
-    instance: &String,
-    instance_config: &InstanceConfig,
-) -> Result<(), Box<dyn Error>> {
+pub fn save_instance_config(instance: &String, instance_config: &InstanceConfig) -> Result<()> {
     let config_path = build_instance_config_path(instance)?;
     trace!(
         "Saving {} instance config file to {:?}",

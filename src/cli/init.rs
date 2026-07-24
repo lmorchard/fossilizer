@@ -1,8 +1,6 @@
 use anyhow::Result;
 use clap::Args;
 
-use std::error::Error;
-
 use fossilizer::{db, site_generator};
 
 #[derive(Debug, Args)]
@@ -15,7 +13,7 @@ pub struct InitArgs {
     customize: bool,
 }
 
-pub async fn command(args: &InitArgs) -> Result<(), Box<dyn Error>> {
+pub async fn command(args: &InitArgs) -> Result<()> {
     site_generator::setup_data_path(&args.clean)?;
     db::upgrade()?;
     if args.customize {
