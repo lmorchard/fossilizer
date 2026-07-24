@@ -90,13 +90,15 @@ mod tests {
 (A `copy_embedded_assets` test would need a fixture `RustEmbed` type; the existing `templates.rs`/build integration already exercises `ThemeAsset` copying, so `open_outfile` direct coverage is the targeted addition here.)
 
 **Verification — automated:**
-- [ ] `make test` passes (incl. new `util` test)
-- [ ] `make lint` passes
-- [ ] `cargo build --locked` succeeds
+- [x] `make test` passes (incl. new `util` test) — 12 unit + exit_code integration
+- [x] `make lint` passes (clippy `-D warnings`)
+- [x] `cargo build --locked` succeeds
 
 **Verification — manual:**
-- [ ] `grep -rn "open_outfile_with_parent_dir" src/` shows the definition only in `util.rs`
-- [ ] `grep -rn "fn copy_embedded_assets" src/` shows it only in `util.rs`
+- [x] `grep -rn "open_outfile_with_parent_dir" src/` shows the definition only in `util.rs`
+- [x] `grep -rn "fn copy_embedded_assets" src/` shows it only in `util.rs`
+
+**Adaptation note:** Extracting `util` unshielded clippy `ptr_arg` on `themes::copy_embedded_themes`/`copy_embedded_web_assets` (they used to forward `&PathBuf` to a `&PathBuf`-taking local fn; now they forward to `util`'s `&Path` fn). Pulled those two `&PathBuf`→`&Path` fixes forward from Phase 4 to keep this commit lint-green. No cascade beyond the two (their caller `copy_web_assets` still forwards to a generic `&P` fn, so it stays shielded until Phase 4).
 
 ---
 

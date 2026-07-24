@@ -17,3 +17,4 @@ pub mod media;
 pub mod site_generator;
 pub mod templates;
 pub mod themes;
+pub mod util;

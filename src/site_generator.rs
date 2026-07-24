@@ -1,10 +1,9 @@
 use crate::config::DEFAULT_CONFIG;
 use crate::templates::contexts;
 use crate::themes::{copy_embedded_themes, copy_embedded_web_assets};
-use crate::{activitystreams, config, db, templates};
+use crate::{activitystreams, config, db, templates, util};
 use anyhow::Result;
 use rayon::prelude::*;
-use rust_embed::RustEmbed;
 use std::collections::HashMap;
 use std::error::Error;
 use std::fs;
@@ -47,35 +46,12 @@ pub fn setup_data_path(clean: &bool) -> Result<(), Box<dyn Error>> {
 pub fn unpack_customizable_resources() -> Result<(), Box<dyn Error>> {
     let config = config::config()?;
 
-    let mut config_outfile = open_outfile_with_parent_dir(&config.config_path())?;
+    let mut config_outfile = util::open_outfile_with_parent_dir(&config.config_path())?;
     config_outfile.write_all(DEFAULT_CONFIG.as_bytes())?;
 
     copy_embedded_themes(&config.themes_path())?;
 
     Ok(())
-}
-
-// todo: move this to a shared utils module? build.rs also uses
-pub fn copy_embedded_assets<Assets: RustEmbed>(
-    assets_output_path: &PathBuf,
-) -> Result<(), Box<dyn Error>> {
-    for filename in Assets::iter() {
-        let file = Assets::get(&filename).ok_or("no asset")?;
-        let outpath = PathBuf::from(&assets_output_path).join(filename.to_string());
-
-        let mut outfile = open_outfile_with_parent_dir(&outpath)?;
-        outfile.write_all(file.data.as_ref())?;
-
-        debug!("Wrote {} to {:?}", filename, outpath);
-    }
-    Ok(())
-}
-
-pub fn open_outfile_with_parent_dir(outpath: &PathBuf) -> Result<fs::File, Box<dyn Error>> {
-    let outparent = outpath.parent().ok_or("no parent path")?;
-    fs::create_dir_all(outparent)?;
-    let outfile = fs::File::create(outpath)?;
-    Ok(outfile)
 }
 
 pub fn copy_web_assets(build_path: &PathBuf) -> Result<(), Box<dyn Error>> {
