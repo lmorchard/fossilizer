@@ -30,7 +30,7 @@ pub async fn command(
 
     let access_token = instance_config.access_token.as_ref().unwrap();
     let url = format!("https://{instance}/api/v1/accounts/verify_credentials");
-    let client = reqwest::ClientBuilder::new().build().unwrap();
+    let client = reqwest::Client::new();
     let res = client
         .get(url)
         .header("Authorization", format!("Bearer {access_token}"))

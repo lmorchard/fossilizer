@@ -33,10 +33,11 @@ sha256 = "1.1.4"
 simple-logging = "2.0.2"
 tar = "0.4.38"
 tera = "1.19.0"
-tokio = { version = "1.29.1", features = ["full", "windows-sys"] }
+tokio = { version = "1.29.1", features = ["rt-multi-thread", "macros", "sync", "time"] }
 url = { version = "2.4.0", features = ["serde"] }
-reqwest = { version = "0.11.18", default-features = false, features = ["gzip", "json", "default-tls"] }
-openssl = { version = "0.10.55", features = ["vendored"] }
+# rustls-tls-native-roots keeps using the OS trust store (as the old default-tls
+# did) while staying OpenSSL-free, so enterprise/custom CAs still work.
+reqwest = { version = "0.12", default-features = false, features = ["gzip", "json", "rustls-tls-native-roots"] }
 zip = "0.6.6"
 walkdir = "2.4.0"
 warp = "0.3.7"
