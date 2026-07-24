@@ -1,10 +1,9 @@
-use anyhow::Result;
+use anyhow::{anyhow, Result};
 
 use crate::cli::mastodon::Args;
 use fossilizer::mastodon::{instance::InstanceConfig, OAUTH_SCOPES, REDIRECT_URI_OOB};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-use std::error::Error;
 
 #[derive(Serialize, Deserialize, Debug)]
 struct CodeAuthResult {
@@ -23,12 +22,12 @@ pub async fn command(
     args: &CodeArgs,
     parent_args: &Args,
     instance_config: &mut InstanceConfig,
-) -> Result<(), Box<dyn Error>> {
+) -> Result<()> {
     let instance = &parent_args.instance;
     let code = &args.code;
 
     let not_registered =
-        || format!("no client registered for {instance}; run `mastodon link` first");
+        || anyhow!("no client registered for {instance}; run `mastodon link` first");
     let client_id = instance_config
         .client_id
         .as_ref()
@@ -57,6 +56,6 @@ pub async fn command(
         info!("Authorization successful for {instance}");
         Ok(())
     } else {
-        Err(format!("failed to authorize with code: {}", res.status()).into())
+        Err(anyhow!("failed to authorize with code: {}", res.status()))
     }
 }

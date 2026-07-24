@@ -2,8 +2,6 @@ use crate::cli::mastodon::Args;
 use anyhow::Result;
 use fossilizer::{db, mastodon::instance::InstanceConfig};
 
-use std::error::Error;
-
 use fossilizer::{config, mastodon::fetcher::Fetcher};
 
 #[derive(Debug, clap::Args)]
@@ -23,7 +21,7 @@ pub async fn command(
     args: &FetchArgs,
     parent_args: &Args,
     instance_config: &mut InstanceConfig,
-) -> Result<(), Box<dyn Error>> {
+) -> Result<()> {
     let max = args.max;
     let page = args.page;
     let incremental: bool = args.incremental;

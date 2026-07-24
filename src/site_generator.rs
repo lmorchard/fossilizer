@@ -1,24 +1,21 @@
 use crate::config::DEFAULT_CONFIG;
 use crate::templates::contexts;
 use crate::themes::{copy_embedded_themes, copy_embedded_web_assets};
-use crate::{activitystreams, config, db, templates};
-use anyhow::Result;
+use crate::{activitystreams, config, db, templates, util};
+use anyhow::{Context, Result};
 use rayon::prelude::*;
-use rust_embed::RustEmbed;
 use std::collections::HashMap;
-use std::error::Error;
 use std::fs;
 use std::io::prelude::*;
 use std::path::{Path, PathBuf};
 use tera::Tera;
 
-pub fn setup_build_path(build_path: &PathBuf, clean: &bool) -> Result<(), Box<dyn Error>> {
-    if *clean {
+pub fn setup_build_path(build_path: &PathBuf, clean: bool) -> Result<()> {
+    if clean {
         info!("Cleaning build path");
         if let Err(err) = fs::remove_dir_all(build_path) {
             if err.kind() != std::io::ErrorKind::NotFound {
-                // todo: improve error handling here
-                return Err(Box::new(err));
+                return Err(err.into());
             }
         }
     }
@@ -26,16 +23,15 @@ pub fn setup_build_path(build_path: &PathBuf, clean: &bool) -> Result<(), Box<dy
     Ok(())
 }
 
-pub fn setup_data_path(clean: &bool) -> Result<(), Box<dyn Error>> {
+pub fn setup_data_path(clean: bool) -> Result<()> {
     let config = config::config()?;
     let data_path = &config.data_path;
 
-    if *clean {
+    if clean {
         info!("Cleaning data path");
         if let Err(err) = fs::remove_dir_all(data_path) {
             if err.kind() != std::io::ErrorKind::NotFound {
-                // todo: improve error handling here
-                return Err(Box::new(err));
+                return Err(err.into());
             }
         }
     }
@@ -44,10 +40,10 @@ pub fn setup_data_path(clean: &bool) -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-pub fn unpack_customizable_resources() -> Result<(), Box<dyn Error>> {
+pub fn unpack_customizable_resources() -> Result<()> {
     let config = config::config()?;
 
-    let mut config_outfile = open_outfile_with_parent_dir(&config.config_path())?;
+    let mut config_outfile = util::open_outfile_with_parent_dir(&config.config_path())?;
     config_outfile.write_all(DEFAULT_CONFIG.as_bytes())?;
 
     copy_embedded_themes(&config.themes_path())?;
@@ -55,30 +51,7 @@ pub fn unpack_customizable_resources() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-// todo: move this to a shared utils module? build.rs also uses
-pub fn copy_embedded_assets<Assets: RustEmbed>(
-    assets_output_path: &PathBuf,
-) -> Result<(), Box<dyn Error>> {
-    for filename in Assets::iter() {
-        let file = Assets::get(&filename).ok_or("no asset")?;
-        let outpath = PathBuf::from(&assets_output_path).join(filename.to_string());
-
-        let mut outfile = open_outfile_with_parent_dir(&outpath)?;
-        outfile.write_all(file.data.as_ref())?;
-
-        debug!("Wrote {} to {:?}", filename, outpath);
-    }
-    Ok(())
-}
-
-pub fn open_outfile_with_parent_dir(outpath: &PathBuf) -> Result<fs::File, Box<dyn Error>> {
-    let outparent = outpath.parent().ok_or("no parent path")?;
-    fs::create_dir_all(outparent)?;
-    let outfile = fs::File::create(outpath)?;
-    Ok(outfile)
-}
-
-pub fn copy_web_assets(build_path: &PathBuf) -> Result<(), Box<dyn Error>> {
+pub fn copy_web_assets(build_path: &PathBuf) -> Result<()> {
     let config = config::config()?;
 
     let web_assets_path = config.web_assets_path();
@@ -96,7 +69,7 @@ pub fn copy_web_assets(build_path: &PathBuf) -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-pub fn copy_files<P>(media_path: &[P], build_path: &P) -> Result<(), Box<dyn Error>>
+pub fn copy_files<P>(media_path: &[P], build_path: &P) -> Result<()>
 where
     P: AsRef<Path> + std::fmt::Debug,
 {
@@ -126,7 +99,7 @@ where
 pub fn plan_activities_pages(
     build_path: &PathBuf,
     db_activities: &db::activities::Activities<'_>,
-) -> Result<Vec<contexts::IndexDayContext>, Box<dyn Error>> {
+) -> Result<Vec<contexts::IndexDayContext>> {
     let mut entries: Vec<contexts::IndexDayContext> = Vec::new();
     let all_days = db_activities.get_published_days()?;
     for (date, count) in all_days {
@@ -155,7 +128,7 @@ pub fn generate_activities_pages(
     tera: &Tera,
     actors: &HashMap<String, activitystreams::Actor>,
     day_entries: &Vec<contexts::IndexDayContext>,
-) -> Result<(), Box<dyn Error>> {
+) -> Result<()> {
     info!("Generating {} per-day pages", day_entries.len());
     day_entries
         .par_iter()
@@ -168,7 +141,7 @@ pub fn generate_activity_page(
     tera: &Tera,
     actors: &HashMap<String, activitystreams::Actor>,
     day_entry: &contexts::IndexDayContext,
-) -> Result<(), Box<dyn Error>> {
+) -> Result<()> {
     // let tera = templates::init()?;
     let db_conn = db::conn()?;
     let db_activities = db::activities::Activities::new(&db_conn);
@@ -213,7 +186,7 @@ pub fn generate_index_page(
     build_path: &PathBuf,
     day_entries: &Vec<contexts::IndexDayContext>,
     tera: &tera::Tera,
-) -> Result<(), Box<dyn Error>> {
+) -> Result<()> {
     info!("Generating site index page");
 
     let index_path = PathBuf::from(&build_path)
@@ -236,7 +209,7 @@ pub fn generate_index_page(
 pub fn generate_index_json(
     build_path: &PathBuf,
     day_entries: &Vec<contexts::IndexDayContext>,
-) -> Result<(), Box<dyn Error>> {
+) -> Result<()> {
     info!("Generating site index JSON");
 
     let file_path = PathBuf::from(&build_path)
@@ -245,7 +218,7 @@ pub fn generate_index_json(
 
     let output = serde_json::to_string_pretty(&day_entries)?;
 
-    let file_parent_path = file_path.parent().ok_or("no parent path")?;
+    let file_parent_path = file_path.parent().context("no parent path")?;
     fs::create_dir_all(file_parent_path)?;
 
     let mut file = fs::File::create(file_path)?;

@@ -1,7 +1,6 @@
 use anyhow::Result;
 use clap::Args;
 use fossilizer::{config, db, media, site_generator, templates};
-use std::error::Error;
 
 #[derive(Debug, Args)]
 pub struct BuildArgs {
@@ -25,7 +24,7 @@ pub struct BuildArgs {
     theme: Option<String>,
 }
 
-pub async fn command(args: &BuildArgs) -> Result<(), Box<dyn Error>> {
+pub async fn command(args: &BuildArgs) -> Result<()> {
     let clean = args.clean;
     let skip_index = args.skip_index;
     let skip_index_json = args.skip_index_json;
@@ -34,14 +33,14 @@ pub async fn command(args: &BuildArgs) -> Result<(), Box<dyn Error>> {
 
     config::update(|config| {
         if let Some(theme) = &args.theme {
-            config.theme = theme.clone();
+            config.theme.clone_from(theme);
         }
     })?;
 
     let config = config::config()?;
     debug!("Using theme {:?}", config.theme);
 
-    site_generator::setup_build_path(&config.build_path, &clean)?;
+    site_generator::setup_build_path(&config.build_path, clean)?;
     media::ensure_build_media(&config.build_path, &config.media_path())?;
 
     if !skip_assets {

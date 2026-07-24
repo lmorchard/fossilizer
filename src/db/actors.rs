@@ -2,7 +2,6 @@ use anyhow::Result;
 use rusqlite::{params, Connection};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-use std::error::Error;
 
 use crate::activitystreams;
 
@@ -25,10 +24,7 @@ impl<'a> Actors<'a> {
         Ok(())
     }
 
-    pub fn get_actor<T: for<'de> Deserialize<'de>>(
-        &self,
-        id: &String,
-    ) -> Result<T, Box<dyn Error>> {
+    pub fn get_actor<T: for<'de> Deserialize<'de>>(&self, id: &String) -> Result<T> {
         let conn = &self.conn;
         let mut stmt = conn.prepare("SELECT json FROM actors WHERE id = ?")?;
         let json_text: String = stmt.query_row([id], |row| row.get(0))?;
@@ -54,9 +50,7 @@ impl<'a> Actors<'a> {
         Ok(out)
     }
 
-    pub fn get_actors_by_id(
-        &self,
-    ) -> Result<HashMap<String, activitystreams::Actor>, Box<dyn Error>> {
+    pub fn get_actors_by_id(&self) -> Result<HashMap<String, activitystreams::Actor>> {
         Ok(self
             .get_actors::<activitystreams::Actor>()?
             .into_iter()

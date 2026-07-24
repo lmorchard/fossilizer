@@ -1,7 +1,6 @@
-use anyhow::Result;
+use anyhow::{anyhow, Result};
 use clap::Args;
 use fossilizer::config;
-use std::error::Error;
 use std::ffi::OsStr;
 use std::net::SocketAddr;
 
@@ -18,7 +17,7 @@ pub struct ServeArgs {
     open: bool,
 }
 
-pub async fn command(args: &ServeArgs) -> Result<(), Box<dyn Error>> {
+pub async fn command(args: &ServeArgs) -> Result<()> {
     let open_browser = args.open;
 
     let config = config::config()?;
@@ -27,9 +26,9 @@ pub async fn command(args: &ServeArgs) -> Result<(), Box<dyn Error>> {
     let addr = format!("{}:{}", args.host.clone(), args.port);
     let addr: SocketAddr = addr
         .parse()
-        .map_err(|e| format!("invalid host/port {addr:?}: {e}"))?;
+        .map_err(|e| anyhow!("invalid host/port {addr:?}: {e}"))?;
 
-    let serving_url = format!("http://{}", addr);
+    let serving_url = format!("http://{addr}");
 
     info!("Serving up {} at {}", build_path.display(), serving_url);
 

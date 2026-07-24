@@ -34,9 +34,9 @@ impl FromStr for ActivitySchema {
 impl std::fmt::Display for ActivitySchema {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            ActivitySchema::Activity => write!(f, "{}", ACTIVITYSCHEMA_ACTIVITY),
-            ActivitySchema::Status => write!(f, "{}", ACTIVITYSCHEMA_STATUS),
-            ActivitySchema::Unknown(s) => write!(f, "{}", s),
+            ActivitySchema::Activity => write!(f, "{ACTIVITYSCHEMA_ACTIVITY}"),
+            ActivitySchema::Status => write!(f, "{ACTIVITYSCHEMA_STATUS}"),
+            ActivitySchema::Unknown(s) => write!(f, "{s}"),
         }
     }
 }
@@ -67,12 +67,12 @@ impl<'a> Activities<'a> {
         let schema = item.which_activity_schema().to_string();
         let json_text = serde_json::to_string_pretty(&item)?;
         let mut stmt = self.conn.prepare_cached(
-            r#"
+            r"
                 INSERT OR REPLACE INTO activities
                 (schema, json)
                 VALUES
                 (?1, ?2)                
-            "#,
+            ",
         )?;
         stmt.execute(params![schema, json_text])?;
 
@@ -134,12 +134,12 @@ impl<'a> Activities<'a> {
     pub fn get_published_years(&self) -> SingleColumnResult {
         query_single_column(
             self.conn,
-            r#"
+            r"
                 SELECT publishedYear
                 FROM activities
                 WHERE isPublic = 1
                 GROUP BY publishedYear
-            "#,
+            ",
             [],
         )
     }
@@ -147,12 +147,12 @@ impl<'a> Activities<'a> {
     pub fn get_published_months_for_year(&self, year: &String) -> SingleColumnResult {
         query_single_column(
             self.conn,
-            r#"
+            r"
                 SELECT publishedYearMonth
                 FROM activities
                 WHERE publishedYear = ? AND isPublic = 1
                 GROUP BY publishedYearMonth
-            "#,
+            ",
             [year],
         )
     }
@@ -160,12 +160,12 @@ impl<'a> Activities<'a> {
     pub fn get_published_days_for_month(&self, month: &String) -> SingleColumnResult {
         query_single_column(
             self.conn,
-            r#"
+            r"
                 SELECT publishedYearMonthDay
                 FROM activities
                 WHERE publishedYearMonth = ?1 AND isPublic = 1
                 GROUP BY publishedYearMonthDay
-            "#,
+            ",
             [month],
         )
     }
@@ -173,13 +173,13 @@ impl<'a> Activities<'a> {
     pub fn get_published_months(&self) -> SingleColumnResult {
         query_single_column(
             self.conn,
-            r#"
+            r"
                 SELECT publishedYearMonth
                 FROM activities
                 WHERE isPublic = 1
                 GROUP BY publishedYearMonth
                 ORDER BY publishedYearMonth
-            "#,
+            ",
             [],
         )
     }
@@ -187,13 +187,13 @@ impl<'a> Activities<'a> {
     pub fn get_published_days(&self) -> Result<Vec<(String, usize)>, rusqlite::Error> {
         let conn = self.conn;
         let mut stmt = conn.prepare_cached(
-            r#"
+            r"
                 SELECT publishedYearMonthDay, count(id)
                 FROM activities
                 WHERE isPublic = 1
                 GROUP BY publishedYearMonthDay
                 ORDER BY publishedYearMonthDay
-            "#,
+            ",
         )?;
         let res = stmt
             .query_map([], |row| Ok((row.get(0)?, row.get(1)?)))?
@@ -205,12 +205,12 @@ impl<'a> Activities<'a> {
     pub fn get_activities_for_day(&self, day: &String) -> Result<Vec<Activity>> {
         query_activities(
             self.conn,
-            r#"
+            r"
                 SELECT json, schema
                 FROM activities
                 WHERE publishedYearMonthDay = ?1 AND isPublic = 1
                 ORDER BY published ASC
-            "#,
+            ",
             [day],
         )
     }
@@ -218,12 +218,12 @@ impl<'a> Activities<'a> {
     pub fn get_activities_by_ids(&self, ids: &[String]) -> Result<Vec<Activity>> {
         query_activities(
             self.conn,
-            r#"
+            r"
                 SELECT json, schema
                 FROM activities
                 WHERE id IN rarray(?1)
                 ORDER BY published ASC
-            "#,
+            ",
             [ids_to_rarray_param(ids)],
         )
     }
@@ -231,11 +231,11 @@ impl<'a> Activities<'a> {
     pub fn count_activities_by_ids(&self, ids: &[String]) -> Result<i64> {
         query_count(
             self.conn,
-            r#"
+            r"
                 SELECT COUNT(id)
                 FROM activities
                 WHERE id IN rarray(?1)
-            "#,
+            ",
             [ids_to_rarray_param(ids)],
         )
     }
@@ -301,7 +301,7 @@ where
                             Err(e) => {
                                 warn!("Failed to deserialize upgraded Status: {}.", e);
                                 // Extract column number from error message if present
-                                let error_msg = format!("{}", e);
+                                let error_msg = format!("{e}");
                                 if let Some(col_str) = error_msg.split("column ").nth(1) {
                                     if let Some(col) = col_str
                                         .split_whitespace()
@@ -326,7 +326,7 @@ where
                         }
                     }
                 }
-                _ => Err(anyhow!("unknown schema {:?}", schema_str)),
+                ActivitySchema::Unknown(name) => Err(anyhow!("unknown schema {name:?}")),
             }
         })?
         .filter_map(|r| r.ok().flatten())

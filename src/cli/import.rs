@@ -1,7 +1,6 @@
 use anyhow::Result;
 use clap::Args;
 use std::convert::From;
-use std::error::Error;
 use std::fs;
 use std::path::PathBuf;
 
@@ -16,7 +15,7 @@ pub struct ImportArgs {
     skip_media: bool,
 }
 
-pub async fn command(args: &ImportArgs) -> Result<(), Box<dyn Error>> {
+pub async fn command(args: &ImportArgs) -> Result<()> {
     let config = config::config()?;
     let skip_media = args.skip_media;
 
@@ -32,7 +31,7 @@ pub async fn command(args: &ImportArgs) -> Result<(), Box<dyn Error>> {
         let mut importer = mastodon::importer::Importer::new(conn, media_path, skip_media);
         let filename: PathBuf = filename.into();
         info!("Importing {:?}", filename);
-        importer.import(filename)?;
+        importer.import(&filename)?;
     }
     info!("Done");
 

@@ -64,8 +64,7 @@ impl From<megalodon::entities::Attachment> for Attachment {
         let media_type = match attachment.r#type {
             AttachmentType::Audio => "audio/mp3",
             AttachmentType::Image => "image/png",
-            AttachmentType::Video => "video/mp4",
-            AttachmentType::Gifv => "video/mp4",
+            AttachmentType::Video | AttachmentType::Gifv => "video/mp4",
             AttachmentType::Unknown => "unknown",
         }
         .to_string();
@@ -94,7 +93,7 @@ pub struct Outbox<TItem: Serialize> {
     pub id: String,
     #[serde(rename = "type")]
     pub type_field: String,
-    pub total_items: i32,
+    pub total_items: u64,
     pub ordered_items: Vec<TItem>,
 }
 impl<TItem: Serialize> OrderedItems<TItem> for Outbox<TItem> {
@@ -109,7 +108,7 @@ pub struct OrderedCollection {
     pub id: String,
     #[serde(rename = "type")]
     pub type_field: String,
-    pub total_items: i32,
+    pub total_items: u64,
     pub first: String,
     pub last: String,
 }
@@ -243,7 +242,7 @@ impl From<megalodon::entities::Status> for Activity {
         let mut to = Vec::new();
         if let megalodon::entities::StatusVisibility::Public = status.visibility {
             to.push(PUBLIC_ID.to_string());
-        };
+        }
 
         // todo: better account for polls, retoots, etc?
         let activity_type_field = if status.reblog.is_some() {
@@ -271,10 +270,10 @@ impl From<megalodon::entities::Status> for Activity {
                                 type_field: "Note".to_string(),
                                 published: quoted_status.created_at,
                                 content: Some(quoted_status.content.clone()),
-                                summary: if !quoted_status.spoiler_text.is_empty() {
-                                    Some(quoted_status.spoiler_text.clone())
-                                } else {
+                                summary: if quoted_status.spoiler_text.is_empty() {
                                     None
+                                } else {
+                                    Some(quoted_status.spoiler_text.clone())
                                 },
                                 attachment: quoted_status
                                     .media_attachments
@@ -297,10 +296,10 @@ impl From<megalodon::entities::Status> for Activity {
                 type_field: "Note".to_string(),
                 published: status.created_at,
                 content: Some(status.content),
-                summary: if !status.spoiler_text.is_empty() {
-                    Some(status.spoiler_text)
-                } else {
+                summary: if status.spoiler_text.is_empty() {
                     None
+                } else {
+                    Some(status.spoiler_text)
                 },
                 attachment: status
                     .media_attachments
@@ -387,7 +386,7 @@ impl Attachments for Tag {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::error::Error;
+    use anyhow::Context;
     use std::path::Path;
     use std::str::FromStr;
     use test_log::test;
@@ -402,7 +401,7 @@ mod tests {
         include_str!("./resources/test/mastodon-status-with-attachment.json");
 
     #[test]
-    fn test_from_megalodon_status_to_activity() -> Result<()> {
+    fn test_from_megalodon_status_to_activity() {
         let status: megalodon::entities::Status =
             serde_json::from_str(JSON_MASTODON_STATUS_WITH_ATTACHMENT).unwrap();
         let activity: Activity = status.clone().into();
@@ -430,12 +429,10 @@ mod tests {
             chrono::DateTime::from_str("2023-07-16T22:02:21.535Z").unwrap();
         assert_eq!(activity.published, expected_published);
         assert_eq!(object.published, expected_published);
-
-        Ok(())
     }
 
     #[test]
-    fn test_remote_actor_attachments() -> Result<(), Box<dyn Error>> {
+    fn test_remote_actor_attachments() -> Result<()> {
         let actor: Actor = serde_json::from_str(JSON_REMOTE_ACTOR)?;
         let icon = actor.icon.as_ref().unwrap();
         let image = actor.image.as_ref().unwrap();
@@ -452,7 +449,7 @@ mod tests {
     }
 
     #[test]
-    fn test_activity_with_attachments() -> Result<(), Box<dyn Error>> {
+    fn test_activity_with_attachments() -> Result<()> {
         let actor: Actor = serde_json::from_str(JSON_REMOTE_ACTOR)?;
         let activity: Activity = serde_json::from_str(JSON_ACTIVITY_WITH_ATTACHMENT)?;
         let media_path = PathBuf::new().join("media");
@@ -479,19 +476,19 @@ mod tests {
     }
 
     #[test]
-    fn test_outbox_parsing_with_local_model() -> Result<(), Box<dyn Error>> {
+    fn test_outbox_parsing_with_local_model() -> Result<()> {
         let outbox: Outbox<Activity> = serde_json::from_str(JSON_OUTBOX)?;
 
         let ordered_items = outbox.ordered_items;
         assert!(!ordered_items.is_empty());
-        let item1 = ordered_items.first().ok_or("no item1")?;
+        let item1 = ordered_items.first().context("no item1")?;
         assert_eq!(
             item1.id,
             "https://mastodon.social/users/lmorchard/statuses/55864/activity"
         );
         assert_eq!(item1.type_field, "Create");
         assert_eq!(
-            item1.actor.id().ok_or("no actor id")?,
+            item1.actor.id().context("no actor id")?,
             "https://mastodon.social/users/lmorchard"
         );
 
@@ -499,7 +496,7 @@ mod tests {
     }
 
     #[test]
-    fn test_outbox_parsing_with_external_model() -> Result<(), Box<dyn Error>> {
+    fn test_outbox_parsing_with_external_model() -> Result<()> {
         let outbox: Outbox<activitystreams::activity::ActivityBox> =
             serde_json::from_str(JSON_OUTBOX)?;
 
@@ -510,7 +507,7 @@ mod tests {
         let item1: activitystreams::activity::Create = item1.clone().into_concrete()?;
 
         assert_eq!(
-            item1.object_props.id.ok_or("no id")?.as_str(),
+            item1.object_props.id.context("no id")?.as_str(),
             "https://mastodon.social/users/lmorchard/statuses/55864/activity"
         );
 
@@ -519,7 +516,7 @@ mod tests {
             item1
                 .create_props
                 .get_actor_xsd_any_uri()
-                .ok_or("no actor")?
+                .context("no actor")?
                 .as_str(),
             "https://mastodon.social/users/lmorchard"
         );
@@ -527,7 +524,7 @@ mod tests {
     }
 
     #[test]
-    fn test_activity_parsing_with_emoji() -> Result<(), Box<dyn Error>> {
+    fn test_activity_parsing_with_emoji() -> Result<()> {
         let activity: Activity = serde_json::from_str(JSON_ACTIVITY_WITH_EMOJI)?;
         assert_eq!(
             activity.id,

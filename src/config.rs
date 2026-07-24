@@ -1,7 +1,11 @@
+// `DEFAULT_CONFIG` binds to default_config.toml via include_str!; the template is
+// currently empty, so clippy::manual_string_new would collapse it to String::new()
+// and sever that binding. Scope the allow to this module rather than lose the link.
+#![allow(clippy::manual_string_new)]
+
+use anyhow::{anyhow, Result};
 use config::Config;
-use dotenv;
 use serde::{Deserialize, Serialize};
-use std::error::Error;
 use std::path::{Path, PathBuf};
 use std::sync::RwLock;
 
@@ -70,8 +74,8 @@ impl AppConfig {
     }
 }
 
-pub fn init(config_path: &Path) -> Result<(), Box<dyn Error>> {
-    dotenv::dotenv().ok();
+pub fn init(config_path: &Path) -> Result<()> {
+    dotenvy::dotenv().ok();
 
     let mut config = Config::builder();
     if config_path.is_file() {
@@ -81,35 +85,47 @@ pub fn init(config_path: &Path) -> Result<(), Box<dyn Error>> {
 
     let config = config.build()?;
 
-    let mut context = CONTEXT.write()?;
+    let mut context = CONTEXT
+        .write()
+        .map_err(|e| anyhow!("config context lock poisoned: {e}"))?;
     context.raw_config = config.clone();
     context.config = config.try_deserialize()?;
 
     Ok(())
 }
 
-pub fn config() -> Result<AppConfig, Box<dyn Error>> {
-    Ok(CONTEXT.read()?.config.clone())
+pub fn config() -> Result<AppConfig> {
+    Ok(CONTEXT
+        .read()
+        .map_err(|e| anyhow!("config context lock poisoned: {e}"))?
+        .config
+        .clone())
 }
 
-pub fn update<U>(updater: U) -> Result<(), Box<dyn Error>>
+pub fn update<U>(updater: U) -> Result<()>
 where
     U: FnOnce(&mut AppConfig),
 {
-    let mut context = CONTEXT.write()?;
+    let mut context = CONTEXT
+        .write()
+        .map_err(|e| anyhow!("config context lock poisoned: {e}"))?;
     updater(&mut context.config);
     Ok(())
 }
 
-pub fn get<'de, T: Deserialize<'de>>(key: &str) -> Result<T, Box<dyn Error>> {
-    let context = CONTEXT.read()?;
+pub fn get<'de, T: Deserialize<'de>>(key: &str) -> Result<T> {
+    let context = CONTEXT
+        .read()
+        .map_err(|e| anyhow!("config context lock poisoned: {e}"))?;
     let value = context.raw_config.get::<T>(key)?;
     Ok(value)
 }
 
 /// Attempt to deserialize the entire configuration into the requested type.
-pub fn try_deserialize<'de, T: Deserialize<'de>>() -> Result<T, Box<dyn Error>> {
-    let context = CONTEXT.read()?;
+pub fn try_deserialize<'de, T: Deserialize<'de>>() -> Result<T> {
+    let context = CONTEXT
+        .read()
+        .map_err(|e| anyhow!("config context lock poisoned: {e}"))?;
     let config = context.raw_config.clone();
     let value = config.try_deserialize::<T>()?;
     Ok(value)

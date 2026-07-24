@@ -1,8 +1,7 @@
-use anyhow::Result;
+use anyhow::{Context, Result};
 use lazy_static::lazy_static;
 use rusqlite::Connection;
 use rusqlite_migration::{Migrations, M};
-use std::error::Error;
 use std::fs;
 use std::path::Path;
 
@@ -27,11 +26,13 @@ lazy_static! {
     ]);
 }
 
-pub fn conn() -> Result<Connection, Box<dyn Error>> {
+pub fn conn() -> Result<Connection> {
     let config = config::config()?;
 
     let database_path = config.database_path();
-    let database_parent_path = Path::new(&database_path).parent().ok_or("no parent path")?;
+    let database_parent_path = Path::new(&database_path)
+        .parent()
+        .context("database path has no parent directory")?;
     fs::create_dir_all(database_parent_path)?;
 
     let conn = Connection::open(&database_path)?;
@@ -44,7 +45,7 @@ pub fn conn() -> Result<Connection, Box<dyn Error>> {
     Ok(conn)
 }
 
-pub fn upgrade() -> Result<(), Box<dyn Error>> {
+pub fn upgrade() -> Result<()> {
     let config = config::config()?;
 
     let mut conn = Connection::open(config.database_path())?;

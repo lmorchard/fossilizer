@@ -1,4 +1,4 @@
-use std::error::Error;
+use anyhow::{anyhow, Result};
 use std::fs;
 use std::path::{Path, PathBuf};
 
@@ -15,7 +15,7 @@ use std::path::{Path, PathBuf};
 ///   returns an error rather than risk clobbering.
 /// - If symlink creation is unsupported/fails, copies `media_path` into
 ///   `build_path/media` and warns (non-fatal).
-pub fn ensure_build_media(build_path: &Path, media_path: &Path) -> Result<(), Box<dyn Error>> {
+pub fn ensure_build_media(build_path: &Path, media_path: &Path) -> Result<()> {
     fs::create_dir_all(build_path)?;
     let link = build_path.join("media");
     let media_target = absolutize(media_path)?;
@@ -35,12 +35,11 @@ pub fn ensure_build_media(build_path: &Path, media_path: &Path) -> Result<(), Bo
             let legacy_nonempty = dir_has_entries(&link)?;
             let media_nonempty = media_existed && dir_has_entries(media_path)?;
             if legacy_nonempty && media_nonempty {
-                return Err(format!(
+                return Err(anyhow!(
                     "both {link:?} (legacy media directory) and {media_path:?} contain \
                      media; refusing to migrate automatically. Merge them into \
                      {media_path:?}, remove {link:?}, then re-run."
-                )
-                .into());
+                ));
             }
             if legacy_nonempty {
                 // Promote the legacy dir to become the media store. An empty
@@ -59,14 +58,13 @@ pub fn ensure_build_media(build_path: &Path, media_path: &Path) -> Result<(), Bo
             }
         }
         Ok(_) => {
-            return Err(format!(
+            return Err(anyhow!(
                 "{link:?} exists but is neither a directory nor a symlink; \
                  remove it and re-run."
-            )
-            .into());
+            ));
         }
         Err(ref e) if e.kind() == std::io::ErrorKind::NotFound => {}
-        Err(e) => return Err(Box::new(e)),
+        Err(e) => return Err(e.into()),
     }
 
     fs::create_dir_all(media_path)?;
@@ -82,7 +80,7 @@ pub fn ensure_build_media(build_path: &Path, media_path: &Path) -> Result<(), Bo
     Ok(())
 }
 
-fn absolutize(p: &Path) -> Result<PathBuf, Box<dyn Error>> {
+fn absolutize(p: &Path) -> Result<PathBuf> {
     if p.is_absolute() {
         Ok(p.to_path_buf())
     } else {
@@ -90,11 +88,11 @@ fn absolutize(p: &Path) -> Result<PathBuf, Box<dyn Error>> {
     }
 }
 
-fn dir_has_entries(p: &Path) -> Result<bool, Box<dyn Error>> {
+fn dir_has_entries(p: &Path) -> Result<bool> {
     Ok(fs::read_dir(p)?.next().is_some())
 }
 
-fn copy_dir_contents(from: &Path, to: &Path) -> Result<(), Box<dyn Error>> {
+fn copy_dir_contents(from: &Path, to: &Path) -> Result<()> {
     let opts = fs_extra::dir::CopyOptions {
         overwrite: true,
         content_only: true,
@@ -106,7 +104,7 @@ fn copy_dir_contents(from: &Path, to: &Path) -> Result<(), Box<dyn Error>> {
 
 /// Move a directory, falling back to copy-then-remove when a plain rename is
 /// not possible (e.g. `EXDEV` across filesystems).
-fn move_dir(from: &Path, to: &Path) -> Result<(), Box<dyn Error>> {
+fn move_dir(from: &Path, to: &Path) -> Result<()> {
     match fs::rename(from, to) {
         Ok(()) => Ok(()),
         // A plain rename only fails to cross filesystems with `CrossesDevices`
@@ -114,11 +112,11 @@ fn move_dir(from: &Path, to: &Path) -> Result<(), Box<dyn Error>> {
         // error (permissions, unexpected state) is real — surface it rather than
         // masking it behind a copy.
         Err(e) if e.kind() == std::io::ErrorKind::CrossesDevices => copy_dir_across(from, to),
-        Err(e) => Err(Box::new(e)),
+        Err(e) => Err(e.into()),
     }
 }
 
-fn copy_dir_across(from: &Path, to: &Path) -> Result<(), Box<dyn Error>> {
+fn copy_dir_across(from: &Path, to: &Path) -> Result<()> {
     if let Some(parent) = to.parent() {
         fs::create_dir_all(parent)?;
     }
@@ -290,7 +288,7 @@ mod tests {
         assert!(build.join("media").join("important.bin").exists());
 
         // Run the real clean routine used by `build --clean`.
-        crate::site_generator::setup_build_path(&build, &true).unwrap();
+        crate::site_generator::setup_build_path(&build, true).unwrap();
 
         // The build dir was wiped, but the media store MUST survive.
         assert!(

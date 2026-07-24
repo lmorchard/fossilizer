@@ -121,10 +121,10 @@ impl Downloader {
                     _ = workers.join_next(), if !workers.is_empty() => {
                         trace!("Worker done - workers.len() = {}", workers.len());
                     }
-                    _ = new_task_notify.notified() => {
+                    () = new_task_notify.notified() => {
                         trace!("New task queued");
                     }
-                    _ = queue_closed.notified() => {
+                    () = queue_closed.notified() => {
                         trace!("Queue closed");
                         should_exit_when_empty = true;
                     }
