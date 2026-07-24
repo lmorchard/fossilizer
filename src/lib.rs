@@ -13,6 +13,7 @@ pub mod config;
 pub mod db;
 pub mod downloader;
 pub mod mastodon;
+pub mod media;
 pub mod site_generator;
 pub mod templates;
 pub mod themes;

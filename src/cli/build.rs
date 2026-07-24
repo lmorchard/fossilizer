@@ -1,6 +1,6 @@
 use anyhow::Result;
 use clap::Args;
-use fossilizer::{config, db, site_generator, templates};
+use fossilizer::{config, db, media, site_generator, templates};
 use std::error::Error;
 
 #[derive(Debug, Args)]
@@ -42,6 +42,7 @@ pub async fn command(args: &BuildArgs) -> Result<(), Box<dyn Error>> {
     debug!("Using theme {:?}", config.theme);
 
     site_generator::setup_build_path(&config.build_path, &clean)?;
+    media::ensure_build_media(&config.build_path, &config.media_path())?;
 
     if !skip_assets {
         site_generator::copy_web_assets(&config.build_path)?;

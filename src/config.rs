@@ -27,6 +27,11 @@ pub struct AppConfig {
     #[serde(default = "default_data_path")]
     pub data_path: PathBuf,
 
+    /// Location for downloaded media. Defaults to `<data_path>/media` when
+    /// unset. Override with `APP_MEDIA_PATH`. Kept separate from `build_path`
+    /// so media is durable state, not regeneratable build output.
+    pub media_path: Option<PathBuf>,
+
     #[serde(default = "default_theme")]
     pub theme: String,
 
@@ -44,7 +49,9 @@ pub fn default_theme() -> String {
 impl AppConfig {
     // todo: allow each of these to be individually overriden
     pub fn media_path(&self) -> PathBuf {
-        self.build_path.join("media")
+        self.media_path
+            .clone()
+            .unwrap_or_else(|| self.data_path.join("media"))
     }
     pub fn database_path(&self) -> PathBuf {
         self.data_path.join("data.sqlite3")
@@ -106,4 +113,28 @@ pub fn try_deserialize<'de, T: Deserialize<'de>>() -> Result<T, Box<dyn Error>> 
     let config = context.raw_config.clone();
     let value = config.try_deserialize::<T>()?;
     Ok(value)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn media_path_defaults_to_data_path_media() {
+        let config = AppConfig {
+            data_path: PathBuf::from("/tmp/somedata"),
+            ..Default::default()
+        };
+        assert_eq!(config.media_path(), PathBuf::from("/tmp/somedata/media"));
+    }
+
+    #[test]
+    fn media_path_uses_explicit_override() {
+        let config = AppConfig {
+            data_path: PathBuf::from("/tmp/somedata"),
+            media_path: Some(PathBuf::from("/mnt/bigdisk/media")),
+            ..Default::default()
+        };
+        assert_eq!(config.media_path(), PathBuf::from("/mnt/bigdisk/media"));
+    }
 }
