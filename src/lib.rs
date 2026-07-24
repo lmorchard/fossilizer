@@ -8,7 +8,8 @@
     clippy::unused_async,
     clippy::implicit_hasher,
     clippy::struct_excessive_bools,
-    clippy::non_std_lazy_statics
+    clippy::non_std_lazy_statics,
+    clippy::unnecessary_debug_formatting
 )]
 
 #[macro_use]
