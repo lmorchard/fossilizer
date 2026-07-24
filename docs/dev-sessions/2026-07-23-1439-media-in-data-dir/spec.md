@@ -43,12 +43,14 @@ irreplaceable state to a directory that is otherwise regeneratable output:
 
 In `src/config.rs`:
 
-- Add a `media_path: PathBuf` field to `AppConfig` with a serde default of
-  `data_path/media` (a `default_media_path`-style helper, matching the existing
-  `default_build_path` / `default_data_path` pattern). Overridable via
-  `APP_MEDIA_PATH`, consistent with the other `APP_`-prefixed paths.
-- Change the `media_path()` accessor to return this field instead of
-  `build_path.join("media")`.
+- Add a `media_path: Option<PathBuf>` field to `AppConfig`. Leaving it `None`
+  (the default when the key is absent) means "derive from `data_path`"; a value
+  set via `APP_MEDIA_PATH` overrides it, consistent with the other `APP_`-prefixed
+  paths. (An `Option` is used rather than a serde default helper because the
+  default depends on another field, `data_path`, which serde field defaults
+  can't reference.)
+- Change the `media_path()` accessor to return the field when set, otherwise
+  fall back to `data_path.join("media")` — instead of `build_path.join("media")`.
 
 Because the three download call sites already call `config.media_path()`, no
 other call-site changes are needed for downloads to land in `data/media`.

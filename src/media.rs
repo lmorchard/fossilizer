@@ -9,10 +9,10 @@ use std::path::{Path, PathBuf};
 /// - Creates `media_path` (and `build_path`) if missing.
 /// - Absent `build_path/media` → creates an absolute symlink to `media_path`.
 /// - Already a symlink → re-points it only if it targets the wrong place.
-/// - Legacy real directory → migrates its contents into `media_path` (only when
-///   `media_path` did not already exist) and replaces it with the symlink.
-///   If BOTH the legacy dir and `media_path` hold media, returns an error
-///   rather than risk clobbering.
+/// - Legacy real directory → migrates its contents into `media_path` (when
+///   `media_path` does not already exist, or exists but is empty) and replaces
+///   it with the symlink. If BOTH the legacy dir and `media_path` hold media,
+///   returns an error rather than risk clobbering.
 /// - If symlink creation is unsupported/fails, copies `media_path` into
 ///   `build_path/media` and warns (non-fatal).
 pub fn ensure_build_media(build_path: &Path, media_path: &Path) -> Result<(), Box<dyn Error>> {
@@ -109,8 +109,12 @@ fn copy_dir_contents(from: &Path, to: &Path) -> Result<(), Box<dyn Error>> {
 fn move_dir(from: &Path, to: &Path) -> Result<(), Box<dyn Error>> {
     match fs::rename(from, to) {
         Ok(()) => Ok(()),
-        // rename can't cross filesystems; copy the contents then drop the source.
-        Err(_) => copy_dir_across(from, to),
+        // A plain rename only fails to cross filesystems with `CrossesDevices`
+        // (EXDEV); fall back to copy-then-remove for that case alone. Any other
+        // error (permissions, unexpected state) is real — surface it rather than
+        // masking it behind a copy.
+        Err(e) if e.kind() == std::io::ErrorKind::CrossesDevices => copy_dir_across(from, to),
+        Err(e) => Err(Box::new(e)),
     }
 }
 
@@ -309,6 +313,23 @@ mod tests {
         assert!(
             !from.exists(),
             "source must be removed after the cross-fs move"
+        );
+    }
+
+    #[test]
+    fn move_dir_surfaces_non_crossdevice_errors_without_copy_fallback() {
+        let root = test_dir("move-dir-error");
+        let from = root.join("does-not-exist");
+        let to = root.join("to");
+
+        // rename fails with NotFound (not CrossesDevices) — the error must be
+        // surfaced, not masked by silently falling back to a copy.
+        let result = super::move_dir(&from, &to);
+
+        assert!(result.is_err());
+        assert!(
+            !to.exists(),
+            "must not create the destination via copy fallback on a non-cross-device error"
         );
     }
 }
