@@ -1,5 +1,5 @@
 (function() {
-    const implementors = Object.fromEntries([["fossilizer",[["impl <a class=\"trait\" href=\"https://doc.rust-lang.org/1.97.0/core/ops/deref/trait.Deref.html\" title=\"trait core::ops::deref::Deref\">Deref</a> for <a class=\"struct\" href=\"fossilizer/config/struct.DEFAULT_CONFIG.html\" title=\"struct fossilizer::config::DEFAULT_CONFIG\">DEFAULT_CONFIG</a>",0]]]]);
+    const implementors = Object.fromEntries([["fossilizer",[["impl <a class=\"trait\" href=\"https://doc.rust-lang.org/1.97.1/core/ops/deref/trait.Deref.html\" title=\"trait core::ops::deref::Deref\">Deref</a> for <a class=\"struct\" href=\"fossilizer/config/struct.DEFAULT_CONFIG.html\" title=\"struct fossilizer::config::DEFAULT_CONFIG\">DEFAULT_CONFIG</a>",0]]]]);
     if (window.register_implementors) {
         window.register_implementors(implementors);
     } else {
