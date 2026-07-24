@@ -1,6 +1,5 @@
 use anyhow::{anyhow, Result};
 use config::Config;
-use dotenv;
 use serde::{Deserialize, Serialize};
 use std::path::{Path, PathBuf};
 use std::sync::RwLock;
@@ -71,7 +70,7 @@ impl AppConfig {
 }
 
 pub fn init(config_path: &Path) -> Result<()> {
-    dotenv::dotenv().ok();
+    dotenvy::dotenv().ok();
 
     let mut config = Config::builder();
     if config_path.is_file() {
