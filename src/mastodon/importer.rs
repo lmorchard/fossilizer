@@ -13,7 +13,7 @@ use std::fs;
 use std::fs::File;
 
 use std::io::{copy, Read};
-use std::path::{Component, PathBuf};
+use std::path::{Component, Path, PathBuf};
 use tar::Archive;
 use walkdir::WalkDir;
 
@@ -43,8 +43,7 @@ impl Importer {
         }
     }
 
-    pub fn import(&mut self, filepath: PathBuf) -> Result<()> {
-        let filepath = filepath.as_path();
+    pub fn import(&mut self, filepath: &Path) -> Result<()> {
         let file = File::open(filepath)?;
 
         // todo: do something with filemagic here to auto-detect archive format based on file contents?
@@ -58,7 +57,7 @@ impl Importer {
             "tar" => self.import_tar(file, false)?,
             "zip" => self.import_zip(file)?,
             other => return Err(anyhow!("unsupported archive format: {other}")),
-        };
+        }
 
         Ok(())
     }
@@ -185,7 +184,7 @@ impl Importer {
 
             for entry in WalkDir::new(&temp_media_path)
                 .into_iter()
-                .filter_map(|e| e.ok())
+                .filter_map(std::result::Result::ok)
             {
                 if !entry.file_type().is_file() {
                     continue;

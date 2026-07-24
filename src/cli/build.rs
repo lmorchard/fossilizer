@@ -33,14 +33,14 @@ pub async fn command(args: &BuildArgs) -> Result<()> {
 
     config::update(|config| {
         if let Some(theme) = &args.theme {
-            config.theme = theme.clone();
+            config.theme.clone_from(theme);
         }
     })?;
 
     let config = config::config()?;
     debug!("Using theme {:?}", config.theme);
 
-    site_generator::setup_build_path(&config.build_path, &clean)?;
+    site_generator::setup_build_path(&config.build_path, clean)?;
     media::ensure_build_media(&config.build_path, &config.media_path())?;
 
     if !skip_assets {

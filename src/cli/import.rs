@@ -31,7 +31,7 @@ pub async fn command(args: &ImportArgs) -> Result<()> {
         let mut importer = mastodon::importer::Importer::new(conn, media_path, skip_media);
         let filename: PathBuf = filename.into();
         info!("Importing {:?}", filename);
-        importer.import(filename)?;
+        importer.import(&filename)?;
     }
     info!("Done");
 

@@ -64,8 +64,7 @@ impl From<megalodon::entities::Attachment> for Attachment {
         let media_type = match attachment.r#type {
             AttachmentType::Audio => "audio/mp3",
             AttachmentType::Image => "image/png",
-            AttachmentType::Video => "video/mp4",
-            AttachmentType::Gifv => "video/mp4",
+            AttachmentType::Video | AttachmentType::Gifv => "video/mp4",
             AttachmentType::Unknown => "unknown",
         }
         .to_string();
@@ -94,7 +93,7 @@ pub struct Outbox<TItem: Serialize> {
     pub id: String,
     #[serde(rename = "type")]
     pub type_field: String,
-    pub total_items: i32,
+    pub total_items: u64,
     pub ordered_items: Vec<TItem>,
 }
 impl<TItem: Serialize> OrderedItems<TItem> for Outbox<TItem> {
@@ -109,7 +108,7 @@ pub struct OrderedCollection {
     pub id: String,
     #[serde(rename = "type")]
     pub type_field: String,
-    pub total_items: i32,
+    pub total_items: u64,
     pub first: String,
     pub last: String,
 }
@@ -243,7 +242,7 @@ impl From<megalodon::entities::Status> for Activity {
         let mut to = Vec::new();
         if let megalodon::entities::StatusVisibility::Public = status.visibility {
             to.push(PUBLIC_ID.to_string());
-        };
+        }
 
         // todo: better account for polls, retoots, etc?
         let activity_type_field = if status.reblog.is_some() {
@@ -271,10 +270,10 @@ impl From<megalodon::entities::Status> for Activity {
                                 type_field: "Note".to_string(),
                                 published: quoted_status.created_at,
                                 content: Some(quoted_status.content.clone()),
-                                summary: if !quoted_status.spoiler_text.is_empty() {
-                                    Some(quoted_status.spoiler_text.clone())
-                                } else {
+                                summary: if quoted_status.spoiler_text.is_empty() {
                                     None
+                                } else {
+                                    Some(quoted_status.spoiler_text.clone())
                                 },
                                 attachment: quoted_status
                                     .media_attachments
@@ -297,10 +296,10 @@ impl From<megalodon::entities::Status> for Activity {
                 type_field: "Note".to_string(),
                 published: status.created_at,
                 content: Some(status.content),
-                summary: if !status.spoiler_text.is_empty() {
-                    Some(status.spoiler_text)
-                } else {
+                summary: if status.spoiler_text.is_empty() {
                     None
+                } else {
+                    Some(status.spoiler_text)
                 },
                 attachment: status
                     .media_attachments
@@ -402,7 +401,7 @@ mod tests {
         include_str!("./resources/test/mastodon-status-with-attachment.json");
 
     #[test]
-    fn test_from_megalodon_status_to_activity() -> Result<()> {
+    fn test_from_megalodon_status_to_activity() {
         let status: megalodon::entities::Status =
             serde_json::from_str(JSON_MASTODON_STATUS_WITH_ATTACHMENT).unwrap();
         let activity: Activity = status.clone().into();
@@ -430,8 +429,6 @@ mod tests {
             chrono::DateTime::from_str("2023-07-16T22:02:21.535Z").unwrap();
         assert_eq!(activity.published, expected_published);
         assert_eq!(object.published, expected_published);
-
-        Ok(())
     }
 
     #[test]

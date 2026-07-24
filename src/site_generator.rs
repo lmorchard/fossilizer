@@ -10,8 +10,8 @@ use std::io::prelude::*;
 use std::path::{Path, PathBuf};
 use tera::Tera;
 
-pub fn setup_build_path(build_path: &PathBuf, clean: &bool) -> Result<()> {
-    if *clean {
+pub fn setup_build_path(build_path: &PathBuf, clean: bool) -> Result<()> {
+    if clean {
         info!("Cleaning build path");
         if let Err(err) = fs::remove_dir_all(build_path) {
             if err.kind() != std::io::ErrorKind::NotFound {
@@ -23,11 +23,11 @@ pub fn setup_build_path(build_path: &PathBuf, clean: &bool) -> Result<()> {
     Ok(())
 }
 
-pub fn setup_data_path(clean: &bool) -> Result<()> {
+pub fn setup_data_path(clean: bool) -> Result<()> {
     let config = config::config()?;
     let data_path = &config.data_path;
 
-    if *clean {
+    if clean {
         info!("Cleaning data path");
         if let Err(err) = fs::remove_dir_all(data_path) {
             if err.kind() != std::io::ErrorKind::NotFound {

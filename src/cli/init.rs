@@ -14,7 +14,7 @@ pub struct InitArgs {
 }
 
 pub async fn command(args: &InitArgs) -> Result<()> {
-    site_generator::setup_data_path(&args.clean)?;
+    site_generator::setup_data_path(args.clean)?;
     db::upgrade()?;
     if args.customize {
         site_generator::unpack_customizable_resources()?;

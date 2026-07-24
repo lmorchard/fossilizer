@@ -1,3 +1,8 @@
+// `DEFAULT_CONFIG` binds to default_config.toml via include_str!; the template is
+// currently empty, so clippy::manual_string_new would collapse it to String::new()
+// and sever that binding. Scope the allow to this module rather than lose the link.
+#![allow(clippy::manual_string_new)]
+
 use anyhow::{anyhow, Result};
 use config::Config;
 use serde::{Deserialize, Serialize};

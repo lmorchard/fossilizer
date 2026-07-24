@@ -28,7 +28,7 @@ pub async fn command(args: &ServeArgs) -> Result<()> {
         .parse()
         .map_err(|e| anyhow!("invalid host/port {addr:?}: {e}"))?;
 
-    let serving_url = format!("http://{}", addr);
+    let serving_url = format!("http://{addr}");
 
     info!("Serving up {} at {}", build_path.display(), serving_url);
 

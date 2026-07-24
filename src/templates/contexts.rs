@@ -12,7 +12,7 @@ use crate::activitystreams;
 pub struct IndexTemplateContext {
     /// Relative path to the site root from the current page
     pub site_root: String,
-    /// Calendar of nested hashmaps, organizing [IndexDayContext]s by year, month, and day
+    /// Calendar of nested hashmaps, organizing [`IndexDayContext`]s by year, month, and day
     pub calendar: CalendarContext,
 }
 
@@ -46,7 +46,7 @@ pub struct IndexDayEntry {
     pub count: usize,
 }
 
-/// Calendar of [IndexDayContext] structs, organized by into nested [HashMap]s
+/// Calendar of [`IndexDayContext`] structs, organized by into nested [`HashMap`]s
 /// indexed by year, month, and day.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CalendarContext(HashMap<String, HashMap<String, HashMap<String, IndexDayContext>>>);
@@ -56,7 +56,7 @@ impl CalendarContext {
         CalendarContext(HashMap::new())
     }
 
-    /// Insert an [IndexDayContext] into the [CalendarContext], using
+    /// Insert an [`IndexDayContext`] into the [`CalendarContext`], using
     /// year / month / day keys based on the date property
     pub fn insert(&mut self, day_context: &IndexDayContext) {
         let calendar = &mut self.0;
@@ -88,7 +88,7 @@ impl Default for CalendarContext {
     }
 }
 impl From<&Vec<IndexDayContext>> for CalendarContext {
-    /// Produce a [CalendarContext] from a [`Vec<IndexDayContext>`]
+    /// Produce a [`CalendarContext`] from a [`Vec<IndexDayContext>`]
     fn from(value: &Vec<IndexDayContext>) -> Self {
         let mut calendar = Self::new();
         for entry in value {
