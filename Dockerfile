@@ -3,8 +3,8 @@
 # ---- Builder: compile the release binary ----
 FROM rust:1-bookworm AS builder
 WORKDIR /usr/src/fossilizer
-# buildpack-deps (rust image base) already provides gcc, make, perl, pkg-config,
-# and libssl-dev needed for the vendored-openssl / bundled-sqlite build.
+# buildpack-deps (rust image base) already provides gcc, make, and pkg-config
+# needed for the bundled-sqlite build. (TLS is rustls now, so no OpenSSL/libssl.)
 COPY . .
 RUN cargo build --release --locked
 
